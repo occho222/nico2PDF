@@ -1,0 +1,138 @@
+<Window x:Class="Nico2PDF.Views.BatchRenameDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Batch Rename Dialog" Height="650" Width="1100"
+        WindowStartupLocation="CenterOwner" 
+        ResizeMode="CanResize">
+    
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        
+        <Style x:Key="ErrorCellStyle" TargetType="DataGridCell">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasError}" Value="True">
+                    <Setter Property="Background" Value="#FFEEEE"/>
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="ChangedRowStyle" TargetType="DataGridRow">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChanged}" Value="True">
+                    <Setter Property="Background" Value="#F0F8FF"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title and Action Buttons -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="txtTitle" Grid.Column="0" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Button x:Name="btnOK" Grid.Column="1" Width="80" Height="30" Margin="0,0,5,0"
+                    IsDefault="True" Click="BtnOK_Click" 
+                    IsEnabled="{Binding IsValid}"/>
+            <Button x:Name="btnCancel" Grid.Column="2" Width="80" Height="30" Margin="0,0,5,0"
+                    IsCancel="True" Click="BtnCancel_Click"/>
+            <Button x:Name="btnHelp" Grid.Column="3" Width="80" Height="30" 
+                    Click="BtnHelp_Click" Background="#17A2B8" Foreground="White"/>
+        </Grid>
+
+        <!-- Target File Count and Tools -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Text="{Binding TargetFilesInfo}" FontSize="12" VerticalAlignment="Center"/>
+            
+            <Button x:Name="btnResetAll" Grid.Column="1" Width="80" Height="25" Margin="0,0,5,0"
+                    Click="BtnResetAll_Click"/>
+            <Button x:Name="btnAddPrefix" Grid.Column="2" Width="80" Height="25" Margin="0,0,5,0"
+                    Click="BtnAddPrefix_Click"/>
+            <Button x:Name="btnAddSuffix" Grid.Column="3" Width="80" Height="25"
+                    Click="BtnAddSuffix_Click"/>
+        </Grid>
+
+        <!-- File List -->
+        <DataGrid x:Name="dgFiles" Grid.Row="2" AutoGenerateColumns="False" 
+                  CanUserAddRows="False" CanUserDeleteRows="False" 
+                  ItemsSource="{Binding RenameItems}"
+                  RowStyle="{StaticResource ChangedRowStyle}">
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="colNo" Header="No" Binding="{Binding OriginalItem.Number}" Width="50" IsReadOnly="True"/>
+                <DataGridTextColumn x:Name="colFolder" Header="Folder" Binding="{Binding OriginalItem.FolderName}" Width="150" IsReadOnly="True"/>
+                <DataGridTextColumn x:Name="colCurrentName" Header="Current" Binding="{Binding CurrentFileName}" Width="250" IsReadOnly="True"/>
+                <DataGridTextColumn x:Name="colNewName" Header="New" Binding="{Binding NewFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                    Width="250" CellStyle="{StaticResource ErrorCellStyle}"/>
+                <DataGridTextColumn x:Name="colPreview" Header="Preview" Binding="{Binding PreviewFileName}" Width="250" IsReadOnly="True">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsChanged}" Value="True">
+                                    <Setter Property="Foreground" Value="DarkBlue"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn x:Name="colExtension" Header="Ext" Binding="{Binding OriginalItem.Extension}" Width="80" IsReadOnly="True"/>
+                <DataGridTemplateColumn x:Name="colStatus" Header="Status" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="txtChanged" Foreground="Green" FontWeight="Bold"
+                                           Visibility="{Binding IsChanged, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBlock x:Name="txtError" Foreground="Red" FontWeight="Bold"
+                                           Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Warning Message -->
+        <Border Grid.Row="3" Background="#FFF3CD" BorderBrush="#FFEAA7" BorderThickness="1" 
+                Padding="10" Margin="0,10,0,10">
+            <StackPanel>
+                <TextBlock x:Name="txtWarningTitle" FontWeight="Bold" Foreground="#856404" Margin="0,0,0,5"/>
+                <TextBlock x:Name="txtWarning1" FontSize="12" Foreground="#856404" Margin="0,2"/>
+                <TextBlock x:Name="txtWarning2" FontSize="12" Foreground="#856404" Margin="0,2"/>
+                <TextBlock x:Name="txtWarning3" FontSize="12" Foreground="#856404" Margin="0,2"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Status -->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock x:Name="txtStatus" Grid.Column="0" Text="{Binding StatusMessage}" FontSize="12" VerticalAlignment="Center"/>
+            <TextBlock x:Name="txtChangedCount" Grid.Column="1"
+                       FontSize="12" FontWeight="Bold" VerticalAlignment="Center" Foreground="DarkBlue"/>
+        </Grid>
+    </Grid>
+</Window>

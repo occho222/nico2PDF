@@ -1,0 +1,421 @@
+﻿<Window x:Class="Nico2PDF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nico2PDF.Converters"
+        xmlns:models="clr-namespace:Nico2PDF.Models"
+        mc:Ignorable="d"
+        Title="Nico2PDF" Height="800" Width="1400"
+        WindowStartupLocation="CenterScreen"
+        AllowDrop="True"
+        DragEnter="Window_DragEnter"
+        DragOver="Window_DragOver"
+        Drop="Window_Drop">
+    
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <local:PdfStatusToColorConverter x:Key="PdfStatusToColorConverter"/>
+        
+        <!-- ファイル一覧のコンテキストメニュー -->
+        <ContextMenu x:Key="FileListContextMenu">
+            <MenuItem Header="📝 ファイル名変更" Click="MenuRenameFile_Click"/>
+            <MenuItem Header="📋 一括リネーム" Click="MenuBatchRename_Click"/>
+            <Separator/>
+            <MenuItem Header="🔄 表示名リセット" Click="MenuResetDisplayName_Click"/>
+            <Separator/>
+            <MenuItem Header="📁 ファイルを開く" Click="MenuOpenFile_Click"/>
+            <MenuItem Header="📂 フォルダで表示" Click="MenuOpenInFolder_Click"/>
+        </ContextMenu>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 左側：プロジェクトパネル -->
+        <Grid Grid.Column="0" Background="#F8F9FA">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- プロジェクトタイトル -->
+            <Border Grid.Row="0" Background="#E9ECEF" Padding="10">
+                <TextBlock Text="プロジェクト管理" FontSize="16" FontWeight="Bold" 
+                           HorizontalAlignment="Center"/>
+            </Border>
+
+            <!-- プロジェクト一覧 -->
+            <TreeView x:Name="treeProjects" Grid.Row="1" Margin="10" 
+                      SelectedItemChanged="TreeProjects_SelectedItemChanged"
+                      MouseDoubleClick="TreeProjects_MouseDoubleClick">
+                <TreeView.Resources>
+                    <!-- カテゴリグループのスタイル -->
+                    <HierarchicalDataTemplate DataType="{x:Type models:ProjectCategoryGroup}" ItemsSource="{Binding Projects}">
+                        <Border Background="{Binding CategoryColor}" CornerRadius="5" Padding="8,4" Margin="0,2">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding CategoryIcon}" FontSize="12" Margin="0,0,5,0" 
+                                           FontFamily="Segoe UI Emoji, Segoe UI Symbol, Segoe UI, Arial"/>
+                                <TextBlock Text="{Binding CategoryName}" FontWeight="Bold" FontSize="12"/>
+                                <TextBlock Text="{Binding ProjectCount, StringFormat=' ({0})'}" FontSize="10" Foreground="Gray" Margin="3,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </HierarchicalDataTemplate>
+                    
+                    <!-- プロジェクトのスタイル -->
+                    <DataTemplate DataType="{x:Type models:ProjectData}">
+                        <Grid Margin="5,2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Text="{Binding Name}" FontWeight="Bold" FontSize="11"/>
+                            <TextBlock Grid.Row="1" Text="{Binding FolderPath}" FontSize="9" Foreground="Gray" 
+                                       TextTrimming="CharacterEllipsis"/>
+                            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock Text="{Binding LastAccessDate, StringFormat='最終アクセス: {0:MM/dd HH:mm}'}" 
+                                           FontSize="8" Foreground="Gray"/>
+                                <TextBlock Text=" | サブ" FontSize="8" Foreground="Green" 
+                                           Visibility="{Binding IncludeSubfolders, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBlock Text=" | カスタム" FontSize="8" Foreground="Blue" 
+                                           Visibility="{Binding UseCustomPdfPath, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </TreeView.Resources>
+                
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                        <Setter Property="Padding" Value="2"/>
+                        <Setter Property="Margin" Value="0,1"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                <Setter Property="Background" Value="#007ACC"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+            </TreeView>
+
+            <!-- 現在のプロジェクト表示 -->
+            <Border Grid.Row="2" Background="#DEE2E6" Padding="10" Margin="10,0">
+                <Label x:Name="lblCurrentProject" Content="現在のプロジェクト: なし" 
+                       FontWeight="Bold" FontSize="12"/>
+            </Border>
+
+            <!-- プロジェクト管理ボタン -->
+            <StackPanel Grid.Row="3" Margin="10">
+                <Button x:Name="btnNewProject" Content="新規プロジェクト" Height="35" Margin="0,5"
+                        Background="#28A745" Foreground="White" FontWeight="Bold"
+                        Click="BtnNewProject_Click"/>
+                <Button x:Name="btnSwitchProject" Content="プロジェクト切り替え" Height="30" Margin="0,2"
+                        Click="BtnSwitchProject_Click"/>
+                <Button x:Name="btnEditProject" Content="プロジェクト編集" Height="30" Margin="0,2"
+                        Click="BtnEditProject_Click"/>
+                <Button x:Name="btnCategoryManage" Content="📂 カテゴリ管理" Height="30" Margin="0,2"
+                        Background="#17A2B8" Foreground="White"
+                        Click="BtnCategoryManage_Click"/>
+                <Button x:Name="btnDeleteProject" Content="プロジェクト削除" Height="30" Margin="0,2"
+                        Background="#DC3545" Foreground="White"
+                        Click="BtnDeleteProject_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- 分割線 -->
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" 
+                      Background="#CED4DA"/>
+
+        <!-- 右側：メイン機能 -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ヘッダー部分 -->
+            <StackPanel Grid.Row="0" Margin="10">
+                <TextBlock Text="Nico2PDF" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Content="対象フォルダ:" Grid.Column="0"/>
+                    
+                    <!-- ドラッグ&ドロップエリアを視覚的に分かりやすくする -->
+                    <Border Grid.Column="1" Margin="5,0" BorderBrush="#007ACC" BorderThickness="2" CornerRadius="3" 
+                            Background="#F8F9FA" AllowDrop="True"
+                            DragEnter="DropArea_DragEnter"
+                            DragOver="DropArea_DragOver"
+                            DragLeave="DropArea_DragLeave"
+                            Drop="DropArea_Drop">
+                        <Grid>
+                            <TextBox x:Name="txtFolderPath" IsReadOnly="True" BorderThickness="0" Background="Transparent"
+                                     VerticalAlignment="Center" Margin="5,3" />
+                            
+                            <!-- ドラッグ&ドロップヒント -->
+                            <TextBlock x:Name="txtDropHint" Text="📁 フォルダをここにドラッグ&amp;ドロップ"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       FontSize="12" Foreground="#6C757D" FontStyle="Italic"
+                                       Visibility="Visible"/>
+                        </Grid>
+                    </Border>
+                    
+                    <Button x:Name="btnSelectFolder" Content="フォルダ選択" Grid.Column="2" 
+                            Width="100" Margin="5,0" Click="BtnSelectFolder_Click"/>
+                    <Button x:Name="btnOpenCurrentProjectFolder" Content="📂 フォルダを開く" Grid.Column="3" 
+                            Width="120" Margin="5,0" Click="BtnOpenCurrentProjectFolder_Click"
+                            Background="#6C757D" Foreground="White"/>
+                    <Button x:Name="btnConvertToProject" Content="プロジェクト化" Grid.Column="4" 
+                            Width="100" Margin="5,0" Click="BtnConvertToProject_Click"
+                            Background="#17A2B8" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- ボタンエリア -->
+            <Grid Grid.Row="1" Margin="10,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 第1行：メイン機能ボタン -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
+                    <Button x:Name="btnReadFolder" Content="ファイル読込" Width="100" Margin="0,0,5,0" 
+                            Click="BtnReadFolder_Click"/>
+                    <Button x:Name="btnUpdateFiles" Content="ファイル更新" Width="100" Margin="0,0,5,0" 
+                            Click="BtnUpdateFiles_Click"/>
+                    <Button x:Name="btnConvertPDF" Content="PDF変換" Width="100" Margin="0,0,5,0" 
+                            Click="BtnConvertPDF_Click"/>
+                    <Button x:Name="btnMergePDF" Content="PDF結合" Width="100" Margin="0,0,5,0" 
+                            Click="BtnMergePDF_Click"/>
+                    <Button x:Name="btnExportFileList" Content="📄 一覧書き出し" Width="120" Margin="0,0,5,0" 
+                            Click="BtnExportFileList_Click" Background="#17A2B8" Foreground="White"
+                            ToolTip="ファイル一覧をテキストファイルまたはCSVファイルに書き出します"/>
+                    <Button x:Name="btnCopyToClipboard" Content="📋 クリップボード" Width="120" Margin="0,0,5,0" 
+                            Click="BtnCopyToClipboard_Click" Background="#6F42C1" Foreground="White"
+                            ToolTip="ファイル一覧をクリップボードにコピーします"/>
+                    <CheckBox x:Name="chkSelectAll" Content="全選択" Margin="20,0,0,0" 
+                              VerticalAlignment="Center" Click="ChkSelectAll_Click"/>
+                </StackPanel>
+
+                <!-- 第2行：ファイル操作・並び替えボタン -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <!-- ファイル操作ボタン -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
+                        <TextBlock Text="ファイル操作:" VerticalAlignment="Center" Margin="0,0,5,0" FontWeight="Bold"/>
+                        <Button x:Name="btnRenameFile" Content="📝 名前変更" Width="90" Height="25" Margin="0,0,3,0" 
+                                Click="BtnRenameFile_Click" ToolTip="選択したファイルの名前を変更" 
+                                Background="#FD7E14" Foreground="White"/>
+                        <Button x:Name="btnBatchRename" Content="📋 一括変更" Width="90" Height="25" Margin="0,0,5,0" 
+                                Click="BtnBatchRename_Click" ToolTip="複数ファイルの名前を一括変更" 
+                                Background="#E83E8C" Foreground="White"/>
+                    </StackPanel>
+                    
+                    <!-- ファイル並び替えボタン -->
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="並び替え:" VerticalAlignment="Center" Margin="0,0,5,0" FontWeight="Bold"/>
+                        <Button x:Name="btnMoveUp" Content="▲" Width="30" Height="25" Margin="0,0,2,0" 
+                                Click="BtnMoveUp_Click" ToolTip="選択したファイルを上に移動"/>
+                        <Button x:Name="btnMoveDown" Content="▼" Width="30" Height="25" Margin="0,0,5,0" 
+                                Click="BtnMoveDown_Click" ToolTip="選択したファイルを下に移動"/>
+                        <Button x:Name="btnSortByName" Content="名前順" Width="60" Height="25" 
+                                Click="BtnSortByName_Click" ToolTip="ファイル名順に並び替え"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+            <!-- ファイル一覧 -->
+            <DataGrid x:Name="dgFiles" Grid.Row="2" Margin="10" AutoGenerateColumns="False" 
+                      CanUserAddRows="False" CanUserDeleteRows="False" 
+                      ContextMenu="{StaticResource FileListContextMenu}">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Header="選択" Binding="{Binding IsSelected}" Width="50"/>
+                    <DataGridTextColumn Header="No" Binding="{Binding Number}" Width="50" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="表示名" Width="250">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding DisplayName}" Cursor="Hand" 
+                                               MouseLeftButtonDown="FileName_MouseLeftButtonDown">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextDecorations" Value="Underline"/>
+                                                <Setter Property="Foreground" Value="Blue"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRenamed}" Value="True">
+                                                        <Setter Property="Foreground" Value="DarkOrange"/>
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock Text="📝" Margin="5,0,0,0" FontSize="10" 
+                                               Visibility="{Binding IsRenamed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                               ToolTip="表示名が変更されています"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="フォルダ" Binding="{Binding FolderName}" Width="180" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="拡張子" Binding="{Binding Extension}" Width="80" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="対象ページ" Binding="{Binding TargetPages}" Width="100" IsReadOnly="False">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip">
+                                    <Setter.Value>
+                                        <ToolTip>
+                                            <StackPanel>
+                                                <TextBlock Text="ページ指定ルール:" FontWeight="Bold" Margin="0,0,0,5"/>
+                                                <TextBlock Text="• 単一ページ: 1" Margin="0,2"/>
+                                                <TextBlock Text="• 複数ページ: 1,3,5" Margin="0,2"/>
+                                                <TextBlock Text="• 範囲指定: 1-5" Margin="0,2"/>
+                                                <TextBlock Text="• 組み合わせ: 1,3-5,7" Margin="0,2"/>
+                                                <TextBlock Text="• Excel: シート番号を指定" Margin="0,2"/>
+                                                <TextBlock Text="• Word/PowerPoint: ページ/スライド番号を指定" Margin="0,2"/>
+                                                <TextBlock Text="• 空白: 全体を変換" Margin="0,2"/>
+                                            </StackPanel>
+                                        </ToolTip>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="更新日時" Binding="{Binding LastModified, StringFormat=yyyy/MM/dd HH:mm:ss}" 
+                                        Width="150" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="PDFステータス" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding PdfStatus}" 
+                                           Foreground="{Binding PdfStatus, Converter={StaticResource PdfStatusToColorConverter}}"
+                                           FontWeight="Bold" 
+                                           HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- PDF結合設定 -->
+            <GroupBox Grid.Row="3" Header="PDF結合設定" Margin="10,5">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- 結合設定行 -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="結合ファイル名:" Grid.Column="0"/>
+                        <TextBox x:Name="txtMergeFileName" Grid.Column="1" Margin="5,0" Text="結合PDF"/>
+                        <CheckBox x:Name="chkAddPageNumber" Content="ページ番号追加" Grid.Column="2" 
+                                  Margin="10,0" VerticalAlignment="Center"/>
+                        <CheckBox x:Name="chkAddBookmarks" Content="しおり追加" Grid.Column="3" 
+                                  Margin="10,0" VerticalAlignment="Center" IsChecked="True"
+                                  ToolTip="PDF結合時にファイル名をしおりとして追加します"/>
+                    </Grid>
+                    
+                    <!-- しおり設定行 -->
+                    <Grid Grid.Row="1" Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="しおり設定:" Grid.Column="0"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="5,0">
+                            <CheckBox x:Name="chkGroupByFolder" Content="フォルダ別にグループ化" 
+                                      Margin="0,0,15,0" VerticalAlignment="Center"
+                                      IsEnabled="{Binding IsChecked, ElementName=chkAddBookmarks}"
+                                      ToolTip="サブフォルダを含む場合、フォルダ別に階層構造でしおりを作成します"/>
+                            <TextBlock Text="※ しおりにはファイルの表示名が使用されます" 
+                                       FontSize="10" Foreground="Gray" VerticalAlignment="Center"
+                                       Visibility="{Binding IsChecked, ElementName=chkAddBookmarks, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- ヘッダ・フッタ設定行 -->
+                    <Grid Grid.Row="2" Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox x:Name="chkAddHeaderFooter" Content="ヘッダ・フッタ:" Grid.Column="0" 
+                                  Margin="0,0,5,0" VerticalAlignment="Center"
+                                  ToolTip="ヘッダは左上、フッタは右下に同じテキストを追加します"/>
+                        <TextBox x:Name="txtHeaderFooterText" Grid.Column="1" Margin="5,0" 
+                                 IsEnabled="{Binding IsChecked, ElementName=chkAddHeaderFooter}"
+                                 ToolTip="ヘッダとフッタに表示するテキストを入力してください"/>
+                        <Label Content="サイズ:" Grid.Column="2" 
+                               IsEnabled="{Binding IsChecked, ElementName=chkAddHeaderFooter}"/>
+                        <TextBox x:Name="txtHeaderFooterFontSize" Grid.Column="3" Margin="5,0" Text="10"
+                                 IsEnabled="{Binding IsChecked, ElementName=chkAddHeaderFooter}"
+                                 ToolTip="フォントサイズを指定してください（例：10）"/>
+                    </Grid>
+                    
+                    <!-- 結合PDFファイル操作行 -->
+                    <Grid Grid.Row="3" Margin="0,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="最新結合PDF:" Grid.Column="0"/>
+                        <TextBox x:Name="txtLatestMergedPDF" Grid.Column="1" Margin="5,0" 
+                                 IsReadOnly="True" Background="#F8F9FA" 
+                                 Text="まだ結合されていません"/>
+                        <Button x:Name="btnOpenLatestMergedPDF" Content="📄 最新PDFを開く" Grid.Column="2" 
+                                Width="120" Margin="5,0" Click="BtnOpenLatestMergedPDF_Click"
+                                Background="#FFC107" Foreground="Black" FontWeight="Bold"/>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+
+            <!-- ステータスバー -->
+            <StatusBar Grid.Row="4">
+                <StatusBarItem>
+                    <TextBlock x:Name="txtStatus" Text="準備完了"/>
+                </StatusBarItem>
+                <StatusBarItem HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="txtVersion" Text="v1.2.0" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <ProgressBar x:Name="progressBar" Width="200" Height="20" Visibility="Collapsed"/>
+                    </StackPanel>
+                </StatusBarItem>
+            </StatusBar>
+        </Grid>
+    </Grid>
+</Window>

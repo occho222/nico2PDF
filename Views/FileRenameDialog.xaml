@@ -1,0 +1,81 @@
+<Window x:Class="Nico2PDF.Views.FileRenameDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="File Rename Dialog" Height="350" Width="700"
+        WindowStartupLocation="CenterOwner" 
+        ResizeMode="NoResize">
+    
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title and Action Buttons -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="txtTitle" Grid.Column="0" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Button x:Name="btnOK" Grid.Column="1" Width="80" Height="30" Margin="0,0,5,0"
+                    IsDefault="True" Click="BtnOK_Click" 
+                    IsEnabled="{Binding IsValid}"/>
+            <Button x:Name="btnCancel" Grid.Column="2" Width="80" Height="30" Margin="0,0,5,0"
+                    IsCancel="True" Click="BtnCancel_Click"/>
+            <Button x:Name="btnHelp" Grid.Column="3" Width="80" Height="30" 
+                    Click="BtnHelp_Click" Background="#17A2B8" Foreground="White"/>
+        </Grid>
+
+        <!-- Current File Name -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock x:Name="lblCurrentFileName" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtCurrentFileName" IsReadOnly="True" 
+                     Background="#F8F9FA" Text="{Binding CurrentFileName, Mode=OneWay}"/>
+        </StackPanel>
+
+        <!-- New File Name -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,10">
+            <TextBlock x:Name="lblNewFileName" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtNewFileName" Text="{Binding NewFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Preview -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,10">
+            <TextBlock x:Name="lblPreview" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtPreview" IsReadOnly="True" 
+                     Background="#E8F5E8" Text="{Binding PreviewFileName, Mode=OneWay}"/>
+        </StackPanel>
+
+        <!-- Warning Message -->
+        <Border Grid.Row="4" Background="#FFF3CD" BorderBrush="#FFEAA7" BorderThickness="1" 
+                Padding="10" Margin="0,0,0,10">
+            <StackPanel>
+                <TextBlock x:Name="txtWarningTitle" FontWeight="Bold" Foreground="#856404" Margin="0,0,0,5"/>
+                <TextBlock x:Name="txtWarning1" FontSize="12" Foreground="#856404" Margin="0,2"/>
+                <TextBlock x:Name="txtWarning2" FontSize="12" Foreground="#856404" Margin="0,2"/>
+                <TextBlock x:Name="txtWarning3" FontSize="12" Foreground="#856404" Margin="0,2"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Validation Error -->
+        <Border Grid.Row="5" Background="#F8D7DA" BorderBrush="#F5C6CB" BorderThickness="1" 
+                Padding="10" Margin="0,0,0,10"
+                Visibility="{Binding HasValidationError, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel>
+                <TextBlock x:Name="txtErrorTitle" FontWeight="Bold" Foreground="#721C24" Margin="0,0,0,5"/>
+                <TextBlock Text="{Binding ValidationError}" FontSize="12" Foreground="#721C24" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
