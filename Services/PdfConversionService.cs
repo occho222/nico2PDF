@@ -12,11 +12,11 @@ using System.Runtime.InteropServices;
 namespace Nico2PDF.Services
 {
     /// <summary>
-    /// PDF•ÏŠ·ƒT[ƒrƒX
+    /// PDFï¿½ÏŠï¿½ï¿½Tï¿½[ï¿½rï¿½X
     /// </summary>
     public class PdfConversionService
     {
-        // Windows APIéŒ¾iPowerPoint‚ÌŠ®‘S‚È”ñ•\¦‰»—pj
+        // Windows APIï¿½éŒ¾ï¿½iPowerPointï¿½ÌŠï¿½ï¿½Sï¿½È”ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½j
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
@@ -29,24 +29,24 @@ namespace Nico2PDF.Services
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
-        // ShowWindow—p‚Ì’è”
+        // ShowWindowï¿½pï¿½Ì’è”
         private const int SW_HIDE = 0;
         private const int SW_MINIMIZE = 6;
 
-        // SetWindowPos—p‚Ì’è”
+        // SetWindowPosï¿½pï¿½Ì’è”
         private const uint SWP_HIDEWINDOW = 0x0080;
         private const uint SWP_NOACTIVATE = 0x0010;
         private const uint SWP_NOMOVE = 0x0002;
         private const uint SWP_NOSIZE = 0x0001;
 
         /// <summary>
-        /// Office•¶‘‚ğPDF‚É•ÏŠ·
+        /// Officeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PDFï¿½É•ÏŠï¿½
         /// </summary>
-        /// <param name="filePath">•ÏŠ·Œ³ƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="targetPages">‘ÎÛƒy[ƒW</param>
-        /// <param name="baseFolderPath">Šî€ƒtƒHƒ‹ƒ_ƒpƒXiƒTƒuƒtƒHƒ‹ƒ_\‘¢ˆÛ—pj</param>
-        /// <param name="maintainSubfolderStructure">ƒTƒuƒtƒHƒ‹ƒ_\‘¢‚ğˆÛ‚·‚é‚©‚Ç‚¤‚©</param>
+        /// <param name="filePath">ï¿½ÏŠï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="targetPages">ï¿½ÎÛƒyï¿½[ï¿½W</param>
+        /// <param name="baseFolderPath">ï¿½î€ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½iï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½\ï¿½ï¿½ï¿½Ûï¿½ï¿½pï¿½j</param>
+        /// <param name="maintainSubfolderStructure">ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
         public static void ConvertToPdf(string filePath, string pdfOutputFolder, string targetPages = "", 
             string baseFolderPath = "", bool maintainSubfolderStructure = false)
         {
@@ -55,7 +55,7 @@ namespace Nico2PDF.Services
             string outputPath;
             if (maintainSubfolderStructure && !string.IsNullOrEmpty(baseFolderPath))
             {
-                // ƒTƒuƒtƒHƒ‹ƒ_\‘¢‚ğˆÛ
+                // ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Ûï¿½
                 var fileInfo = new FileInfo(filePath);
                 var relativePath = GetRelativePath(baseFolderPath, fileInfo.DirectoryName!);
                 var outputDir = Path.Combine(pdfOutputFolder, relativePath);
@@ -69,7 +69,7 @@ namespace Nico2PDF.Services
             }
             else
             {
-                // ]—ˆ’Ê‚èA‚·‚×‚Ä“¯‚¶ƒtƒHƒ‹ƒ_‚Éo—Í
+                // ï¿½]ï¿½ï¿½ï¿½Ê‚ï¿½Aï¿½ï¿½ï¿½×‚Ä“ï¿½ï¿½ï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Éoï¿½ï¿½
                 outputPath = Path.Combine(pdfOutputFolder, Path.GetFileNameWithoutExtension(filePath) + ".pdf");
             }
 
@@ -89,31 +89,31 @@ namespace Nico2PDF.Services
                     ConvertPowerPointToPdf(filePath, outputPath, targetPages);
                     break;
                 case ".pdf":
-                    // PDFƒtƒ@ƒCƒ‹‚Ìê‡Aƒy[ƒWw’è‚ª‚ ‚ê‚Î’ŠoA‚È‚¯‚ê‚ÎƒRƒs[
+                    // PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡ï¿½Aï¿½yï¿½[ï¿½Wï¿½wï¿½è‚ªï¿½ï¿½ï¿½ï¿½Î’ï¿½ï¿½oï¿½Aï¿½È‚ï¿½ï¿½ï¿½ÎƒRï¿½sï¿½[
                     ProcessPdfFile(filePath, outputPath, targetPages);
                     break;
                 default:
-                    throw new NotSupportedException($"‘Î‰‚µ‚Ä‚¢‚È‚¢ƒtƒ@ƒCƒ‹Œ`®: {extension}");
+                    throw new NotSupportedException($"ï¿½Î‰ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½`ï¿½ï¿½: {extension}");
             }
         }
 
         /// <summary>
-        /// Office•¶‘‚ğPDF‚É•ÏŠ·i]—ˆ‚ÌŒİŠ·«ƒƒ\ƒbƒhj
+        /// Officeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PDFï¿½É•ÏŠï¿½ï¿½iï¿½]ï¿½ï¿½ï¿½ÌŒİŠï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½j
         /// </summary>
-        /// <param name="filePath">•ÏŠ·Œ³ƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="targetPages">‘ÎÛƒy[ƒW</param>
+        /// <param name="filePath">ï¿½ÏŠï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="targetPages">ï¿½ÎÛƒyï¿½[ï¿½W</param>
         public static void ConvertToPdf(string filePath, string pdfOutputFolder, string targetPages = "")
         {
             ConvertToPdf(filePath, pdfOutputFolder, targetPages, "", false);
         }
 
         /// <summary>
-        /// Excel¨PDF•ÏŠ·
+        /// Excelï¿½ï¿½PDFï¿½ÏŠï¿½
         /// </summary>
-        /// <param name="inputPath">“ü—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="outputPath">o—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="targetPages">‘ÎÛƒy[ƒW</param>
+        /// <param name="inputPath">ï¿½ï¿½ï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="outputPath">ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="targetPages">ï¿½ÎÛƒyï¿½[ï¿½W</param>
         private static void ConvertExcelToPdf(string inputPath, string outputPath, string targetPages = "")
         {
             dynamic? excelApp = null;
@@ -121,20 +121,20 @@ namespace Nico2PDF.Services
 
             try
             {
-                // Šù‘¶‚ÌExcelƒvƒƒZƒX‚ğ‹­§I—¹
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Excelï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
                 KillExistingExcelProcesses();
 
-                // ExcelƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğ“®“I‚Éì¬
+                // Excelï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ğ“®“Iï¿½Éì¬
                 var excelType = Type.GetTypeFromProgID("Excel.Application");
                 if (excelType == null)
                 {
-                    throw new InvalidOperationException("Excel Application‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+                    throw new InvalidOperationException("Excel Applicationï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B");
                 }
 
                 excelApp = Activator.CreateInstance(excelType);
                 if (excelApp == null)
                 {
-                    throw new InvalidOperationException("Excel Application‚Ì‹N“®‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B");
+                    throw new InvalidOperationException("Excel Applicationï¿½Ì‹Nï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½B");
                 }
 
                 excelApp.Visible = false;
@@ -148,20 +148,21 @@ namespace Nico2PDF.Services
 
                 if (targetSheets.Any())
                 {
-                    // w’èƒV[ƒg‚Ì‚İ•ÏŠ·
-                    var totalSheets = workbook.Worksheets.Count;
+                    // æŒ‡å®šã‚·ãƒ¼ãƒˆã®ã¿å¤‰æ›ï¼ˆè¡¨ç¤ºé †åºã§å‡¦ç†ï¼‰
+                    var totalSheets = workbook.Sheets.Count;
 
-                    // ‘¶İ‚µ‚È‚¢ƒV[ƒg‚Ìƒ`ƒFƒbƒN
+                    // å­˜åœ¨ã—ãªã„ã‚·ãƒ¼ãƒˆã®ãƒã‚§ãƒƒã‚¯
                     var invalidSheets = targetSheets.Where(s => s > totalSheets).ToList();
                     if (invalidSheets.Any())
                     {
-                        throw new ArgumentException($"‘¶İ‚µ‚È‚¢ƒV[ƒg”Ô†‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·: {string.Join(", ", invalidSheets)} (‘ƒV[ƒg”: {totalSheets})");
+                        throw new ArgumentException($"å­˜åœ¨ã—ãªã„ã‚·ãƒ¼ãƒˆç•ªå·ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™: {string.Join(", ", invalidSheets)} (ç·ã‚·ãƒ¼ãƒˆæ•°: {totalSheets})");
                     }
 
-                    // w’èƒV[ƒg‚ğ‘I‘ğ
+                    // æŒ‡å®šã‚·ãƒ¼ãƒˆã‚’è¡¨ç¤ºé †åºã§é¸æŠ
                     for (int i = 0; i < targetSheets.Count; i++)
                     {
-                        var sheet = workbook.Worksheets[targetSheets[i]];
+                        var sheetIndex = targetSheets[i];
+                        var sheet = workbook.Sheets[sheetIndex]; // è¡¨ç¤ºé †åºã§ã‚·ãƒ¼ãƒˆã‚’å–å¾—
                         
                         if (i == 0)
                         {
@@ -169,22 +170,22 @@ namespace Nico2PDF.Services
                         }
                         else
                         {
-                            sheet.Select(false); // ’Ç‰Á‘I‘ğ
+                            sheet.Select(false); // è¿½åŠ é¸æŠ
                         }
                     }
 
-                    // ‘I‘ğ‚³‚ê‚½ƒV[ƒg‚ğPDF•ÏŠ· (xlTypePDF = 0)
+                    // é¸æŠã•ã‚ŒãŸã‚·ãƒ¼ãƒˆã‚’PDFå¤‰æ› (xlTypePDF = 0)
                     excelApp.ActiveSheet.ExportAsFixedFormat(0, outputPath);
                 }
                 else
                 {
-                    // ‘SƒV[ƒg•ÏŠ· (xlTypePDF = 0)
+                    // ï¿½Sï¿½Vï¿½[ï¿½gï¿½ÏŠï¿½ (xlTypePDF = 0)
                     workbook.ExportAsFixedFormat(0, outputPath);
                 }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Excel•ÏŠ·’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: {ex.Message}", ex);
+                throw new InvalidOperationException($"Excelï¿½ÏŠï¿½ï¿½ï¿½ï¿½ÉƒGï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: {ex.Message}", ex);
             }
             finally
             {
@@ -195,28 +196,28 @@ namespace Nico2PDF.Services
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"ExcelI—¹ˆ—‚ÅƒGƒ‰[: {ex.Message}");
+                    Debug.WriteLine($"Excelï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅƒGï¿½ï¿½ï¿½[: {ex.Message}");
                 }
 
                 if (workbook != null) ReleaseComObject(workbook);
                 if (excelApp != null) ReleaseComObject(excelApp);
 
-                // ‹­§ƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“
+                // ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½xï¿½[ï¿½Wï¿½Rï¿½ï¿½ï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
 
-                // c‘¶ƒvƒƒZƒX‚ğ‹­§I—¹
+                // ï¿½cï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
                 KillExistingExcelProcesses();
             }
         }
 
         /// <summary>
-        /// Word¨PDF•ÏŠ·
+        /// Wordï¿½ï¿½PDFï¿½ÏŠï¿½
         /// </summary>
-        /// <param name="inputPath">“ü—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="outputPath">o—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="targetPages">‘ÎÛƒy[ƒW</param>
+        /// <param name="inputPath">ï¿½ï¿½ï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="outputPath">ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="targetPages">ï¿½ÎÛƒyï¿½[ï¿½W</param>
         private static void ConvertWordToPdf(string inputPath, string outputPath, string targetPages = "")
         {
             dynamic? wordApp = null;
@@ -224,20 +225,20 @@ namespace Nico2PDF.Services
 
             try
             {
-                // Šù‘¶‚ÌWordƒvƒƒZƒX‚ğƒNƒŠ[ƒ“ƒAƒbƒv
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Wordï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Aï¿½bï¿½v
                 KillExistingWordProcesses();
 
-                // WordƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğ“®“I‚Éì¬
+                // Wordï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ğ“®“Iï¿½Éì¬
                 var wordType = Type.GetTypeFromProgID("Word.Application");
                 if (wordType == null)
                 {
-                    throw new InvalidOperationException("Word Application‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+                    throw new InvalidOperationException("Word Applicationï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B");
                 }
 
                 wordApp = Activator.CreateInstance(wordType);
                 if (wordApp == null)
                 {
-                    throw new InvalidOperationException("Word Application‚Ì‹N“®‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B");
+                    throw new InvalidOperationException("Word Applicationï¿½Ì‹Nï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½B");
                 }
 
                 wordApp.Visible = false;
@@ -248,30 +249,30 @@ namespace Nico2PDF.Services
 
                 if (targetPageList.Any())
                 {
-                    // w’èƒy[ƒW‚Ì‚İ•ÏŠ·
+                    // ï¿½wï¿½ï¿½yï¿½[ï¿½Wï¿½Ì‚İ•ÏŠï¿½
                     var totalPages = document.ComputeStatistics(4); // wdStatisticPages = 4
 
-                    // ‘¶İ‚µ‚È‚¢ƒy[ƒW‚Ìƒ`ƒFƒbƒN
+                    // ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½yï¿½[ï¿½Wï¿½Ìƒ`ï¿½Fï¿½bï¿½N
                     var invalidPages = targetPageList.Where(p => p > totalPages).ToList();
                     if (invalidPages.Any())
                     {
-                        throw new ArgumentException($"‘¶İ‚µ‚È‚¢ƒy[ƒW”Ô†‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·: {string.Join(", ", invalidPages)} (‘ƒy[ƒW”: {totalPages})");
+                        throw new ArgumentException($"ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½: {string.Join(", ", invalidPages)} (ï¿½ï¿½ï¿½yï¿½[ï¿½Wï¿½ï¿½: {totalPages})");
                     }
 
-                    // ƒy[ƒW”ÍˆÍw’è‚ÅPDFo—Í
+                    // ï¿½yï¿½[ï¿½Wï¿½ÍˆÍwï¿½ï¿½ï¿½PDFï¿½oï¿½ï¿½
                     // wdExportFormatPDF = 17, wdExportFromTo = 3
                     document.ExportAsFixedFormat(outputPath, 17, Range: 3, From: targetPageList.Min(), To: targetPageList.Max());
                 }
                 else
                 {
-                    // ‘Sƒy[ƒW•ÏŠ·
+                    // ï¿½Sï¿½yï¿½[ï¿½Wï¿½ÏŠï¿½
                     // wdExportFormatPDF = 17
                     document.ExportAsFixedFormat(outputPath, 17);
                 }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Word•ÏŠ·’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: {ex.Message}", ex);
+                throw new InvalidOperationException($"Wordï¿½ÏŠï¿½ï¿½ï¿½ï¿½ÉƒGï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: {ex.Message}", ex);
             }
             finally
             {
@@ -282,63 +283,63 @@ namespace Nico2PDF.Services
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"WordI—¹ˆ—‚ÅƒGƒ‰[: {ex.Message}");
+                    Debug.WriteLine($"Wordï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅƒGï¿½ï¿½ï¿½[: {ex.Message}");
                 }
 
                 if (document != null) ReleaseComObject(document);
                 if (wordApp != null) ReleaseComObject(wordApp);
 
-                // ‹­§ƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“
+                // ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½xï¿½[ï¿½Wï¿½Rï¿½ï¿½ï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
 
-                // c‘¶ƒvƒƒZƒX‚ğ‹­§I—¹
+                // ï¿½cï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
                 KillExistingWordProcesses();
             }
         }
 
         /// <summary>
-        /// PDFƒtƒ@ƒCƒ‹‚Ìˆ—iƒy[ƒWw’è‚ª‚ ‚ê‚Î’ŠoA‚È‚¯‚ê‚ÎƒRƒs[j
+        /// PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½iï¿½yï¿½[ï¿½Wï¿½wï¿½è‚ªï¿½ï¿½ï¿½ï¿½Î’ï¿½ï¿½oï¿½Aï¿½È‚ï¿½ï¿½ï¿½ÎƒRï¿½sï¿½[ï¿½j
         /// </summary>
-        /// <param name="inputPath">“ü—ÍPDFƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="outputPath">o—ÍPDFƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="targetPages">‘ÎÛƒy[ƒW</param>
+        /// <param name="inputPath">ï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="outputPath">ï¿½oï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="targetPages">ï¿½ÎÛƒyï¿½[ï¿½W</param>
         private static void ProcessPdfFile(string inputPath, string outputPath, string targetPages = "")
         {
             var targetPageList = ParsePageRange(targetPages);
 
             if (targetPageList.Any())
             {
-                // w’èƒy[ƒW‚Ì‚İ’Šo
+                // ï¿½wï¿½ï¿½yï¿½[ï¿½Wï¿½Ì‚İ’ï¿½ï¿½o
                 using (var inputReader = new PdfReader(inputPath))
                 {
                     var totalPages = inputReader.NumberOfPages;
 
-                    // ‘¶İ‚µ‚È‚¢ƒy[ƒW‚Ìƒ`ƒFƒbƒN
+                    // ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½yï¿½[ï¿½Wï¿½Ìƒ`ï¿½Fï¿½bï¿½N
                     var invalidPages = targetPageList.Where(p => p > totalPages).ToList();
                     if (invalidPages.Any())
                     {
-                        throw new ArgumentException($"‘¶İ‚µ‚È‚¢ƒy[ƒW”Ô†‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·: {string.Join(", ", invalidPages)} (‘ƒy[ƒW”: {totalPages})");
+                        throw new ArgumentException($"ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½: {string.Join(", ", invalidPages)} (ï¿½ï¿½ï¿½yï¿½[ï¿½Wï¿½ï¿½: {totalPages})");
                     }
 
-                    // w’è‚³‚ê‚½ƒy[ƒW‚Ì‚İ‚ğ’Šo‚µ‚ÄPDF‚ğì¬
+                    // ï¿½wï¿½è‚³ï¿½ê‚½ï¿½yï¿½[ï¿½Wï¿½Ì‚İ‚ğ’Šoï¿½ï¿½ï¿½ï¿½PDFï¿½ï¿½ï¿½ì¬
                     ExtractPdfPages(inputPath, outputPath, targetPageList);
                 }
             }
             else
             {
-                // ‘Sƒy[ƒWƒRƒs[i]—ˆ‚Ì“®ìj
-                File.Copy(inputPath, outputPath, overwrite: true); // •K‚¸ã‘‚«
+                // ï¿½Sï¿½yï¿½[ï¿½Wï¿½Rï¿½sï¿½[ï¿½iï¿½]ï¿½ï¿½ï¿½Ì“ï¿½ï¿½ï¿½j
+                File.Copy(inputPath, outputPath, overwrite: true); // ï¿½Kï¿½ï¿½ï¿½ã‘ï¿½ï¿½
             }
         }
 
         /// <summary>
-        /// PowerPoint¨PDF•ÏŠ·
+        /// PowerPointï¿½ï¿½PDFï¿½ÏŠï¿½
         /// </summary>
-        /// <param name="inputPath">“ü—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="outputPath">o—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="targetPages">‘ÎÛƒy[ƒW</param>
+        /// <param name="inputPath">ï¿½ï¿½ï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="outputPath">ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="targetPages">ï¿½ÎÛƒyï¿½[ï¿½W</param>
         private static void ConvertPowerPointToPdf(string inputPath, string outputPath, string targetPages = "")
         {
             dynamic? pptApp = null;
@@ -347,28 +348,28 @@ namespace Nico2PDF.Services
 
             try
             {
-                // Šù‘¶‚ÌPowerPointƒvƒƒZƒX‚ğ‹­§I—¹
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PowerPointï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
                 KillExistingPowerPointProcesses();
 
                 var pptType = Type.GetTypeFromProgID("PowerPoint.Application");
                 if (pptType == null)
                 {
-                    throw new InvalidOperationException("PowerPointƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+                    throw new InvalidOperationException("PowerPointï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B");
                 }
                 
                 pptApp = Activator.CreateInstance(pptType);
                 if (pptApp == null)
                 {
-                    throw new InvalidOperationException("PowerPointƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì‹N“®‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B");
+                    throw new InvalidOperationException("PowerPointï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ì‹Nï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½B");
                 }
 
-                // PowerPoint—p‚ÌƒoƒbƒNƒOƒ‰ƒEƒ“ƒhˆ—İ’èiˆÀ‘S‚È•û–@j
+                // PowerPointï¿½pï¿½Ìƒoï¿½bï¿½Nï¿½Oï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½iï¿½ï¿½ï¿½Sï¿½È•ï¿½ï¿½@ï¿½j
                 SetPowerPointBackgroundMode(pptApp);
                 
                 presentation = pptApp.Presentations.Open(inputPath);
 
-                // ƒvƒŒƒ[ƒ“ƒe[ƒVƒ‡ƒ“ŠJ‚¢‚½Œã‚ÉÄ“x”ñ•\¦‰»‚ğÀs
-                System.Threading.Thread.Sleep(200); // ­‚µ‘Ò‹@
+                // ï¿½vï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½eï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÉÄ“xï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½s
+                System.Threading.Thread.Sleep(200); // ï¿½ï¿½ï¿½ï¿½ï¿½Ò‹@
                 HidePowerPointWindows(pptApp);
 
                 var targetSlides = ParsePageRange(targetPages);
@@ -376,22 +377,22 @@ namespace Nico2PDF.Services
 
                 if (targetSlides.Any())
                 {
-                    // ‘¶İ‚µ‚È‚¢ƒXƒ‰ƒCƒh‚Ìƒ`ƒFƒbƒN
+                    // ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½Xï¿½ï¿½ï¿½Cï¿½hï¿½Ìƒ`ï¿½Fï¿½bï¿½N
                     var invalidSlides = targetSlides.Where(s => s > totalSlides).ToList();
                     if (invalidSlides.Any())
                     {
-                        throw new ArgumentException($"‘¶İ‚µ‚È‚¢ƒXƒ‰ƒCƒh”Ô†‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·: {string.Join(", ", invalidSlides)} (‘ƒXƒ‰ƒCƒh”: {totalSlides})");
+                        throw new ArgumentException($"ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½Xï¿½ï¿½ï¿½Cï¿½hï¿½Ôï¿½ï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½: {string.Join(", ", invalidSlides)} (ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½Cï¿½hï¿½ï¿½: {totalSlides})");
                     }
 
-                    // ˆê“I‚É‘SƒXƒ‰ƒCƒh‚ğPDF‚É•ÏŠ·
+                    // ï¿½êï¿½Iï¿½É‘Sï¿½Xï¿½ï¿½ï¿½Cï¿½hï¿½ï¿½PDFï¿½É•ÏŠï¿½
                     tempPdfPath = Path.Combine(Path.GetTempPath(), $"temp_ppt_{Guid.NewGuid()}.pdf");
                     
-                    // PDF•ÏŠ·‘O‚ÉÄ“x”ñ•\¦‰»
+                    // PDFï¿½ÏŠï¿½ï¿½Oï¿½ÉÄ“xï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
                     HidePowerPointWindows(pptApp);
                     
                     presentation.SaveAs(tempPdfPath, 32); // 32 = ppSaveAsPDF
 
-                    // PowerPoint‚ğ•Â‚¶‚é
+                    // PowerPointï¿½ï¿½Â‚ï¿½ï¿½ï¿½
                     presentation.Close();
                     pptApp.Quit();
                     ReleaseComObject(presentation);
@@ -399,25 +400,25 @@ namespace Nico2PDF.Services
                     presentation = null;
                     pptApp = null;
 
-                    // ˆê“I‚ÈGCÀs
+                    // ï¿½êï¿½Iï¿½ï¿½GCï¿½ï¿½ï¿½s
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
 
-                    // w’è‚³‚ê‚½ƒy[ƒW‚Ì‚İ‚ğ’Šo‚µ‚ÄPDF‚ğì¬
+                    // ï¿½wï¿½è‚³ï¿½ê‚½ï¿½yï¿½[ï¿½Wï¿½Ì‚İ‚ğ’Šoï¿½ï¿½ï¿½ï¿½PDFï¿½ï¿½ï¿½ì¬
                     ExtractPdfPages(tempPdfPath, outputPath, targetSlides);
                 }
                 else
                 {
-                    // ‘SƒXƒ‰ƒCƒh•ÏŠ·‘O‚ÉÄ“x”ñ•\¦‰»
+                    // ï¿½Sï¿½Xï¿½ï¿½ï¿½Cï¿½hï¿½ÏŠï¿½ï¿½Oï¿½ÉÄ“xï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
                     HidePowerPointWindows(pptApp);
                     
-                    // ‘SƒXƒ‰ƒCƒh•ÏŠ·
+                    // ï¿½Sï¿½Xï¿½ï¿½ï¿½Cï¿½hï¿½ÏŠï¿½
                     presentation.SaveAs(outputPath, 32); // 32 = ppSaveAsPDF
                 }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"PowerPoint•ÏŠ·’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: {ex.Message}", ex);
+                throw new InvalidOperationException($"PowerPointï¿½ÏŠï¿½ï¿½ï¿½ï¿½ÉƒGï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: {ex.Message}", ex);
             }
             finally
             {
@@ -428,13 +429,13 @@ namespace Nico2PDF.Services
                 } 
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"PowerPointI—¹ˆ—‚ÅƒGƒ‰[: {ex.Message}");
+                    Debug.WriteLine($"PowerPointï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅƒGï¿½ï¿½ï¿½[: {ex.Message}");
                 }
                 
                 if (presentation != null) ReleaseComObject(presentation);
                 if (pptApp != null) ReleaseComObject(pptApp);
 
-                // ˆêƒtƒ@ƒCƒ‹‚ğíœ
+                // ï¿½êï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½íœ
                 if (!string.IsNullOrEmpty(tempPdfPath) && File.Exists(tempPdfPath))
                 {
                     try
@@ -443,116 +444,116 @@ namespace Nico2PDF.Services
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"ˆêƒtƒ@ƒCƒ‹íœ‚É¸”s: {ex.Message}");
+                        Debug.WriteLine($"ï¿½êï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½íœï¿½Éï¿½ï¿½s: {ex.Message}");
                     }
                 }
 
-                // ‹­§ƒKƒx[ƒWƒRƒŒƒNƒVƒ‡ƒ“iExcel‚âWord‚Æ“¯—lj
+                // ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½xï¿½[ï¿½Wï¿½Rï¿½ï¿½ï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½iExcelï¿½ï¿½Wordï¿½Æ“ï¿½ï¿½lï¿½j
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
 
-                // c‘¶ƒvƒƒZƒX‚ğ‹­§I—¹
+                // ï¿½cï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
                 KillExistingPowerPointProcesses();
             }
         }
 
         /// <summary>
-        /// PowerPoint‚ğƒoƒbƒNƒOƒ‰ƒEƒ“ƒhƒ‚[ƒh‚Éİ’è
+        /// PowerPointï¿½ï¿½ï¿½oï¿½bï¿½Nï¿½Oï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½hï¿½ï¿½ï¿½[ï¿½hï¿½Éİ’ï¿½
         /// </summary>
-        /// <param name="pptApp">PowerPointƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒIƒuƒWƒFƒNƒg</param>
+        /// <param name="pptApp">PowerPointï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g</param>
         private static void SetPowerPointBackgroundMode(dynamic pptApp)
         {
             try
             {
-                // 1. Šî–{“I‚ÈƒvƒƒpƒeƒBİ’è
+                // 1. ï¿½ï¿½{ï¿½Iï¿½Èƒvï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½İ’ï¿½
                 try 
                 { 
-                    // DisplayAlerts‚ğÅ‰‚Éİ’èid—vj
+                    // DisplayAlertsï¿½ï¿½ï¿½Åï¿½ï¿½Éİ’ï¿½iï¿½dï¿½vï¿½j
                     pptApp.DisplayAlerts = 2; // ppAlertsNone = 2 
                 }
                 catch (Exception ex) 
                 { 
-                    Debug.WriteLine($"DisplayAlertsİ’èƒGƒ‰[: {ex.Message}"); 
+                    Debug.WriteLine($"DisplayAlertsï¿½İ’ï¿½Gï¿½ï¿½ï¿½[: {ex.Message}"); 
                 }
 
                 try 
                 { 
-                    // ScreenUpdating‚ğ–³Œø‰»
+                    // ScreenUpdatingï¿½ğ–³Œï¿½ï¿½ï¿½
                     pptApp.ScreenUpdating = false; 
                 }
                 catch (Exception ex) 
                 { 
-                    Debug.WriteLine($"ScreenUpdatingİ’èƒGƒ‰[: {ex.Message}"); 
+                    Debug.WriteLine($"ScreenUpdatingï¿½İ’ï¿½Gï¿½ï¿½ï¿½[: {ex.Message}"); 
                 }
 
                 try 
                 { 
-                    // VisibleƒvƒƒpƒeƒB‚ğİ’è
+                    // Visibleï¿½vï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ï¿½İ’ï¿½
                     pptApp.Visible = false; 
                 }
                 catch (Exception ex) 
                 { 
-                    Debug.WriteLine($"Visibleİ’èƒGƒ‰[: {ex.Message}"); 
+                    Debug.WriteLine($"Visibleï¿½İ’ï¿½Gï¿½ï¿½ï¿½[: {ex.Message}"); 
                 }
 
-                // 2. Windows API‚ğg—p‚µ‚½ˆÀ‘S‚È”ñ•\¦‰»
+                // 2. Windows APIï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½È”ï¿½\ï¿½ï¿½ï¿½ï¿½
                 HidePowerPointWindows(pptApp);
 
-                // 3. ­‚µ‘Ò‹@‚µ‚Ä‚©‚çÄ“x”ñ•\¦‰»‚ğs
+                // 3. ï¿½ï¿½ï¿½ï¿½ï¿½Ò‹@ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Ä“xï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½s
                 System.Threading.Thread.Sleep(100);
                 HidePowerPointWindows(pptApp);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"PowerPointƒoƒbƒNƒOƒ‰ƒEƒ“ƒhİ’è‚Ìˆê”Ê“I‚ÈƒGƒ‰[: {ex.Message}");
-                // PowerPoint‚Ì”wŒiİ’è‚ÅƒGƒ‰[‚ª”­¶‚µ‚Ä‚àˆ—‚ğ‘±s
+                Debug.WriteLine($"PowerPointï¿½oï¿½bï¿½Nï¿½Oï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½hï¿½İ’ï¿½Ìˆï¿½Ê“Iï¿½ÈƒGï¿½ï¿½ï¿½[: {ex.Message}");
+                // PowerPointï¿½Ì”wï¿½iï¿½İ’ï¿½ÅƒGï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ğ‘±s
             }
         }
 
         /// <summary>
-        /// Windows API‚ğg—p‚µ‚ÄPowerPointƒEƒBƒ“ƒhƒE‚ğˆÀ‘S‚É”ñ•\¦‚É‚·‚é
+        /// Windows APIï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½PowerPointï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½É”ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
         /// </summary>
-        /// <param name="pptApp">PowerPointƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒIƒuƒWƒFƒNƒg</param>
+        /// <param name="pptApp">PowerPointï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g</param>
         private static void HidePowerPointWindows(dynamic pptApp)
         {
             try
             {
-                // PowerPointƒvƒƒZƒX‚Ì‚İ‚ğ‘ÎÛ‚Æ‚µ‚½ˆÀ‘S‚È”ñ•\¦‰»
+                // PowerPointï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½Ì‚İ‚ï¿½ÎÛ‚Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½È”ï¿½\ï¿½ï¿½ï¿½ï¿½
                 var processes = Process.GetProcessesByName("POWERPNT");
                 foreach (var process in processes)
                 {
                     try
                     {
-                        // ƒƒCƒ“ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğæ“¾
+                        // ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
                         var mainWindowHandle = process.MainWindowHandle;
                         if (mainWindowHandle != IntPtr.Zero)
                         {
-                            // ƒEƒBƒ“ƒhƒE‚ğ”ñ•\¦‚É‚·‚é
+                            // ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
                             ShowWindow(mainWindowHandle, SW_HIDE);
                             
-                            // ‚³‚ç‚ÉƒEƒBƒ“ƒhƒE‚ğ”ñƒAƒNƒeƒBƒu‚ÈˆÊ’u‚ÉˆÚ“®
+                            // ï¿½ï¿½ï¿½ï¿½ÉƒEï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½Aï¿½Nï¿½eï¿½Bï¿½uï¿½ÈˆÊ’uï¿½ÉˆÚ“ï¿½
                             SetWindowPos(mainWindowHandle, IntPtr.Zero, -32000, -32000, 0, 0, 
                                 SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOSIZE);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"PowerPointƒvƒƒZƒXˆ—ƒGƒ‰[: {ex.Message}");
+                        Debug.WriteLine($"PowerPointï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[: {ex.Message}");
                     }
                 }
 
-                // PowerPoint‚Ì“Á’è‚ÌƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì‚İ‚ğ‘ÎÛ‚Æ‚µ‚½”ñ•\¦‰»
+                // PowerPointï¿½Ì“ï¿½ï¿½ï¿½ÌƒEï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Nï¿½ï¿½ï¿½Xï¿½Ì‚İ‚ï¿½ÎÛ‚Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
                 try
                 {
-                    // PowerPoint‚ÌƒƒCƒ“ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ğŒŸõ
+                    // PowerPointï¿½Ìƒï¿½ï¿½Cï¿½ï¿½ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                     var pptMainWindow = FindWindow("PP12FrameClass", null);
                     if (pptMainWindow != IntPtr.Zero)
                     {
                         ShowWindow(pptMainWindow, SW_HIDE);
                     }
 
-                    // ƒXƒ‰ƒCƒhƒVƒ‡[ƒEƒBƒ“ƒhƒE‚ğŒŸõ
+                    // ï¿½Xï¿½ï¿½ï¿½Cï¿½hï¿½Vï¿½ï¿½ï¿½[ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                     var pptSlideWindow = FindWindow("PPSlideShowClass", null);
                     if (pptSlideWindow != IntPtr.Zero)
                     {
@@ -561,10 +562,10 @@ namespace Nico2PDF.Services
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"PowerPoint“Á’èƒEƒBƒ“ƒhƒE”ñ•\¦ƒGƒ‰[: {ex.Message}");
+                    Debug.WriteLine($"PowerPointç‰¹å®šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦éè¡¨ç¤ºã‚¨ãƒ©ãƒ¼: {ex.Message}");
                 }
 
-                // COMŒo—R‚Å‚ÌƒEƒBƒ“ƒhƒE§ŒäiˆÀ‘S‚È•û–@j
+                // COMï¿½oï¿½Rï¿½Å‚ÌƒEï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Sï¿½È•ï¿½ï¿½@ï¿½j
                 try
                 {
                     if (pptApp.Windows != null && pptApp.Windows.Count > 0)
@@ -579,24 +580,24 @@ namespace Nico2PDF.Services
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine($"PowerPointƒEƒBƒ“ƒhƒE{i}”ñ•\¦ƒGƒ‰[: {ex.Message}");
+                                Debug.WriteLine($"PowerPointã‚¦ã‚£ãƒ³ãƒ‰ã‚¦{i}éè¡¨ç¤ºã‚¨ãƒ©ãƒ¼: {ex.Message}");
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"PowerPoint COM ƒEƒBƒ“ƒhƒE§ŒäƒGƒ‰[: {ex.Message}");
+                    Debug.WriteLine($"PowerPoint COM ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[: {ex.Message}");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"PowerPointƒEƒBƒ“ƒhƒE”ñ•\¦ˆ—‚Ìˆê”Ê“I‚ÈƒGƒ‰[: {ex.Message}");
+                Debug.WriteLine($"PowerPointã‚¦ã‚£ãƒ³ãƒ‰ã‚¦éè¡¨ç¤ºå‡¦ç†ã®ä¸€èˆ¬çš„ãªã‚¨ãƒ©ãƒ¼: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Šù‘¶‚ÌExcelƒvƒƒZƒX‚ğ‹­§I—¹
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Excelï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
         /// </summary>
         private static void KillExistingExcelProcesses()
         {
@@ -620,17 +621,17 @@ namespace Nico2PDF.Services
                     }
                 }
                 
-                // ­‚µ‘Ò‹@
+                // ï¿½ï¿½ï¿½ï¿½ï¿½Ò‹@
                 System.Threading.Thread.Sleep(500);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"ExcelƒvƒƒZƒXI—¹ˆ—‚ÅƒGƒ‰[: {ex.Message}");
+                Debug.WriteLine($"Excelï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅƒGï¿½ï¿½ï¿½[: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Šù‘¶‚ÌWordƒvƒƒZƒX‚ğ‹­§I—¹
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Wordï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
         /// </summary>
         private static void KillExistingWordProcesses()
         {
@@ -654,17 +655,17 @@ namespace Nico2PDF.Services
                     }
                 }
                 
-                // ­‚µ‘Ò‹@
+                // ï¿½ï¿½ï¿½ï¿½ï¿½Ò‹@
                 System.Threading.Thread.Sleep(500);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"WordƒvƒƒZƒXI—¹ˆ—‚ÅƒGƒ‰[: {ex.Message}");
+                Debug.WriteLine($"Wordï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅƒGï¿½ï¿½ï¿½[: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Šù‘¶‚ÌPowerPointƒvƒƒZƒX‚ğ‹­§I—¹
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PowerPointï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
         /// </summary>
         private static void KillExistingPowerPointProcesses()
         {
@@ -688,20 +689,20 @@ namespace Nico2PDF.Services
                     }
                 }
                 
-                // ­‚µ‘Ò‹@
+                // ï¿½ï¿½ï¿½ï¿½ï¿½Ò‹@
                 System.Threading.Thread.Sleep(500);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"PowerPointƒvƒƒZƒXI—¹ˆ—‚ÅƒGƒ‰[: {ex.Message}");
+                Debug.WriteLine($"PowerPointï¿½vï¿½ï¿½ï¿½Zï¿½Xï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅƒGï¿½ï¿½ï¿½[: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// ƒy[ƒW”ÍˆÍ‚ğ‰ğÍ
+        /// ï¿½yï¿½[ï¿½Wï¿½ÍˆÍ‚ï¿½ï¿½ï¿½ï¿½
         /// </summary>
-        /// <param name="pageRange">ƒy[ƒW”ÍˆÍ•¶š—ñ</param>
-        /// <returns>ƒy[ƒW”Ô†ƒŠƒXƒg</returns>
+        /// <param name="pageRange">ï¿½yï¿½[ï¿½Wï¿½ÍˆÍ•ï¿½ï¿½ï¿½ï¿½ï¿½</param>
+        /// <returns>ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½ï¿½ï¿½Xï¿½g</returns>
         private static List<int> ParsePageRange(string pageRange)
         {
             var pages = new List<int>();
@@ -735,18 +736,18 @@ namespace Nico2PDF.Services
             }
             catch
             {
-                throw new ArgumentException($"–³Œø‚Èƒy[ƒW”ÍˆÍw’è: {pageRange}");
+                throw new ArgumentException($"ï¿½ï¿½ï¿½ï¿½ï¿½Èƒyï¿½[ï¿½Wï¿½ÍˆÍwï¿½ï¿½: {pageRange}");
             }
 
             return pages.OrderBy(p => p).ToList();
         }
 
         /// <summary>
-        /// PDF‚©‚çw’è‚³‚ê‚½ƒy[ƒW‚Ì‚İ‚ğ’Šo
+        /// PDFï¿½ï¿½ï¿½ï¿½wï¿½è‚³ï¿½ê‚½ï¿½yï¿½[ï¿½Wï¿½Ì‚İ‚ğ’Šo
         /// </summary>
-        /// <param name="inputPdfPath">“ü—ÍPDFƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="outputPdfPath">o—ÍPDFƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="pageNumbers">ƒy[ƒW”Ô†ƒŠƒXƒg</param>
+        /// <param name="inputPdfPath">ï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="outputPdfPath">ï¿½oï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="pageNumbers">ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
         private static void ExtractPdfPages(string inputPdfPath, string outputPdfPath, List<int> pageNumbers)
         {
             using (var inputReader = new PdfReader(inputPdfPath))
@@ -767,9 +768,9 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// COMƒIƒuƒWƒFƒNƒg‚ğ‰ğ•ú
+        /// COMï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
-        /// <param name="obj">‰ğ•ú‘ÎÛƒIƒuƒWƒFƒNƒg</param>
+        /// <param name="obj">ï¿½ï¿½ï¿½ï¿½ÎÛƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½g</param>
         private static void ReleaseComObject(object? obj)
         {
             if (obj != null)
@@ -780,48 +781,48 @@ namespace Nico2PDF.Services
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"COMƒIƒuƒWƒFƒNƒg‰ğ•úƒGƒ‰[: {ex.Message}");
+                    Debug.WriteLine($"COMï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[: {ex.Message}");
                 }
             }
         }
 
         /// <summary>
-        /// PDFƒtƒ@ƒCƒ‹‚©‚çw’è‚³‚ê‚½ƒy[ƒW‚Ì‚İ‚ğ’ŠoiŒöŠJƒƒ\ƒbƒhj
+        /// PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½è‚³ï¿½ê‚½ï¿½yï¿½[ï¿½Wï¿½Ì‚İ‚ğ’Šoï¿½iï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½j
         /// </summary>
-        /// <param name="inputPdfPath">“ü—ÍPDFƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="outputPdfPath">o—ÍPDFƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="pageRange">ƒy[ƒW”ÍˆÍ•¶š—ñi—á: "1,3,5-7"j</param>
+        /// <param name="inputPdfPath">ï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="outputPdfPath">ï¿½oï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="pageRange">ï¿½yï¿½[ï¿½Wï¿½ÍˆÍ•ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½: "1,3,5-7"ï¿½j</param>
         public static void ExtractPdfPagesFromRange(string inputPdfPath, string outputPdfPath, string pageRange)
         {
             if (string.IsNullOrWhiteSpace(pageRange))
             {
-                throw new ArgumentException("ƒy[ƒW”ÍˆÍ‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB", nameof(pageRange));
+                throw new ArgumentException("ï¿½yï¿½[ï¿½Wï¿½ÍˆÍ‚ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B", nameof(pageRange));
             }
 
             var pageNumbers = ParsePageRange(pageRange);
             if (!pageNumbers.Any())
             {
-                throw new ArgumentException("—LŒø‚Èƒy[ƒW”ÍˆÍ‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB", nameof(pageRange));
+                throw new ArgumentException("ï¿½Lï¿½ï¿½ï¿½Èƒyï¿½[ï¿½Wï¿½ÍˆÍ‚ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B", nameof(pageRange));
             }
 
             using (var inputReader = new PdfReader(inputPdfPath))
             {
                 var totalPages = inputReader.NumberOfPages;
 
-                // ‘¶İ‚µ‚È‚¢ƒy[ƒW‚Ìƒ`ƒFƒbƒN
+                // ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½yï¿½[ï¿½Wï¿½Ìƒ`ï¿½Fï¿½bï¿½N
                 var invalidPages = pageNumbers.Where(p => p > totalPages).ToList();
                 if (invalidPages.Any())
                 {
-                    throw new ArgumentException($"‘¶İ‚µ‚È‚¢ƒy[ƒW”Ô†‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·: {string.Join(", ", invalidPages)} (‘ƒy[ƒW”: {totalPages})");
+                    throw new ArgumentException($"ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½: {string.Join(", ", invalidPages)} (ï¿½ï¿½ï¿½yï¿½[ï¿½Wï¿½ï¿½: {totalPages})");
                 }
 
-                // w’è‚³‚ê‚½ƒy[ƒW‚Ì‚İ‚ğ’Šo‚µ‚ÄPDF‚ğì¬
+                // ï¿½wï¿½è‚³ï¿½ê‚½ï¿½yï¿½[ï¿½Wï¿½Ì‚İ‚ğ’Šoï¿½ï¿½ï¿½ï¿½PDFï¿½ï¿½ï¿½ì¬
                 ExtractPdfPages(inputPdfPath, outputPdfPath, pageNumbers);
             }
         }
 
         /// <summary>
-        /// ‘Š‘ÎƒpƒX‚ğæ“¾
+        /// ï¿½ï¿½ï¿½Îƒpï¿½Xï¿½ï¿½ï¿½æ“¾
         /// </summary>
         private static string GetRelativePath(string basePath, string fullPath)
         {
