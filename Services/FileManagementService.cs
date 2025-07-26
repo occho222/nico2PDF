@@ -9,17 +9,17 @@ using Nico2PDF.Models;
 namespace Nico2PDF.Services
 {
     /// <summary>
-    /// ƒtƒ@ƒCƒ‹ŠÇ—ƒT[ƒrƒX
+    /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ç—ï¿½ï¿½Tï¿½[ï¿½rï¿½X
     /// </summary>
     public class FileManagementService
     {
         /// <summary>
-        /// w’èƒtƒHƒ‹ƒ_‚©‚çƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İ
+        /// ï¿½wï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
         /// </summary>
-        /// <param name="folderPath">ƒtƒHƒ‹ƒ_ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="includeSubfolders">ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ş‚©‚Ç‚¤‚©</param>
-        /// <returns>ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</returns>
+        /// <param name="folderPath">ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="includeSubfolders">ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <returns>ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</returns>
         public static List<FileItem> LoadFilesFromFolder(string folderPath, string pdfOutputFolder, bool includeSubfolders = false)
         {
             var fileItems = new List<FileItem>();
@@ -33,6 +33,11 @@ namespace Nico2PDF.Services
                 foreach (var file in files)
                 {
                     var fileInfo = new FileInfo(file);
+                    
+                    // ~ä»˜ãã®ä¸­é–“ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é™¤å¤–
+                    if (fileInfo.Name.StartsWith("~"))
+                        continue;
+                    
                     string extensionUpper = fileInfo.Extension.TrimStart('.').ToUpper();
                     
                     var item = new FileItem
@@ -42,7 +47,7 @@ namespace Nico2PDF.Services
                         Extension = extensionUpper,
                         LastModified = fileInfo.LastWriteTime,
                         IsSelected = true,
-                        PdfStatus = CheckPdfExists(fileInfo, pdfOutputFolder, folderPath, includeSubfolders) ? "•ÏŠ·Ï" : "–¢•ÏŠ·",
+                        PdfStatus = CheckPdfExists(fileInfo, pdfOutputFolder, folderPath, includeSubfolders) ? "ï¿½ÏŠï¿½ï¿½ï¿½" : "ï¿½ï¿½ï¿½ÏŠï¿½",
                         TargetPages = GetDefaultTargetPages(extensionUpper),
                         RelativePath = GetRelativePath(folderPath, fileInfo.FullName),
                         OriginalFileName = fileInfo.Name
@@ -55,24 +60,24 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// w’èƒtƒHƒ‹ƒ_‚©‚çƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İi]—ˆ‚ÌŒİŠ·«ƒƒ\ƒbƒhj
+        /// ï¿½wï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½Ç‚İï¿½ï¿½İiï¿½]ï¿½ï¿½ï¿½ÌŒİŠï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½j
         /// </summary>
-        /// <param name="folderPath">ƒtƒHƒ‹ƒ_ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <returns>ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</returns>
+        /// <param name="folderPath">ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <returns>ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</returns>
         public static List<FileItem> LoadFilesFromFolder(string folderPath, string pdfOutputFolder)
         {
             return LoadFilesFromFolder(folderPath, pdfOutputFolder, false);
         }
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹‚ÌXV‚ğƒ`ƒFƒbƒN
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÌXï¿½Vï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½N
         /// </summary>
-        /// <param name="folderPath">ƒtƒHƒ‹ƒ_ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="currentFileItems">Œ»İ‚Ìƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <param name="includeSubfolders">ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ş‚©‚Ç‚¤‚©</param>
-        /// <returns>XV‚³‚ê‚½ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</returns>
+        /// <param name="folderPath">ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="currentFileItems">ï¿½ï¿½ï¿½İ‚Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="includeSubfolders">ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <returns>ï¿½Xï¿½Vï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</returns>
         public static (List<FileItem> UpdatedItems, List<string> ChangedFiles, List<string> AddedFiles, List<string> DeletedFiles) 
             UpdateFiles(string folderPath, string pdfOutputFolder, List<FileItem> currentFileItems, bool includeSubfolders = false)
         {
@@ -84,13 +89,18 @@ namespace Nico2PDF.Services
 
             var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-            // Œ»İ‚Ìƒtƒ@ƒCƒ‹ƒVƒXƒeƒ€‚©‚çƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İ
+            // ï¿½ï¿½ï¿½İ‚Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½Vï¿½Xï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
             foreach (var ext in extensions)
             {
                 var files = Directory.GetFiles(folderPath, ext, searchOption);
                 foreach (var file in files)
                 {
                     var fileInfo = new FileInfo(file);
+                    
+                    // ~ä»˜ãã®ä¸­é–“ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é™¤å¤–
+                    if (fileInfo.Name.StartsWith("~"))
+                        continue;
+                    
                     string extensionUpper = fileInfo.Extension.TrimStart('.').ToUpper();
 
                     bool isSelected = true;
@@ -99,18 +109,18 @@ namespace Nico2PDF.Services
                     string displayName = "";
                     string originalFileName = fileInfo.Name;
 
-                    // Šù‘¶ƒtƒ@ƒCƒ‹‚Ìê‡‚ÍXV“ú‚ğƒ`ƒFƒbƒN
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡ï¿½ÍXï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½N
                     if (previousFiles.TryGetValue(file, out var existingFile))
                     {
                         if (existingFile.LastModified != fileInfo.LastWriteTime)
                         {
-                            // XV“ú‚ª•ÏX‚³‚ê‚½ê‡
+                            // ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÏXï¿½ï¿½ï¿½ê‚½ï¿½ê‡
                             changedFiles.Add(fileInfo.Name);
                             isSelected = true;
                         }
                         else
                         {
-                            // •ÏX‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í‘O‚Ì‘I‘ğó‘Ô‚ğ•Û
+                            // ï¿½ÏXï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½Í‘Oï¿½Ì‘Iï¿½ï¿½ï¿½ï¿½Ô‚ï¿½Ûï¿½
                             isSelected = existingFile.IsSelected;
                             targetPages = existingFile.TargetPages;
                             displayOrder = existingFile.DisplayOrder;
@@ -118,12 +128,12 @@ namespace Nico2PDF.Services
                             originalFileName = existingFile.OriginalFileName;
                         }
                         
-                        // ˆ—Ï‚İƒtƒ@ƒCƒ‹‚ğ«‘‚©‚çíœ
+                        // ï¿½ï¿½ï¿½ï¿½ï¿½Ï‚İƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½íœ
                         previousFiles.Remove(file);
                     }
                     else
                     {
-                        // V‹Kƒtƒ@ƒCƒ‹‚©‚à‚µ‚ê‚È‚¢‚ªAƒtƒ@ƒCƒ‹–¼‚ª•ÏX‚³‚ê‚½‰Â”\«‚àƒ`ƒFƒbƒN
+                        // ï¿½Vï¿½Kï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½Aï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÏXï¿½ï¿½ï¿½ê‚½ï¿½Â”\ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½N
                         var matchingItem = currentFileItems.FirstOrDefault(item => 
                             Path.GetDirectoryName(item.FilePath) == Path.GetDirectoryName(file) &&
                             (item.OriginalFileName == fileInfo.Name || 
@@ -131,14 +141,14 @@ namespace Nico2PDF.Services
 
                         if (matchingItem != null)
                         {
-                            // Šù‘¶ƒAƒCƒeƒ€‚Ìİ’è‚ğŒp³i–¼‘O•ÏX‚³‚ê‚½ƒtƒ@ƒCƒ‹j
+                            // ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½Ìİ’ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Oï¿½ÏXï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½j
                             isSelected = matchingItem.IsSelected;
                             targetPages = matchingItem.TargetPages;
                             displayOrder = matchingItem.DisplayOrder;
                             displayName = matchingItem.DisplayName;
                             originalFileName = matchingItem.OriginalFileName;
                             
-                            // ŒÃ‚¢PDFƒtƒ@ƒCƒ‹‚ğíœi–¼‘O•ÏX‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ìê‡j
+                            // ï¿½Ã‚ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½íœï¿½iï¿½ï¿½ï¿½Oï¿½ÏXï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡ï¿½j
                             if (matchingItem.FilePath != file && matchingItem.Extension.ToUpper() != "PDF")
                             {
                                 var oldPdfPath = GetPdfPath(matchingItem.FilePath, pdfOutputFolder, folderPath, includeSubfolders);
@@ -147,21 +157,21 @@ namespace Nico2PDF.Services
                                     try
                                     {
                                         File.Delete(oldPdfPath);
-                                        System.Diagnostics.Debug.WriteLine($"ŒÃ‚¢PDFƒtƒ@ƒCƒ‹‚ğíœ: {oldPdfPath}");
+                                        System.Diagnostics.Debug.WriteLine($"ï¿½Ã‚ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½íœ: {oldPdfPath}");
                                     }
                                     catch (Exception ex)
                                     {
-                                        System.Diagnostics.Debug.WriteLine($"ŒÃ‚¢PDFƒtƒ@ƒCƒ‹íœƒGƒ‰[: {ex.Message}");
+                                        System.Diagnostics.Debug.WriteLine($"ï¿½Ã‚ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½íœï¿½Gï¿½ï¿½ï¿½[: {ex.Message}");
                                     }
                                 }
                             }
                             
-                            // Œ³‚ÌƒAƒCƒeƒ€‚ğ«‘‚©‚çíœid•¡‚ğ”ğ‚¯‚é‚½‚ßj
+                            // ï¿½ï¿½ï¿½ÌƒAï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½íœï¿½iï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ßj
                             previousFiles.Remove(matchingItem.FilePath);
                         }
                         else
                         {
-                            // ^‚ÌV‹Kƒtƒ@ƒCƒ‹‚Ìê‡
+                            // ï¿½^ï¿½ÌVï¿½Kï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡
                             addedFiles.Add(fileInfo.Name);
                             isSelected = true;
                             displayOrder = currentFileItems.Count + addedFiles.Count - 1;
@@ -169,11 +179,11 @@ namespace Nico2PDF.Services
                         }
                     }
 
-                    // PDFƒXƒe[ƒ^ƒX‚ğŠm”F
+                    // PDFï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½ï¿½mï¿½F
                     bool pdfExists = CheckPdfExists(fileInfo, pdfOutputFolder, folderPath, includeSubfolders);
-                    string pdfStatus = pdfExists ? "•ÏŠ·Ï" : "–¢•ÏŠ·";
+                    string pdfStatus = pdfExists ? "ï¿½ÏŠï¿½ï¿½ï¿½" : "ï¿½ï¿½ï¿½ÏŠï¿½";
 
-                    // PDF‚ª‘¶İ‚µ‚È‚¢ê‡‚Í‘I‘ğó‘Ô‚É‚·‚éiPDFƒtƒ@ƒCƒ‹©‘Ì‚Íœ‚­j
+                    // PDFï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½Í‘Iï¿½ï¿½ï¿½ï¿½Ô‚É‚ï¿½ï¿½ï¿½iPDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Íï¿½ï¿½ï¿½ï¿½j
                     if (!pdfExists && fileInfo.Extension.ToLower() != ".pdf")
                     {
                         isSelected = true;
@@ -197,12 +207,12 @@ namespace Nico2PDF.Services
                 }
             }
 
-            // íœ‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğŒŸo
+            // ï¿½íœï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½o
             var deletedFiles = new List<string>();
 
             foreach (var previousFile in previousFiles.Values)
             {
-                // ƒtƒ@ƒCƒ‹‚ª–¼‘O•ÏX‚³‚ê‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒN
+                // ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ÏXï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½N
                 var directory = Path.GetDirectoryName(previousFile.FilePath);
                 var matchingNewFile = newFileItems.FirstOrDefault(item => 
                     Path.GetDirectoryName(item.FilePath) == directory &&
@@ -211,10 +221,10 @@ namespace Nico2PDF.Services
 
                 if (matchingNewFile == null)
                 {
-                    // ^‚Éíœ‚³‚ê‚½ƒtƒ@ƒCƒ‹
+                    // ï¿½^ï¿½Éíœï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½
                     deletedFiles.Add(previousFile.FileName);
 
-                    // ‘Î‰‚·‚éPDFƒtƒ@ƒCƒ‹‚ğíœ
+                    // ï¿½Î‰ï¿½ï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½íœ
                     if (previousFile.Extension.ToUpper() != "PDF")
                     {
                         var pdfPath = GetPdfPath(previousFile.FilePath, pdfOutputFolder, folderPath, includeSubfolders);
@@ -223,21 +233,21 @@ namespace Nico2PDF.Services
                             try
                             {
                                 File.Delete(pdfPath);
-                                System.Diagnostics.Debug.WriteLine($"íœ‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ÌPDF‚ğíœ: {pdfPath}");
+                                System.Diagnostics.Debug.WriteLine($"ï¿½íœï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½PDFï¿½ï¿½ï¿½íœ: {pdfPath}");
                             }
                             catch (Exception ex)
                             {
-                                System.Diagnostics.Debug.WriteLine($"PDFƒtƒ@ƒCƒ‹íœƒGƒ‰[: {ex.Message}");
+                                System.Diagnostics.Debug.WriteLine($"PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½íœï¿½Gï¿½ï¿½ï¿½[: {ex.Message}");
                             }
                         }
                     }
                 }
             }
 
-            // •\¦‡˜‚Å•À‚Ñ‘Ö‚¦
+            // ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å•ï¿½ï¿½Ñ‘Ö‚ï¿½
             var orderedItems = newFileItems.OrderBy(f => f.DisplayOrder).ThenBy(f => f.RelativePath).ThenBy(f => f.FileName).ToList();
             
-            // ”Ô†‚ğÄİ’è
+            // ï¿½Ôï¿½ï¿½ï¿½ï¿½Äİ’ï¿½
             for (int i = 0; i < orderedItems.Count; i++)
             {
                 orderedItems[i].Number = i + 1;
@@ -248,12 +258,12 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹‚ÌXV‚ğƒ`ƒFƒbƒNi]—ˆ‚ÌŒİŠ·«ƒƒ\ƒbƒhj
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÌXï¿½Vï¿½ï¿½ï¿½`ï¿½Fï¿½bï¿½Nï¿½iï¿½]ï¿½ï¿½ï¿½ÌŒİŠï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½j
         /// </summary>
-        /// <param name="folderPath">ƒtƒHƒ‹ƒ_ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="currentFileItems">Œ»İ‚Ìƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <returns>XV‚³‚ê‚½ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</returns>
+        /// <param name="folderPath">ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="currentFileItems">ï¿½ï¿½ï¿½İ‚Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <returns>ï¿½Xï¿½Vï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</returns>
         public static (List<FileItem> UpdatedItems, List<string> ChangedFiles, List<string> AddedFiles, List<string> DeletedFiles) 
             UpdateFiles(string folderPath, string pdfOutputFolder, List<FileItem> currentFileItems)
         {
@@ -261,36 +271,36 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹–¼‚ğ•ÏX
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÏX
         /// </summary>
-        /// <param name="filePath">Œ³‚Ìƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="newFileName">V‚µ‚¢ƒtƒ@ƒCƒ‹–¼iŠg’£q‚È‚µj</param>
-        /// <returns>V‚µ‚¢ƒtƒ@ƒCƒ‹ƒpƒX</returns>
+        /// <param name="filePath">ï¿½ï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="newFileName">ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½iï¿½gï¿½ï¿½ï¿½qï¿½È‚ï¿½ï¿½j</param>
+        /// <returns>ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</returns>
         public static string RenamePhysicalFile(string filePath, string newFileName)
         {
             if (!File.Exists(filePath))
-                throw new FileNotFoundException("ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB", filePath);
+                throw new FileNotFoundException("ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B", filePath);
 
             var directory = Path.GetDirectoryName(filePath);
             var extension = Path.GetExtension(filePath);
             var newFilePath = Path.Combine(directory!, newFileName + extension);
 
             if (File.Exists(newFilePath) && !string.Equals(newFilePath, filePath, StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException("“¯‚¶–¼‘O‚Ìƒtƒ@ƒCƒ‹‚ªŠù‚É‘¶İ‚µ‚Ü‚·B");
+                throw new InvalidOperationException("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‘ï¿½ï¿½İ‚ï¿½ï¿½Ü‚ï¿½ï¿½B");
 
             File.Move(filePath, newFilePath);
             return newFilePath;
         }
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹–¼•ÏX‚ÉŒÃ‚¢PDFƒtƒ@ƒCƒ‹‚ğíœ‚µAV‚µ‚¢PDFƒtƒ@ƒCƒ‹‚Ì‘¶İ‚ğŠm”F
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ÏXï¿½ï¿½ï¿½ÉŒÃ‚ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½íœï¿½ï¿½ï¿½Aï¿½Vï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‘ï¿½ï¿½İ‚ï¿½ï¿½mï¿½F
         /// </summary>
-        /// <param name="oldFilePath">•ÏX‘O‚Ìƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="newFilePath">•ÏXŒã‚Ìƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="baseFolderPath">Šî€ƒtƒHƒ‹ƒ_ƒpƒX</param>
-        /// <param name="includeSubfolders">ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ş‚©‚Ç‚¤‚©</param>
-        /// <returns>V‚µ‚¢PDFƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚é‚©‚Ç‚¤‚©</returns>
+        /// <param name="oldFilePath">ï¿½ÏXï¿½Oï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="newFilePath">ï¿½ÏXï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="baseFolderPath">ï¿½î€ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X</param>
+        /// <param name="includeSubfolders">ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <returns>ï¿½Vï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</returns>
         public static bool HandlePdfFileAfterRename(string oldFilePath, string newFilePath, string pdfOutputFolder, string baseFolderPath, bool includeSubfolders)
         {
             try
@@ -298,52 +308,52 @@ namespace Nico2PDF.Services
                 var oldFileInfo = new FileInfo(oldFilePath);
                 var newFileInfo = new FileInfo(newFilePath);
                 
-                // PDFƒtƒ@ƒCƒ‹©‘Ì‚Ìê‡‚Íˆ—‚µ‚È‚¢
+                // PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Ìê‡ï¿½Íï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
                 if (oldFileInfo.Extension.ToUpper() == "PDF")
                 {
                     return true;
                 }
 
-                // ŒÃ‚¢PDFƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğæ“¾
+                // ï¿½Ã‚ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒpï¿½Xï¿½ï¿½ï¿½æ“¾
                 var oldPdfPath = GetPdfPath(oldFilePath, pdfOutputFolder, baseFolderPath, includeSubfolders);
                 
-                // ŒÃ‚¢PDFƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡‚Ííœ
+                // ï¿½Ã‚ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½ï¿½ê‡ï¿½Ííœ
                 if (File.Exists(oldPdfPath))
                 {
                     try
                     {
                         File.Delete(oldPdfPath);
-                        System.Diagnostics.Debug.WriteLine($"–¼‘O•ÏX‚É”º‚¤ŒÃ‚¢PDFƒtƒ@ƒCƒ‹íœ: {oldPdfPath}");
+                        System.Diagnostics.Debug.WriteLine($"ï¿½ï¿½ï¿½Oï¿½ÏXï¿½É”ï¿½ï¿½ï¿½ï¿½Ã‚ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½íœ: {oldPdfPath}");
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"ŒÃ‚¢PDFƒtƒ@ƒCƒ‹íœƒGƒ‰[: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"ï¿½Ã‚ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½íœï¿½Gï¿½ï¿½ï¿½[: {ex.Message}");
                     }
                 }
 
-                // V‚µ‚¢PDFƒtƒ@ƒCƒ‹‚Ì‘¶İ‚ğŠm”F
+                // ï¿½Vï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‘ï¿½ï¿½İ‚ï¿½ï¿½mï¿½F
                 var newPdfPath = GetPdfPath(newFilePath, pdfOutputFolder, baseFolderPath, includeSubfolders);
                 return File.Exists(newPdfPath);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"PDFˆ—ƒGƒ‰[: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"PDFï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[: {ex.Message}");
                 return false;
             }
         }
 
         /// <summary>
-        /// •¡”ƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğè“®‚ÅˆêŠ‡•ÏX
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì–ï¿½ï¿½Oï¿½ï¿½ï¿½è“®ï¿½ÅˆêŠ‡ï¿½ÏX
         /// </summary>
-        /// <param name="renameItems">ƒŠƒl[ƒ€ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <returns>•ÏXŒ‹‰Ê</returns>
+        /// <param name="renameItems">ï¿½ï¿½ï¿½lï¿½[ï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <returns>ï¿½ÏXï¿½ï¿½ï¿½ï¿½</returns>
         public static (int SuccessCount, int FailCount, List<string> Errors) BatchRenameFiles(List<BatchRenameItem> renameItems)
         {
             var successCount = 0;
             var failCount = 0;
             var errors = new List<string>();
 
-            // •ÏX‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ì‚İ‚ğˆ—
+            // ï¿½ÏXï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‚İ‚ï¿½ï¿½ï¿½ï¿½ï¿½
             var changedItems = renameItems.Where(item => item.IsChanged && !item.HasError).ToList();
 
             foreach (var renameItem in changedItems)
@@ -354,7 +364,7 @@ namespace Nico2PDF.Services
                     var oldFilePath = originalItem.FilePath;
                     var newFilePath = RenamePhysicalFile(originalItem.FilePath, renameItem.NewFileName);
                     
-                    // ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€‚ğXV
+                    // ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
                     originalItem.FilePath = newFilePath;
                     originalItem.FileName = Path.GetFileName(newFilePath);
                     originalItem.DisplayName = renameItem.PreviewFileName;
@@ -372,12 +382,12 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// •¡”ƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğˆêŠ‡•ÏXi‹Œ”ÅEŒİŠ·«‚Ì‚½‚ßc‚·j
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì–ï¿½ï¿½Oï¿½ï¿½ï¿½êŠ‡ï¿½ÏXï¿½iï¿½ï¿½ï¿½ÅEï¿½İŠï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ßcï¿½ï¿½ï¿½j
         /// </summary>
-        /// <param name="fileItems">ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <param name="pattern">•ÏXƒpƒ^[ƒ“i—áFV‚µ‚¢–¼‘O_{0}j</param>
-        /// <param name="physicalRename">•¨—ƒtƒ@ƒCƒ‹–¼‚à•ÏX‚·‚é‚©‚Ç‚¤‚©</param>
-        /// <returns>•ÏXŒ‹‰Ê</returns>
+        /// <param name="fileItems">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="pattern">ï¿½ÏXï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½iï¿½ï¿½Fï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½O_{0}ï¿½j</param>
+        /// <param name="physicalRename">ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÏXï¿½ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <returns>ï¿½ÏXï¿½ï¿½ï¿½ï¿½</returns>
         public static (int SuccessCount, int FailCount, List<string> Errors) BatchRenameFiles(List<FileItem> fileItems, string pattern, bool physicalRename = false)
         {
             var successCount = 0;
@@ -412,13 +422,13 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// PDFƒtƒ@ƒCƒ‹‚Ì‘¶İ‚ğŠm”F
+        /// PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‘ï¿½ï¿½İ‚ï¿½ï¿½mï¿½F
         /// </summary>
-        /// <param name="fileInfo">ƒtƒ@ƒCƒ‹î•ñ</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="baseFolderPath">Šî€ƒtƒHƒ‹ƒ_ƒpƒX</param>
-        /// <param name="includeSubfolders">ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ş‚©‚Ç‚¤‚©</param>
-        /// <returns>PDFƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚é‚©‚Ç‚¤‚©</returns>
+        /// <param name="fileInfo">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="baseFolderPath">ï¿½î€ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X</param>
+        /// <param name="includeSubfolders">ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <returns>PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</returns>
         private static bool CheckPdfExists(FileInfo fileInfo, string pdfOutputFolder, string baseFolderPath, bool includeSubfolders)
         {
             if (fileInfo.Extension.ToLower() == ".pdf") return true;
@@ -428,13 +438,13 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// PDFƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğæ“¾
+        /// PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒpï¿½Xï¿½ï¿½ï¿½æ“¾
         /// </summary>
-        /// <param name="originalFilePath">Œ³‚Ìƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="baseFolderPath">Šî€ƒtƒHƒ‹ƒ_ƒpƒX</param>
-        /// <param name="includeSubfolders">ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ş‚©‚Ç‚¤‚©</param>
-        /// <returns>PDFƒtƒ@ƒCƒ‹‚ÌƒpƒX</returns>
+        /// <param name="originalFilePath">ï¿½ï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="baseFolderPath">ï¿½î€ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X</param>
+        /// <param name="includeSubfolders">ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <returns>PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒpï¿½X</returns>
         private static string GetPdfPath(string originalFilePath, string pdfOutputFolder, string baseFolderPath, bool includeSubfolders)
         {
             var fileInfo = new FileInfo(originalFilePath);
@@ -442,24 +452,24 @@ namespace Nico2PDF.Services
 
             if (includeSubfolders)
             {
-                // ƒTƒuƒtƒHƒ‹ƒ_\‘¢‚ğˆÛ
+                // ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Ûï¿½
                 var relativePath = GetRelativePath(baseFolderPath, fileInfo.DirectoryName!);
                 var outputDir = Path.Combine(pdfOutputFolder, relativePath);
                 return Path.Combine(outputDir, fileName);
             }
             else
             {
-                // ‚·‚×‚Ä‚Ìƒtƒ@ƒCƒ‹‚ğ“¯‚¶ƒtƒHƒ‹ƒ_‚Éo—Í
+                // ï¿½ï¿½ï¿½×‚Ä‚Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ğ“¯‚ï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Éoï¿½ï¿½
                 return Path.Combine(pdfOutputFolder, fileName);
             }
         }
 
         /// <summary>
-        /// ‘Š‘ÎƒpƒX‚ğæ“¾
+        /// ï¿½ï¿½ï¿½Îƒpï¿½Xï¿½ï¿½ï¿½æ“¾
         /// </summary>
-        /// <param name="basePath">Šî€ƒpƒX</param>
-        /// <param name="fullPath">Š®‘SƒpƒX</param>
-        /// <returns>‘Š‘ÎƒpƒX</returns>
+        /// <param name="basePath">ï¿½î€ï¿½pï¿½X</param>
+        /// <param name="fullPath">ï¿½ï¿½ï¿½Sï¿½pï¿½X</param>
+        /// <returns>ï¿½ï¿½ï¿½Îƒpï¿½X</returns>
         private static string GetRelativePath(string basePath, string fullPath)
         {
             var baseUri = new Uri(basePath.EndsWith(Path.DirectorySeparatorChar.ToString()) ? basePath : basePath + Path.DirectorySeparatorChar);
@@ -477,10 +487,10 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// Šg’£q‚ÉŠî‚Ã‚¢‚ÄƒfƒtƒHƒ‹ƒg‚Ì‘ÎÛƒy[ƒW‚ğæ“¾
+        /// ï¿½gï¿½ï¿½ï¿½qï¿½ÉŠï¿½Ã‚ï¿½ï¿½Äƒfï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Ì‘ÎÛƒyï¿½[ï¿½Wï¿½ï¿½ï¿½æ“¾
         /// </summary>
-        /// <param name="extension">Šg’£q</param>
-        /// <returns>ƒfƒtƒHƒ‹ƒg‚Ì‘ÎÛƒy[ƒW</returns>
+        /// <param name="extension">ï¿½gï¿½ï¿½ï¿½q</param>
+        /// <returns>ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Ì‘ÎÛƒyï¿½[ï¿½W</returns>
         private static string GetDefaultTargetPages(string extension)
         {
             return extension switch
@@ -491,12 +501,12 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒTƒuƒtƒHƒ‹ƒ_—p‚ÌPDFo—ÍƒfƒBƒŒƒNƒgƒŠ‚ğì¬
+        /// ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½ï¿½PDFï¿½oï¿½Íƒfï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ì¬
         /// </summary>
-        /// <param name="filePath">ƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="pdfOutputFolder">PDFo—ÍƒtƒHƒ‹ƒ_</param>
-        /// <param name="baseFolderPath">Šî€ƒtƒHƒ‹ƒ_ƒpƒX</param>
-        /// <param name="includeSubfolders">ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ş‚©‚Ç‚¤‚©</param>
+        /// <param name="filePath">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="pdfOutputFolder">PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_</param>
+        /// <param name="baseFolderPath">ï¿½î€ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X</param>
+        /// <param name="includeSubfolders">ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½</param>
         public static void EnsurePdfOutputDirectory(string filePath, string pdfOutputFolder, string baseFolderPath, bool includeSubfolders)
         {
             if (includeSubfolders)
@@ -520,13 +530,13 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹ˆê——‚ğƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚É‘‚«o‚µ
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ê——ï¿½ï¿½ï¿½eï¿½Lï¿½Xï¿½gï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
         /// </summary>
-        /// <param name="fileItems">ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <param name="outputPath">o—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="includeHeaders">ƒwƒbƒ_[‚ğŠÜ‚ß‚é‚©‚Ç‚¤‚©</param>
-        /// <param name="includeDetails">Ú×î•ñ‚ğŠÜ‚ß‚é‚©‚Ç‚¤‚©</param>
-        /// <param name="selectedOnly">‘I‘ğ‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ì‚İ‚ğo—Í‚·‚é‚©‚Ç‚¤‚©</param>
+        /// <param name="fileItems">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="outputPath">ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="includeHeaders">ï¿½wï¿½bï¿½_ï¿½[ï¿½ï¿½ï¿½Ü‚ß‚é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <param name="includeDetails">ï¿½Ú×ï¿½ï¿½ï¿½ï¿½Ü‚ß‚é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <param name="selectedOnly">ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‚İ‚ï¿½ï¿½oï¿½Í‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
         public static void ExportFileList(List<FileItem> fileItems, string outputPath, bool includeHeaders = true, bool includeDetails = true, bool selectedOnly = false)
         {
             var exportItems = selectedOnly ? fileItems.Where(f => f.IsSelected).ToList() : fileItems;
@@ -536,11 +546,11 @@ namespace Nico2PDF.Services
             {
                 if (includeDetails)
                 {
-                    sb.AppendLine("”Ô†\t•\¦–¼\tƒtƒ@ƒCƒ‹–¼\tŠg’£q\tÅIXV“ú\tPDFƒXƒe[ƒ^ƒX\t‘ÎÛƒy[ƒW\tƒtƒHƒ‹ƒ_\tƒtƒ@ƒCƒ‹ƒpƒX");
+                    sb.AppendLine("ç•ªå·\tè¡¨ç¤ºå\tãƒ•ã‚¡ã‚¤ãƒ«å\tæ‹¡å¼µå­\tæœ€çµ‚æ›´æ–°æ—¥æ™‚\tPDFã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹\tå¯¾è±¡ãƒšãƒ¼ã‚¸\tãƒ•ã‚©ãƒ«ãƒ€\tãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹");
                 }
                 else
                 {
-                    sb.AppendLine("”Ô†\t•\¦–¼\tƒtƒHƒ‹ƒ_");
+                    sb.AppendLine("ç•ªå·\tè¡¨ç¤ºå\tãƒ•ã‚©ãƒ«ãƒ€");
                 }
             }
 
@@ -560,13 +570,13 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹ˆê——‚ğCSVƒtƒ@ƒCƒ‹‚É‘‚«o‚µ
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ê——ï¿½ï¿½CSVï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
         /// </summary>
-        /// <param name="fileItems">ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <param name="outputPath">o—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="includeHeaders">ƒwƒbƒ_[‚ğŠÜ‚ß‚é‚©‚Ç‚¤‚©</param>
-        /// <param name="includeDetails">Ú×î•ñ‚ğŠÜ‚ß‚é‚©‚Ç‚¤‚©</param>
-        /// <param name="selectedOnly">‘I‘ğ‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ì‚İ‚ğo—Í‚·‚é‚©‚Ç‚¤‚©</param>
+        /// <param name="fileItems">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="outputPath">ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="includeHeaders">ï¿½wï¿½bï¿½_ï¿½[ï¿½ï¿½ï¿½Ü‚ß‚é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <param name="includeDetails">ï¿½Ú×ï¿½ï¿½ï¿½ï¿½Ü‚ß‚é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <param name="selectedOnly">ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‚İ‚ï¿½ï¿½oï¿½Í‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
         public static void ExportFileListToCsv(List<FileItem> fileItems, string outputPath, bool includeHeaders = true, bool includeDetails = true, bool selectedOnly = false)
         {
             var exportItems = selectedOnly ? fileItems.Where(f => f.IsSelected).ToList() : fileItems;
@@ -576,11 +586,11 @@ namespace Nico2PDF.Services
             {
                 if (includeDetails)
                 {
-                    sb.AppendLine("”Ô†,•\¦–¼,ƒtƒ@ƒCƒ‹–¼,Šg’£q,ÅIXV“ú,PDFƒXƒe[ƒ^ƒX,‘ÎÛƒy[ƒW,ƒtƒHƒ‹ƒ_,ƒtƒ@ƒCƒ‹ƒpƒX");
+                    sb.AppendLine("ç•ªå·,è¡¨ç¤ºå,ãƒ•ã‚¡ã‚¤ãƒ«å,æ‹¡å¼µå­,æœ€çµ‚æ›´æ–°æ—¥æ™‚,PDFã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹,å¯¾è±¡ãƒšãƒ¼ã‚¸,ãƒ•ã‚©ãƒ«ãƒ€,ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹");
                 }
                 else
                 {
-                    sb.AppendLine("”Ô†,•\¦–¼,ƒtƒHƒ‹ƒ_");
+                    sb.AppendLine("ç•ªå·,è¡¨ç¤ºå,ãƒ•ã‚©ãƒ«ãƒ€");
                 }
             }
 
@@ -600,12 +610,12 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹ˆê——‚ğƒNƒŠƒbƒvƒ{[ƒh‚ÉƒRƒs[
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ê——ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½bï¿½vï¿½{ï¿½[ï¿½hï¿½ÉƒRï¿½sï¿½[
         /// </summary>
-        /// <param name="fileItems">ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <param name="includeHeaders">ƒwƒbƒ_[‚ğŠÜ‚ß‚é‚©‚Ç‚¤‚©</param>
-        /// <param name="includeDetails">Ú×î•ñ‚ğŠÜ‚ß‚é‚©‚Ç‚¤‚©</param>
-        /// <param name="selectedOnly">‘I‘ğ‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ì‚İ‚ğo—Í‚·‚é‚©‚Ç‚¤‚©</param>
+        /// <param name="fileItems">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="includeHeaders">ï¿½wï¿½bï¿½_ï¿½[ï¿½ï¿½ï¿½Ü‚ß‚é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <param name="includeDetails">ï¿½Ú×ï¿½ï¿½ï¿½ï¿½Ü‚ß‚é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <param name="selectedOnly">ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‚İ‚ï¿½ï¿½oï¿½Í‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
         public static void CopyFileListToClipboard(List<FileItem> fileItems, bool includeHeaders = true, bool includeDetails = true, bool selectedOnly = false)
         {
             var exportItems = selectedOnly ? fileItems.Where(f => f.IsSelected).ToList() : fileItems;
@@ -615,11 +625,11 @@ namespace Nico2PDF.Services
             {
                 if (includeDetails)
                 {
-                    sb.AppendLine("”Ô†\t•\¦–¼\tƒtƒ@ƒCƒ‹–¼\tŠg’£q\tÅIXV“ú\tPDFƒXƒe[ƒ^ƒX\t‘ÎÛƒy[ƒW\tƒtƒHƒ‹ƒ_\tƒtƒ@ƒCƒ‹ƒpƒX");
+                    sb.AppendLine("ç•ªå·\tè¡¨ç¤ºå\tãƒ•ã‚¡ã‚¤ãƒ«å\tæ‹¡å¼µå­\tæœ€çµ‚æ›´æ–°æ—¥æ™‚\tPDFã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹\tå¯¾è±¡ãƒšãƒ¼ã‚¸\tãƒ•ã‚©ãƒ«ãƒ€\tãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹");
                 }
                 else
                 {
-                    sb.AppendLine("”Ô†\t•\¦–¼\tƒtƒHƒ‹ƒ_");
+                    sb.AppendLine("ç•ªå·\tè¡¨ç¤ºå\tãƒ•ã‚©ãƒ«ãƒ€");
                 }
             }
 
@@ -639,10 +649,10 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹–¼‚Ì‚İ‚ğƒNƒŠƒbƒvƒ{[ƒh‚ÉƒRƒs[i‰üs‹æØ‚èj
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ì‚İ‚ï¿½ï¿½Nï¿½ï¿½ï¿½bï¿½vï¿½{ï¿½[ï¿½hï¿½ÉƒRï¿½sï¿½[ï¿½iï¿½ï¿½ï¿½sï¿½ï¿½Ø‚ï¿½j
         /// </summary>
-        /// <param name="fileItems">ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <param name="selectedOnly">‘I‘ğ‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ì‚İ‚ğo—Í‚·‚é‚©‚Ç‚¤‚©</param>
+        /// <param name="fileItems">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="selectedOnly">ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ì‚İ‚ï¿½ï¿½oï¿½Í‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
         public static void CopyFileNamesToClipboard(List<FileItem> fileItems, bool selectedOnly = false)
         {
             var exportItems = selectedOnly ? fileItems.Where(f => f.IsSelected).ToList() : fileItems;
@@ -657,16 +667,16 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// CSVƒtƒB[ƒ‹ƒh‚ğƒGƒXƒP[ƒv
+        /// CSVï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Gï¿½Xï¿½Pï¿½[ï¿½v
         /// </summary>
-        /// <param name="field">ƒtƒB[ƒ‹ƒh’l</param>
-        /// <returns>ƒGƒXƒP[ƒv‚³‚ê‚½ƒtƒB[ƒ‹ƒh’l</returns>
+        /// <param name="field">ï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½l</param>
+        /// <returns>ï¿½Gï¿½Xï¿½Pï¿½[ï¿½vï¿½ï¿½ï¿½ê‚½ï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½l</returns>
         private static string EscapeCsvField(string field)
         {
             if (string.IsNullOrEmpty(field))
                 return "";
             
-            // ƒ_ƒuƒ‹ƒNƒH[ƒg‚ğƒGƒXƒP[ƒv
+            // ï¿½_ï¿½uï¿½ï¿½ï¿½Nï¿½Hï¿½[ï¿½gï¿½ï¿½ï¿½Gï¿½Xï¿½Pï¿½[ï¿½v
             return field.Replace("\"", "\"\"");
         }
     }

@@ -1405,7 +1405,8 @@ namespace Nico2PDF
                 string pdfPath;
                 if (file.Extension.ToLower() == "pdf")
                 {
-                    pdfPath = file.FilePath;
+                    // PDFファイルの場合も、PDFフォルダ内のファイルを使用
+                    pdfPath = GetPdfPath(file.FilePath, pdfOutputFolder, baseFolderPath, includeSubfolders);
                 }
                 else
                 {
