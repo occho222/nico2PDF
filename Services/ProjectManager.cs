@@ -9,7 +9,7 @@ using Nico2PDF.Models;
 namespace Nico2PDF.Services
 {
     /// <summary>
-    /// ƒvƒƒWƒFƒNƒgŠÇ—ƒT[ƒrƒX
+    /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Ç—ï¿½ï¿½Tï¿½[ï¿½rï¿½X
     /// </summary>
     public class ProjectManager
     {
@@ -19,9 +19,9 @@ namespace Nico2PDF.Services
         );
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒg‚ğ“Ç‚İ‚İ
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
         /// </summary>
-        /// <returns>ƒvƒƒWƒFƒNƒgƒŠƒXƒg</returns>
+        /// <returns>ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½Xï¿½g</returns>
         public static List<ProjectData> LoadProjects()
         {
             try
@@ -30,21 +30,32 @@ namespace Nico2PDF.Services
                 {
                     var json = File.ReadAllText(ProjectsFilePath);
                     var projects = JsonSerializer.Deserialize<List<ProjectData>>(json) ?? new List<ProjectData>();
+                    
+                    // æ—¢å­˜ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã® SubfolderDepth ãƒã‚¤ã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³
+                    foreach (var project in projects)
+                    {
+                        // SubfolderDepthãŒ0ã®å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤(1)ã‚’è¨­å®š
+                        if (project.SubfolderDepth == 0)
+                        {
+                            project.SubfolderDepth = 1;
+                        }
+                    }
+                    
                     return projects;
                 }
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"ƒvƒƒWƒFƒNƒg‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½: {ex.Message}", "ƒGƒ‰[",
+                System.Windows.MessageBox.Show($"ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Ì“Ç‚İï¿½ï¿½İ‚Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: {ex.Message}", "ï¿½Gï¿½ï¿½ï¿½[",
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             }
             return new List<ProjectData>();
         }
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒg‚ğ•Û‘¶
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½Û‘ï¿½
         /// </summary>
-        /// <param name="projects">ƒvƒƒWƒFƒNƒgƒŠƒXƒg</param>
+        /// <param name="projects">ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½Xï¿½g</param>
         public static void SaveProjects(List<ProjectData> projects)
         {
             try
@@ -61,28 +72,28 @@ namespace Nico2PDF.Services
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"ƒvƒƒWƒFƒNƒg‚Ì•Û‘¶‚É¸”s‚µ‚Ü‚µ‚½: {ex.Message}", "ƒGƒ‰[",
+                System.Windows.MessageBox.Show($"ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Ì•Û‘ï¿½ï¿½Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: {ex.Message}", "ï¿½Gï¿½ï¿½ï¿½[",
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             }
         }
 
         /// <summary>
-        /// ƒJƒeƒSƒŠ•Ê‚ÌƒvƒƒWƒFƒNƒg•\¦‡˜‚ğæ“¾
+        /// ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½Ê‚Ìƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
         /// </summary>
-        /// <param name="projects">ƒvƒƒWƒFƒNƒgƒŠƒXƒg</param>
-        /// <returns>ƒJƒeƒSƒŠ•Ê‚É®—‚³‚ê‚½ƒvƒƒWƒFƒNƒgƒŠƒXƒg</returns>
+        /// <param name="projects">ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <returns>ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½Ê‚Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½Xï¿½g</returns>
         public static List<ProjectData> GetProjectsByCategoryOrder(List<ProjectData> projects)
         {
             var result = new List<ProjectData>();
             
-            // ƒJƒeƒSƒŠ‚ÅƒOƒ‹[ƒv‰»
-            var groupedProjects = projects.GroupBy(p => string.IsNullOrEmpty(p.Category) ? "–¢•ª—Ş" : p.Category)
-                                          .OrderBy(g => g.Key == "–¢•ª—Ş" ? "z" : g.Key) // –¢•ª—Ş‚ğÅŒã‚É
+            // ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½ÅƒOï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½
+            var groupedProjects = projects.GroupBy(p => string.IsNullOrEmpty(p.Category) ? "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" : p.Category)
+                                          .OrderBy(g => g.Key == "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" ? "z" : g.Key) // ï¿½ï¿½ï¿½ï¿½ï¿½Ş‚ï¿½ï¿½ÅŒï¿½ï¿½
                                           .ToList();
 
             foreach (var group in groupedProjects)
             {
-                // ƒJƒeƒSƒŠ“à‚ÅƒvƒƒWƒFƒNƒg–¼‡‚É•À‚Ñ‘Ö‚¦
+                // ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½Åƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½É•ï¿½ï¿½Ñ‘Ö‚ï¿½
                 var categoryProjects = group.OrderBy(p => p.Name).ToList();
                 result.AddRange(categoryProjects);
             }
@@ -91,10 +102,10 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// —˜—p‰Â”\‚ÈƒJƒeƒSƒŠˆê——‚ğæ“¾
+        /// ï¿½ï¿½ï¿½pï¿½Â”\ï¿½ÈƒJï¿½eï¿½Sï¿½ï¿½ï¿½ê——ï¿½ï¿½ï¿½æ“¾
         /// </summary>
-        /// <param name="projects">ƒvƒƒWƒFƒNƒgƒŠƒXƒg</param>
-        /// <returns>ƒJƒeƒSƒŠˆê——</returns>
+        /// <param name="projects">ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <returns>ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½ê——</returns>
         public static List<string> GetAvailableCategories(List<ProjectData> projects)
         {
             var categories = projects.Where(p => !string.IsNullOrEmpty(p.Category))
@@ -107,10 +118,10 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒg‚ğw’èƒJƒeƒSƒŠ‚ÉˆÚ“®
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½wï¿½ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½ÉˆÚ“ï¿½
         /// </summary>
-        /// <param name="project">ˆÚ“®‘ÎÛƒvƒƒWƒFƒNƒg</param>
-        /// <param name="newCategory">V‚µ‚¢ƒJƒeƒSƒŠ</param>
+        /// <param name="project">ï¿½Ú“ï¿½ï¿½ÎÛƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½g</param>
+        /// <param name="newCategory">ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½eï¿½Sï¿½ï¿½</param>
         public static void MoveProjectToCategory(ProjectData project, string newCategory)
         {
             project.Category = newCategory ?? "";

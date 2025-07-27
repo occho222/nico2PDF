@@ -20,16 +20,16 @@ namespace Nico2PDF.Services
         /// <param name="pdfOutputFolder">PDF�o�̓t�H���_</param>
         /// <param name="includeSubfolders">�T�u�t�H���_���܂ނ��ǂ���</param>
         /// <returns>�t�@�C���A�C�e�����X�g</returns>
-        public static List<FileItem> LoadFilesFromFolder(string folderPath, string pdfOutputFolder, bool includeSubfolders = false)
+        public static List<FileItem> LoadFilesFromFolder(string folderPath, string pdfOutputFolder, bool includeSubfolders = false, int subfolderDepth = 2)
         {
             var fileItems = new List<FileItem>();
             var extensions = new[] { "*.xls", "*.xlsx", "*.xlsm", "*.doc", "*.docx", "*.ppt", "*.pptx", "*.pdf" };
 
-            var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-
             foreach (var ext in extensions)
             {
-                var files = Directory.GetFiles(folderPath, ext, searchOption);
+                var files = includeSubfolders 
+                    ? GetFilesWithDepthLimit(folderPath, ext, subfolderDepth)
+                    : Directory.GetFiles(folderPath, ext, SearchOption.TopDirectoryOnly);
                 foreach (var file in files)
                 {
                     var fileInfo = new FileInfo(file);
@@ -79,7 +79,7 @@ namespace Nico2PDF.Services
         /// <param name="includeSubfolders">�T�u�t�H���_���܂ނ��ǂ���</param>
         /// <returns>�X�V���ꂽ�t�@�C���A�C�e�����X�g</returns>
         public static (List<FileItem> UpdatedItems, List<string> ChangedFiles, List<string> AddedFiles, List<string> DeletedFiles) 
-            UpdateFiles(string folderPath, string pdfOutputFolder, List<FileItem> currentFileItems, bool includeSubfolders = false)
+            UpdateFiles(string folderPath, string pdfOutputFolder, List<FileItem> currentFileItems, bool includeSubfolders = false, int subfolderDepth = 1)
         {
             var previousFiles = currentFileItems.ToDictionary(f => f.FilePath, f => f);
             var newFileItems = new List<FileItem>();
@@ -87,12 +87,12 @@ namespace Nico2PDF.Services
             var addedFiles = new List<string>();
             var extensions = new[] { "*.xls", "*.xlsx", "*.xlsm", "*.doc", "*.docx", "*.ppt", "*.pptx", "*.pdf" };
 
-            var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-
             // ���݂̃t�@�C���V�X�e������t�@�C����ǂݍ���
             foreach (var ext in extensions)
             {
-                var files = Directory.GetFiles(folderPath, ext, searchOption);
+                var files = includeSubfolders ? 
+                    GetFilesWithDepthLimit(folderPath, ext, subfolderDepth) :
+                    Directory.GetFiles(folderPath, ext, SearchOption.TopDirectoryOnly);
                 foreach (var file in files)
                 {
                     var fileInfo = new FileInfo(file);
@@ -212,33 +212,35 @@ namespace Nico2PDF.Services
 
             foreach (var previousFile in previousFiles.Values)
             {
-                // �t�@�C�������O�ύX����Ă��Ȃ����`�F�b�N
-                var directory = Path.GetDirectoryName(previousFile.FilePath);
-                var matchingNewFile = newFileItems.FirstOrDefault(item => 
-                    Path.GetDirectoryName(item.FilePath) == directory &&
-                    (item.OriginalFileName == previousFile.OriginalFileName ||
-                     Path.GetFileNameWithoutExtension(previousFile.OriginalFileName) == Path.GetFileNameWithoutExtension(previousFile.OriginalFileName)));
+                // 対応する新しいファイルが存在するかチェック（単純なFilePath比較）
+                var matchingNewFile = newFileItems.FirstOrDefault(item => item.FilePath == previousFile.FilePath);
 
                 if (matchingNewFile == null)
                 {
-                    // �^�ɍ폜���ꂽ�t�@�C��
+                    // ファイルが削除された（または名前変更された）
                     deletedFiles.Add(previousFile.FileName);
+                    System.Diagnostics.Debug.WriteLine($"削除されたファイル検出: {previousFile.FilePath}");
 
-                    // �Ή�����PDF�t�@�C�����폜
+                    // 対応するPDFファイルを削除
                     if (previousFile.Extension.ToUpper() != "PDF")
                     {
                         var pdfPath = GetPdfPath(previousFile.FilePath, pdfOutputFolder, folderPath, includeSubfolders);
+                        System.Diagnostics.Debug.WriteLine($"PDF削除試行: {pdfPath}");
                         if (File.Exists(pdfPath))
                         {
                             try
                             {
                                 File.Delete(pdfPath);
-                                System.Diagnostics.Debug.WriteLine($"�폜���ꂽ�t�@�C����PDF���폜: {pdfPath}");
+                                System.Diagnostics.Debug.WriteLine($"削除されたファイルのPDF削除成功: {pdfPath}");
                             }
                             catch (Exception ex)
                             {
-                                System.Diagnostics.Debug.WriteLine($"PDF�t�@�C���폜�G���[: {ex.Message}");
+                                System.Diagnostics.Debug.WriteLine($"PDFファイル削除エラー: {ex.Message}");
                             }
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"PDFファイルが存在しません: {pdfPath}");
                         }
                     }
                 }
@@ -445,7 +447,7 @@ namespace Nico2PDF.Services
         /// <param name="baseFolderPath">��t�H���_�p�X</param>
         /// <param name="includeSubfolders">�T�u�t�H���_���܂ނ��ǂ���</param>
         /// <returns>PDF�t�@�C���̃p�X</returns>
-        private static string GetPdfPath(string originalFilePath, string pdfOutputFolder, string baseFolderPath, bool includeSubfolders)
+        public static string GetPdfPath(string originalFilePath, string pdfOutputFolder, string baseFolderPath, bool includeSubfolders)
         {
             var fileInfo = new FileInfo(originalFilePath);
             var fileName = Path.GetFileNameWithoutExtension(fileInfo.Name) + ".pdf";
@@ -678,6 +680,55 @@ namespace Nico2PDF.Services
             
             // �_�u���N�H�[�g���G�X�P�[�v
             return field.Replace("\"", "\"\"");
+        }
+
+        /// <summary>
+        /// 指定された階層数の制限でファイルを取得
+        /// </summary>
+        /// <param name="rootPath">ルートパス</param>
+        /// <param name="searchPattern">検索パターン</param>
+        /// <param name="maxDepth">最大階層数</param>
+        /// <returns>ファイルパスのリスト</returns>
+        private static string[] GetFilesWithDepthLimit(string rootPath, string searchPattern, int maxDepth)
+        {
+            var files = new List<string>();
+            GetFilesRecursive(rootPath, searchPattern, maxDepth, 0, files);
+            return files.ToArray();
+        }
+
+        /// <summary>
+        /// 再帰的にファイルを取得（階層制限付き）
+        /// </summary>
+        /// <param name="currentPath">現在のパス</param>
+        /// <param name="searchPattern">検索パターン</param>
+        /// <param name="maxDepth">最大階層数</param>
+        /// <param name="currentDepth">現在の階層数</param>
+        /// <param name="files">ファイルリスト</param>
+        private static void GetFilesRecursive(string currentPath, string searchPattern, int maxDepth, int currentDepth, List<string> files)
+        {
+            try
+            {
+                // 現在の階層のファイルを追加
+                files.AddRange(Directory.GetFiles(currentPath, searchPattern));
+
+                // 最大階層に達していない場合、サブディレクトリを探索
+                if (currentDepth < maxDepth)
+                {
+                    var directories = Directory.GetDirectories(currentPath);
+                    foreach (var directory in directories)
+                    {
+                        GetFilesRecursive(directory, searchPattern, maxDepth, currentDepth + 1, files);
+                    }
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // アクセス権限がないディレクトリはスキップ
+            }
+            catch (DirectoryNotFoundException)
+            {
+                // 存在しないディレクトリはスキップ
+            }
         }
     }
 }

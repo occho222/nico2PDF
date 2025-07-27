@@ -8,23 +8,24 @@ using System.Text.Json.Serialization;
 namespace Nico2PDF.Models
 {
     /// <summary>
-    /// ƒvƒƒWƒFƒNƒgƒf[ƒ^ƒ‚ƒfƒ‹
+    /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½fï¿½ï¿½
     /// </summary>
     public class ProjectData : INotifyPropertyChanged
     {
         private string _name = "";
         private bool _isActive = false;
         private bool _includeSubfolders = false;
+        private int _subfolderDepth = 1;
         private bool _useCustomPdfPath = false;
         private string _customPdfPath = "";
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒgID
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gID
         /// </summary>
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒg–¼
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½
         /// </summary>
         public string Name
         {
@@ -37,12 +38,12 @@ namespace Nico2PDF.Models
         }
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒg‚ÌŠK‘wƒŒƒxƒ‹
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ÌŠKï¿½wï¿½ï¿½ï¿½xï¿½ï¿½
         /// </summary>
         public int Level { get; set; } = 0;
 
         /// <summary>
-        /// ƒAƒNƒeƒBƒuó‘Ô
+        /// ï¿½Aï¿½Nï¿½eï¿½Bï¿½uï¿½ï¿½ï¿½
         /// </summary>
         public bool IsActive
         {
@@ -55,12 +56,12 @@ namespace Nico2PDF.Models
         }
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒgƒtƒHƒ‹ƒ_‚ÌƒpƒX
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ìƒpï¿½X
         /// </summary>
         public string FolderPath { get; set; } = "";
 
         /// <summary>
-        /// ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ş‚©‚Ç‚¤‚©
+        /// ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½
         /// </summary>
         public bool IncludeSubfolders
         {
@@ -73,7 +74,21 @@ namespace Nico2PDF.Models
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒX‚ğg—p‚·‚é‚©‚Ç‚¤‚©
+        /// ã‚µãƒ–ãƒ•ã‚©ãƒ«ãƒ€ã®èª­ã¿è¾¼ã¿éšå±¤æ•°ï¼ˆ1-5ã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ1ï¼‰
+        /// </summary>
+        public int SubfolderDepth
+        {
+            get => _subfolderDepth;
+            set
+            {
+                // 1-5ã®ç¯„å›²ã§ã‚¯ãƒ©ãƒ³ãƒ—
+                _subfolderDepth = Math.Max(1, Math.Min(5, value));
+                OnPropertyChanged(nameof(SubfolderDepth));
+            }
+        }
+
+        /// <summary>
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½
         /// </summary>
         public bool UseCustomPdfPath
         {
@@ -86,7 +101,7 @@ namespace Nico2PDF.Models
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒX
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½X
         /// </summary>
         public string CustomPdfPath
         {
@@ -99,7 +114,7 @@ namespace Nico2PDF.Models
         }
 
         /// <summary>
-        /// PDFo—ÍƒtƒHƒ‹ƒ_‚ÌƒpƒX
+        /// PDFï¿½oï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_ï¿½Ìƒpï¿½X
         /// </summary>
         public string PdfOutputFolder 
         { 
@@ -107,23 +122,23 @@ namespace Nico2PDF.Models
             {
                 if (UseCustomPdfPath && !string.IsNullOrEmpty(CustomPdfPath))
                 {
-                    // ƒJƒXƒ^ƒ€ƒpƒX‚ğg—p‚·‚éê‡APDFƒtƒHƒ‹ƒ_‚ğì¬
+                    // ï¿½Jï¿½Xï¿½^ï¿½ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ê‡ï¿½APDFï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ì¬
                     return Path.Combine(CustomPdfPath, "PDF");
                 }
                 return Path.Combine(FolderPath, "PDF");
             }
             set
             {
-                // Œã•ûŒİŠ·«‚Ì‚½‚ßAsetter ‚Í•Û
+                // ï¿½ï¿½ï¿½ï¿½İŠï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ßAsetter ï¿½Í•Ûï¿½
                 if (!UseCustomPdfPath)
                 {
-                    // ]—ˆ’Ê‚è‚Ì“®ì
+                    // ï¿½]ï¿½ï¿½ï¿½Ê‚ï¿½Ì“ï¿½ï¿½ï¿½
                 }
             }
         }
 
         /// <summary>
-        /// Œ‹‡PDF•Û‘¶ƒtƒHƒ‹ƒ_‚ÌƒpƒX
+        /// ï¿½ï¿½ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ìƒpï¿½X
         /// </summary>
         [JsonIgnore]
         public string MergePdfFolder
@@ -132,110 +147,110 @@ namespace Nico2PDF.Models
             {
                 if (UseCustomPdfPath && !string.IsNullOrEmpty(CustomPdfPath))
                 {
-                    // ƒJƒXƒ^ƒ€ƒpƒX‚ğg—p‚·‚éê‡AƒJƒXƒ^ƒ€ƒpƒX‰º‚ÉmergePDFƒtƒHƒ‹ƒ_‚ğì¬
+                    // ï¿½Jï¿½Xï¿½^ï¿½ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ê‡ï¿½Aï¿½Jï¿½Xï¿½^ï¿½ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½ï¿½mergePDFï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ì¬
                     return Path.Combine(CustomPdfPath, "mergePDF");
                 }
-                // ’Êí‚ÍƒvƒƒWƒFƒNƒgƒtƒHƒ‹ƒ_‰º‚ÉmergePDFƒtƒHƒ‹ƒ_‚ğì¬
+                // ï¿½Êï¿½Íƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½mergePDFï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ì¬
                 return Path.Combine(FolderPath, "mergePDF");
             }
         }
 
         /// <summary>
-        /// Œ‹‡PDFƒtƒ@ƒCƒ‹–¼
+        /// ï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½
         /// </summary>
-        public string MergeFileName { get; set; } = "Œ‹‡PDF";
+        public string MergeFileName { get; set; } = "çµåˆPDF";
 
         /// <summary>
-        /// ƒy[ƒW”Ô†’Ç‰Áƒtƒ‰ƒO
+        /// ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O
         /// </summary>
         public bool AddPageNumber { get; set; } = false;
 
         /// <summary>
-        /// ‚µ‚¨‚è’Ç‰Áƒtƒ‰ƒO
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O
         /// </summary>
         public bool AddBookmarks { get; set; } = true;
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_•ÊƒOƒ‹[ƒv‰»ƒtƒ‰ƒO
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ÊƒOï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
         /// </summary>
         public bool GroupByFolder { get; set; } = false;
 
         /// <summary>
-        /// ƒwƒbƒ_Eƒtƒbƒ^’Ç‰Áƒtƒ‰ƒO
+        /// ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O
         /// </summary>
         public bool AddHeaderFooter { get; set; } = false;
 
         /// <summary>
-        /// ƒwƒbƒ_Eƒtƒbƒ^ƒeƒLƒXƒg
+        /// ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½eï¿½Lï¿½Xï¿½g
         /// </summary>
         public string HeaderFooterText { get; set; } = "";
 
         /// <summary>
-        /// ƒwƒbƒ_Eƒtƒbƒ^ƒtƒHƒ“ƒgƒTƒCƒY
+        /// ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Tï¿½Cï¿½Y
         /// </summary>
         public float HeaderFooterFontSize { get; set; } = 10.0f;
 
         /// <summary>
-        /// ÅV‚ÌŒ‹‡PDFƒtƒ@ƒCƒ‹ƒpƒX
+        /// ï¿½ÅVï¿½ÌŒï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X
         /// </summary>
         public string LatestMergedPdfPath { get; set; } = "";
 
         /// <summary>
-        /// ì¬“ú
+        /// ï¿½ì¬ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         /// <summary>
-        /// ÅIƒAƒNƒZƒX“ú
+        /// ï¿½ÅIï¿½Aï¿½Nï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public DateTime LastAccessDate { get; set; } = DateTime.Now;
 
         /// <summary>
-        /// ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg
+        /// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g
         /// </summary>
         public List<FileItemData> FileItems { get; set; } = new List<FileItemData>();
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒgƒJƒeƒSƒŠiƒtƒHƒ‹ƒ_•ª‚¯—pj
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½iï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½j
         /// </summary>
         public string Category { get; set; } = "";
 
         /// <summary>
-        /// ƒJƒeƒSƒŠ‚Ìà–¾
+        /// ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
         /// </summary>
         public string CategoryDescription { get; set; } = "";
 
         /// <summary>
-        /// ƒJƒeƒSƒŠ‚ÌFi•\¦—pj
+        /// ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½ÌFï¿½iï¿½\ï¿½ï¿½ï¿½pï¿½j
         /// </summary>
         public string CategoryColor { get; set; } = "#E9ECEF";
 
         /// <summary>
-        /// ƒJƒeƒSƒŠƒAƒCƒRƒ“i•\¦—pj
+        /// ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½Aï¿½Cï¿½Rï¿½ï¿½ï¿½iï¿½\ï¿½ï¿½ï¿½pï¿½j
         /// </summary>
         public string CategoryIcon { get; set; } = "??";
 
         /// <summary>
-        /// •\¦–¼iJSON”ñ‘ÎÛj
+        /// ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½iJSONï¿½ï¿½ÎÛj
         /// </summary>
         [JsonIgnore]
         public string DisplayName => string.IsNullOrEmpty(Category) ? Name : $"{Name}";
 
         /// <summary>
-        /// ƒJƒeƒSƒŠ•t‚«•\¦–¼iJSON”ñ‘ÎÛj
+        /// ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½tï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½iJSONï¿½ï¿½ÎÛj
         /// </summary>
         [JsonIgnore]
         public string CategoryDisplayName => string.IsNullOrEmpty(Category) ? $"?? {Name}" : $"{CategoryIcon} {Name}";
 
         /// <summary>
-        /// ƒvƒƒpƒeƒB•ÏXƒCƒxƒ“ƒg
+        /// ï¿½vï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ÏXï¿½Cï¿½xï¿½ï¿½ï¿½g
         /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
-        /// ƒvƒƒpƒeƒB•ÏX’Ê’m
+        /// ï¿½vï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ÏXï¿½Ê’m
         /// </summary>
-        /// <param name="propertyName">ƒvƒƒpƒeƒB–¼</param>
+        /// <param name="propertyName">ï¿½vï¿½ï¿½ï¿½pï¿½eï¿½Bï¿½ï¿½</param>
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

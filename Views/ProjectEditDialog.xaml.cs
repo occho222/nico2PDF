@@ -15,48 +15,49 @@ using DragDropEffects = System.Windows.DragDropEffects;
 namespace Nico2PDF.Views
 {
     /// <summary>
-    /// ƒvƒƒWƒFƒNƒg•ÒWƒ_ƒCƒAƒƒO
+    /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ÒWï¿½_ï¿½Cï¿½Aï¿½ï¿½ï¿½O
     /// </summary>
     public partial class ProjectEditDialog : Window
     {
-        #region ƒvƒƒpƒeƒB
+        #region ï¿½vï¿½ï¿½ï¿½pï¿½eï¿½B
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒg–¼
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½
         /// </summary>
         public string ProjectName { get; set; } = "";
 
         /// <summary>
-        /// ƒvƒƒWƒFƒNƒgƒJƒeƒSƒŠ
+        /// ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Jï¿½eï¿½Sï¿½ï¿½
         /// </summary>
         public string Category { get; set; } = "";
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒX
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½X
         /// </summary>
         public string FolderPath { get; set; } = "";
 
         /// <summary>
-        /// ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ş‚©‚Ç‚¤‚©
+        /// ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ş‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½
         /// </summary>
         public bool IncludeSubfolders { get; set; } = false;
+        public int SubfolderDepth { get; set; } = 1;
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒX‚ğg—p‚·‚é‚©‚Ç‚¤‚©
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½
         /// </summary>
         public bool UseCustomPdfPath { get; set; } = false;
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒX
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½X
         /// </summary>
         public string CustomPdfPath { get; set; } = "";
 
         /// <summary>
-        /// —˜—p‰Â”\‚ÈƒJƒeƒSƒŠƒŠƒXƒg
+        /// ï¿½ï¿½ï¿½pï¿½Â”\ï¿½ÈƒJï¿½eï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g
         /// </summary>
         private List<string> availableCategories = new List<string>();
         #endregion
 
-        #region ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+        #region ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
         public ProjectEditDialog()
         {
             InitializeComponent();
@@ -64,17 +65,36 @@ namespace Nico2PDF.Views
         }
         #endregion
 
-        #region ‰Šú‰»
+        #region ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// <summary>
-        /// —˜—p‰Â”\‚ÈƒJƒeƒSƒŠ‚ğ“Ç‚İ‚İ
+        /// æŒ‡å®šã•ã‚ŒãŸãƒ‘ã‚¹ãŒãƒ™ãƒ¼ã‚¹ãƒ‘ã‚¹ã®ã‚µãƒ–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã©ã†ã‹ã‚’åˆ¤å®š
+        /// </summary>
+        /// <param name="basePath">ãƒ™ãƒ¼ã‚¹ãƒ‘ã‚¹</param>
+        /// <param name="targetPath">åˆ¤å®šå¯¾è±¡ãƒ‘ã‚¹</param>
+        /// <returns>ã‚µãƒ–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å ´åˆã¯true</returns>
+        private bool IsSubdirectory(string basePath, string targetPath)
+        {
+            try
+            {
+                var baseUri = new Uri(Path.GetFullPath(basePath).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar);
+                var targetUri = new Uri(Path.GetFullPath(targetPath).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar);
+                return baseUri.IsBaseOf(targetUri);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// ï¿½ï¿½ï¿½pï¿½Â”\ï¿½ÈƒJï¿½eï¿½Sï¿½ï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
         /// </summary>
         private void LoadAvailableCategories()
         {
             var allProjects = ProjectManager.LoadProjects();
             availableCategories = ProjectManager.GetAvailableCategories(allProjects);
             
-            // ‚æ‚­g‚í‚ê‚éƒJƒeƒSƒŠ‚ğ’Ç‰Á
-            var defaultCategories = new List<string> { "‹Æ–±", "ŒÂl", "ŠJ”­", "‘—¿", "ƒA[ƒJƒCƒu" };
+            // ï¿½æ‚­ï¿½gï¿½ï¿½ï¿½ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½ï¿½Ç‰ï¿½
+            var defaultCategories = new List<string> { "ï¿½Æ–ï¿½", "ï¿½Âl", "ï¿½Jï¿½ï¿½", "ï¿½ï¿½ï¿½ï¿½", "ï¿½Aï¿½[ï¿½Jï¿½Cï¿½u" };
             foreach (var category in defaultCategories)
             {
                 if (!availableCategories.Contains(category))
@@ -87,9 +107,9 @@ namespace Nico2PDF.Views
         }
         #endregion
 
-        #region ƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰
+        #region ï¿½Cï¿½xï¿½ï¿½ï¿½gï¿½nï¿½ï¿½ï¿½hï¿½ï¿½
         /// <summary>
-        /// ƒEƒBƒ“ƒhƒE“Ç‚İ‚İ
+        /// ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ç‚İï¿½ï¿½İï¿½
         /// </summary>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -97,18 +117,19 @@ namespace Nico2PDF.Views
             txtFolderPath.Text = FolderPath;
             cmbCategory.Text = Category;
             chkIncludeSubfolders.IsChecked = IncludeSubfolders;
+            txtSubfolderDepth.Text = SubfolderDepth.ToString();
             chkUseCustomPdfPath.IsChecked = UseCustomPdfPath;
             txtCustomPdfPath.Text = CustomPdfPath;
 
-            // ƒJƒXƒ^ƒ€PDFƒpƒX‚Ì—LŒø/–³Œø‚ğİ’è
+            // ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½pï¿½Xï¿½Ì—Lï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
             UpdateCustomPdfPathEnabled();
             
-            // ƒqƒ“ƒgƒeƒLƒXƒg‚Ì•\¦§Œä
+            // ï¿½qï¿½ï¿½ï¿½gï¿½eï¿½Lï¿½Xï¿½gï¿½Ì•\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             UpdateDropHints();
         }
 
         /// <summary>
-        /// ƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒqƒ“ƒg‚Ì•\¦‚ğXV
+        /// ï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½qï¿½ï¿½ï¿½gï¿½Ì•\ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
         /// </summary>
         private void UpdateDropHints()
         {
@@ -124,13 +145,13 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_‘I‘ğƒ{ƒ^ƒ“ƒNƒŠƒbƒN
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Iï¿½ï¿½ï¿½{ï¿½^ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½
         /// </summary>
         private void BtnSelectFolder_Click(object sender, RoutedEventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
             {
-                dialog.Description = "ƒvƒƒWƒFƒNƒgƒtƒHƒ‹ƒ_‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢";
+                dialog.Description = "ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
                 if (!string.IsNullOrEmpty(txtFolderPath.Text))
                 {
                     dialog.SelectedPath = txtFolderPath.Text;
@@ -140,29 +161,29 @@ namespace Nico2PDF.Views
                 {
                     txtFolderPath.Text = dialog.SelectedPath;
                     
-                    // ƒvƒƒWƒFƒNƒg–¼‚ª‹ó‚Ìê‡‚ÍƒtƒHƒ‹ƒ_–¼‚ğİ’è
+                    // ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìê‡ï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½İ’ï¿½
                     if (string.IsNullOrEmpty(txtProjectName.Text))
                     {
                         txtProjectName.Text = Path.GetFileName(dialog.SelectedPath);
                     }
                     
-                    // ƒqƒ“ƒg•\¦‚ğXV
+                    // ï¿½qï¿½ï¿½ï¿½gï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒX‘I‘ğƒ{ƒ^ƒ“ƒNƒŠƒbƒN
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½Iï¿½ï¿½ï¿½{ï¿½^ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½
         /// </summary>
         private void BtnSelectCustomPdfPath_Click(object sender, RoutedEventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
             {
-                dialog.Description = "PDF•Û‘¶ƒtƒHƒ‹ƒ_‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢iƒtƒHƒ‹ƒ_ƒpƒX‚Ì‚İ‚ªİ’è‚³‚ê‚Ü‚·j";
+                dialog.Description = "PDFï¿½Û‘ï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½Ì‚İ‚ï¿½ï¿½İ’è‚³ï¿½ï¿½Ü‚ï¿½ï¿½j";
                 if (!string.IsNullOrEmpty(txtCustomPdfPath.Text))
                 {
-                    // Šù‘¶‚ÌƒpƒX‚ªƒtƒ@ƒCƒ‹–¼‚ğŠÜ‚Şê‡‚ÍAƒfƒBƒŒƒNƒgƒŠƒpƒX‚Ì‚İ‚ğæ“¾
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒpï¿½Xï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Şê‡ï¿½ÍAï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½pï¿½Xï¿½Ì‚İ‚ï¿½ï¿½æ“¾
                     var existingPath = txtCustomPdfPath.Text;
                     if (File.Exists(existingPath))
                     {
@@ -174,7 +195,7 @@ namespace Nico2PDF.Views
                     }
                     else
                     {
-                        // ƒpƒX‚ÌeƒfƒBƒŒƒNƒgƒŠ‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN
+                        // ï¿½pï¿½Xï¿½Ìeï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½é‚©ï¿½`ï¿½Fï¿½bï¿½N
                         var parentDir = Path.GetDirectoryName(existingPath);
                         if (!string.IsNullOrEmpty(parentDir) && Directory.Exists(parentDir))
                         {
@@ -185,36 +206,46 @@ namespace Nico2PDF.Views
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    // ƒtƒHƒ‹ƒ_ƒpƒX‚Ì‚İ‚ğİ’èiƒtƒ@ƒCƒ‹–¼‚ÍŠÜ‚ß‚È‚¢j
+                    // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½Ì‚İ‚ï¿½İ’ï¿½iï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ÍŠÜ‚ß‚È‚ï¿½ï¿½j
+                    // ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ã®é¸æŠã‚’ç¦æ­¢
+                    if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
+                        IsSubdirectory(txtFolderPath.Text, dialog.SelectedPath))
+                    {
+                        MessageBox.Show("PDFä¿å­˜ãƒ‘ã‚¹ã¯ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ä»¥å¤–ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚\n" +
+                                      "é…ä¸‹ã‚’é¸æŠã™ã‚‹ã¨PDFãƒ•ã‚¡ã‚¤ãƒ«ãŒå¯¾è±¡ã«å«ã¾ã‚Œã¦ã—ã¾ã„ã¾ã™ã€‚", "ã‚¨ãƒ©ãƒ¼", 
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
                     txtCustomPdfPath.Text = dialog.SelectedPath;
                     
-                    // ƒqƒ“ƒg•\¦‚ğXV
+                    // ï¿½qï¿½ï¿½ï¿½gï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// ƒTƒuƒtƒHƒ‹ƒ_“Ç‚İ‚İƒ`ƒFƒbƒN
+        /// ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ç‚İï¿½ï¿½İƒ`ï¿½Fï¿½bï¿½Nï¿½ï¿½
         /// </summary>
         private void ChkIncludeSubfolders_Checked(object sender, RoutedEventArgs e)
         {
-            // ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Şê‡AƒJƒXƒ^ƒ€PDFƒpƒX‚ğ•K{‚É‚·‚é
+            // ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Şê‡ï¿½Aï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½pï¿½Xï¿½ï¿½Kï¿½{ï¿½É‚ï¿½ï¿½ï¿½
             chkUseCustomPdfPath.IsChecked = true;
             UpdateCustomPdfPathEnabled();
         }
 
         /// <summary>
-        /// ƒTƒuƒtƒHƒ‹ƒ_“Ç‚İ‚İƒ`ƒFƒbƒN‰ğœ
+        /// ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ç‚İï¿½ï¿½İƒ`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         private void ChkIncludeSubfolders_Unchecked(object sender, RoutedEventArgs e)
         {
-            // ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Ü‚È‚¢ê‡‚Í”CˆÓ
+            // ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Ü‚È‚ï¿½ï¿½ê‡ï¿½Í”Cï¿½ï¿½
             UpdateCustomPdfPathEnabled();
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒXg—pƒ`ƒFƒbƒN
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½gï¿½pï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½
         /// </summary>
         private void ChkUseCustomPdfPath_Checked(object sender, RoutedEventArgs e)
         {
@@ -222,7 +253,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒXg—pƒ`ƒFƒbƒN‰ğœ
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½gï¿½pï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         private void ChkUseCustomPdfPath_Unchecked(object sender, RoutedEventArgs e)
         {
@@ -230,56 +261,56 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒX“ü—Í—“‚Ì—LŒø/–³Œø‚ğXV
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½Í—ï¿½ï¿½Ì—Lï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
         /// </summary>
         private void UpdateCustomPdfPathEnabled()
         {
             var includeSubfolders = chkIncludeSubfolders.IsChecked == true;
             var useCustomPdfPath = chkUseCustomPdfPath.IsChecked == true;
             
-            // ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Şê‡‚ÍAƒJƒXƒ^ƒ€PDFƒpƒX‚ğ‹­§“I‚É—LŒø‚É‚·‚é
+            // ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Şê‡ï¿½ÍAï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½pï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½É—Lï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
             if (includeSubfolders)
             {
                 chkUseCustomPdfPath.IsChecked = true;
-                chkUseCustomPdfPath.IsEnabled = false; // ƒ`ƒFƒbƒNƒ{ƒbƒNƒX‚ğ–³Œø‰»i•K{j
+                chkUseCustomPdfPath.IsEnabled = false; // ï¿½`ï¿½Fï¿½bï¿½Nï¿½{ï¿½bï¿½Nï¿½Xï¿½ğ–³Œï¿½ï¿½ï¿½ï¿½iï¿½Kï¿½{ï¿½j
                 gridCustomPdfPath.IsEnabled = true;
             }
             else
             {
-                chkUseCustomPdfPath.IsEnabled = true; // ƒ`ƒFƒbƒNƒ{ƒbƒNƒX‚ğ—LŒø‰»i”CˆÓj
+                chkUseCustomPdfPath.IsEnabled = true; // ï¿½`ï¿½Fï¿½bï¿½Nï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½iï¿½Cï¿½Ój
                 gridCustomPdfPath.IsEnabled = useCustomPdfPath;
             }
         }
 
         /// <summary>
-        /// OKƒ{ƒ^ƒ“ƒNƒŠƒbƒN
+        /// OKï¿½{ï¿½^ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½
         /// </summary>
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtProjectName.Text))
             {
-                MessageBox.Show("ƒvƒƒWƒFƒNƒg–¼‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B", "ƒGƒ‰[", 
+                MessageBox.Show("ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B", "ï¿½Gï¿½ï¿½ï¿½[", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtFolderPath.Text))
             {
-                MessageBox.Show("ƒtƒHƒ‹ƒ_‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B", "ƒGƒ‰[", 
+                MessageBox.Show("ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B", "ï¿½Gï¿½ï¿½ï¿½[", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!Directory.Exists(txtFolderPath.Text))
             {
-                MessageBox.Show("‘I‘ğ‚³‚ê‚½ƒtƒHƒ‹ƒ_‚ª‘¶İ‚µ‚Ü‚¹‚ñB", "ƒGƒ‰[", 
+                MessageBox.Show("ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B", "ï¿½Gï¿½ï¿½ï¿½[", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (chkIncludeSubfolders.IsChecked == true && chkUseCustomPdfPath.IsChecked != true)
             {
-                MessageBox.Show("ƒTƒuƒtƒHƒ‹ƒ_‚ğŠÜ‚Şİ’è‚Ìê‡AƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒX‚Ìİ’è‚ª•K{‚Å‚·B", "ƒGƒ‰[", 
+                MessageBox.Show("ï¿½Tï¿½uï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Ü‚Şİ’ï¿½Ìê‡ï¿½Aï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½Ìİ’è‚ªï¿½Kï¿½{ï¿½Å‚ï¿½ï¿½B", "ï¿½Gï¿½ï¿½ï¿½[", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -288,14 +319,24 @@ namespace Nico2PDF.Views
             {
                 if (string.IsNullOrWhiteSpace(txtCustomPdfPath.Text))
                 {
-                    MessageBox.Show("ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒX‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B", "ƒGƒ‰[", 
+                    MessageBox.Show("ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B", "ï¿½Gï¿½ï¿½ï¿½[", 
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ã®é¸æŠã‚’ç¦æ­¢
+                if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
+                    IsSubdirectory(txtFolderPath.Text, txtCustomPdfPath.Text))
+                {
+                    MessageBox.Show("PDFä¿å­˜ãƒ‘ã‚¹ã¯ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ä»¥å¤–ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚\n" +
+                                  "é…ä¸‹ã‚’é¸æŠã™ã‚‹ã¨PDFãƒ•ã‚¡ã‚¤ãƒ«ãŒå¯¾è±¡ã«å«ã¾ã‚Œã¦ã—ã¾ã„ã¾ã™ã€‚", "ã‚¨ãƒ©ãƒ¼", 
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (!Directory.Exists(txtCustomPdfPath.Text))
                 {
-                    var result = MessageBox.Show("w’è‚³‚ê‚½PDF•Û‘¶ƒtƒHƒ‹ƒ_‚ª‘¶İ‚µ‚Ü‚¹‚ñBì¬‚µ‚Ü‚·‚©H", "Šm”F", 
+                    var result = MessageBox.Show("ï¿½wï¿½è‚³ï¿½ê‚½PDFï¿½Û‘ï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½Bï¿½ì¬ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½H", "ï¿½mï¿½F", 
                         MessageBoxButton.YesNo, MessageBoxImage.Question);
                     
                     if (result == MessageBoxResult.Yes)
@@ -306,7 +347,7 @@ namespace Nico2PDF.Views
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show($"ƒtƒHƒ‹ƒ_‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½: {ex.Message}", "ƒGƒ‰[", 
+                            MessageBox.Show($"ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ìì¬ï¿½Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: {ex.Message}", "ï¿½Gï¿½ï¿½ï¿½[", 
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                             return;
                         }
@@ -322,6 +363,17 @@ namespace Nico2PDF.Views
             FolderPath = txtFolderPath.Text.Trim();
             Category = cmbCategory.Text?.Trim() ?? "";
             IncludeSubfolders = chkIncludeSubfolders.IsChecked == true;
+            
+            // éšå±¤æ•°ã®å–å¾—ã¨æ¤œè¨¼
+            if (int.TryParse(txtSubfolderDepth.Text, out int depth))
+            {
+                SubfolderDepth = Math.Max(1, Math.Min(5, depth));
+            }
+            else
+            {
+                SubfolderDepth = 1; // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+            }
+            
             UseCustomPdfPath = chkUseCustomPdfPath.IsChecked == true;
             CustomPdfPath = txtCustomPdfPath.Text.Trim();
             
@@ -330,7 +382,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒLƒƒƒ“ƒZƒ‹ƒ{ƒ^ƒ“ƒNƒŠƒbƒN
+        /// ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½{ï¿½^ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½
         /// </summary>
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
@@ -339,16 +391,16 @@ namespace Nico2PDF.Views
         }
         #endregion
 
-        #region ƒhƒ‰ƒbƒO&ƒhƒƒbƒvˆ—
+        #region ï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½ï¿½ï¿½ï¿½
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒX—pƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒGƒŠƒA‚ÌDragEnter
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½pï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½Gï¿½ï¿½ï¿½Aï¿½ï¿½DragEnter
         /// </summary>
         private void FolderDropArea_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                // ƒhƒ‰ƒbƒOƒI[ƒo[‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN
+                // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½N
                 if (sender is Border border)
                 {
                     border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LightBlue);
@@ -362,7 +414,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒX—pƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒGƒŠƒA‚ÌDragOver
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½pï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½Gï¿½ï¿½ï¿½Aï¿½ï¿½DragOver
         /// </summary>
         private void FolderDropArea_DragOver(object sender, DragEventArgs e)
         {
@@ -377,11 +429,11 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒX—pƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒGƒŠƒA‚ÌDragLeave
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½pï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½Gï¿½ï¿½ï¿½Aï¿½ï¿½DragLeave
         /// </summary>
         private void FolderDropArea_DragLeave(object sender, DragEventArgs e)
         {
-            // ƒhƒ‰ƒbƒOƒŠ[ƒu‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN‚ğŒ³‚É–ß‚·
+            // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½ï¿½ï¿½[ï¿½uï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             if (sender is Border border)
             {
                 border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
@@ -390,11 +442,11 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒX—pƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒGƒŠƒA‚ÌDrop
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½pï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½Gï¿½ï¿½ï¿½Aï¿½ï¿½Drop
         /// </summary>
         private void FolderDropArea_Drop(object sender, DragEventArgs e)
         {
-            // ƒhƒ‰ƒbƒOƒI[ƒo[‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN‚ğŒ³‚É–ß‚·
+            // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             if (sender is Border border)
             {
                 border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
@@ -408,12 +460,12 @@ namespace Nico2PDF.Views
                 {
                     string droppedPath = files[0];
                     
-                    // ƒtƒHƒ‹ƒ_‚©ƒtƒ@ƒCƒ‹‚©‚ğ”»’è
+                    // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ğ”»’ï¿½
                     if (Directory.Exists(droppedPath))
                     {
                         txtFolderPath.Text = droppedPath;
                         
-                        // ƒvƒƒWƒFƒNƒg–¼‚ª‹ó‚Ìê‡‚ÍƒtƒHƒ‹ƒ_–¼‚ğİ’è
+                        // ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìê‡ï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½İ’ï¿½
                         if (string.IsNullOrEmpty(txtProjectName.Text))
                         {
                             txtProjectName.Text = Path.GetFileName(droppedPath);
@@ -421,13 +473,13 @@ namespace Nico2PDF.Views
                     }
                     else if (File.Exists(droppedPath))
                     {
-                        // ƒtƒ@ƒCƒ‹‚Ìê‡‚ÍeƒtƒHƒ‹ƒ_‚ğg—p
+                        // ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡ï¿½Íeï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½gï¿½p
                         string parentFolder = Path.GetDirectoryName(droppedPath);
                         if (!string.IsNullOrEmpty(parentFolder))
                         {
                             txtFolderPath.Text = parentFolder;
                             
-                            // ƒvƒƒWƒFƒNƒg–¼‚ª‹ó‚Ìê‡‚ÍƒtƒHƒ‹ƒ_–¼‚ğİ’è
+                            // ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìê‡ï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½İ’ï¿½
                             if (string.IsNullOrEmpty(txtProjectName.Text))
                             {
                                 txtProjectName.Text = Path.GetFileName(parentFolder);
@@ -435,21 +487,21 @@ namespace Nico2PDF.Views
                         }
                     }
                     
-                    // ƒqƒ“ƒg•\¦‚ğXV
+                    // ï¿½qï¿½ï¿½ï¿½gï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// PDF•Û‘¶ƒpƒX—pƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒGƒŠƒA‚ÌDragEnter
+        /// PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½pï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½Gï¿½ï¿½ï¿½Aï¿½ï¿½DragEnter
         /// </summary>
         private void PdfDropArea_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                // ƒhƒ‰ƒbƒOƒI[ƒo[‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN
+                // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½N
                 if (sender is Border border)
                 {
                     border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LightBlue);
@@ -463,7 +515,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// PDF•Û‘¶ƒpƒX—pƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒGƒŠƒA‚ÌDragOver
+        /// PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½pï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½Gï¿½ï¿½ï¿½Aï¿½ï¿½DragOver
         /// </summary>
         private void PdfDropArea_DragOver(object sender, DragEventArgs e)
         {
@@ -478,11 +530,11 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// PDF•Û‘¶ƒpƒX—pƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒGƒŠƒA‚ÌDragLeave
+        /// PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½pï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½Gï¿½ï¿½ï¿½Aï¿½ï¿½DragLeave
         /// </summary>
         private void PdfDropArea_DragLeave(object sender, DragEventArgs e)
         {
-            // ƒhƒ‰ƒbƒOƒŠ[ƒu‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN‚ğŒ³‚É–ß‚·
+            // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½ï¿½ï¿½[ï¿½uï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             if (sender is Border border)
             {
                 border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
@@ -491,11 +543,11 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// PDF•Û‘¶ƒpƒX—pƒhƒ‰ƒbƒO&ƒhƒƒbƒvƒGƒŠƒA‚ÌDrop
+        /// PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½pï¿½hï¿½ï¿½ï¿½bï¿½O&ï¿½hï¿½ï¿½ï¿½bï¿½vï¿½Gï¿½ï¿½ï¿½Aï¿½ï¿½Drop
         /// </summary>
         private void PdfDropArea_Drop(object sender, DragEventArgs e)
         {
-            // ƒhƒ‰ƒbƒOƒI[ƒo[‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN‚ğŒ³‚É–ß‚·
+            // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             if (sender is Border border)
             {
                 border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
@@ -509,37 +561,57 @@ namespace Nico2PDF.Views
                 {
                     string droppedPath = files[0];
                     
-                    // ƒtƒHƒ‹ƒ_‚©ƒtƒ@ƒCƒ‹‚©‚ğ”»’è
+                    // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ğ”»’ï¿½
                     if (Directory.Exists(droppedPath))
                     {
-                        // ƒtƒHƒ‹ƒ_ƒpƒX‚Ì‚İ‚ğİ’èiƒtƒ@ƒCƒ‹–¼‚ÍŠÜ‚ß‚È‚¢j
+                        // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½Ì‚İ‚ï¿½İ’ï¿½iï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ÍŠÜ‚ß‚È‚ï¿½ï¿½j
+                        // ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ã®é¸æŠã‚’ç¦æ­¢
+                        if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
+                            IsSubdirectory(txtFolderPath.Text, droppedPath))
+                        {
+                            MessageBox.Show("PDFä¿å­˜ãƒ‘ã‚¹ã¯ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ä»¥å¤–ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚\n" +
+                                          "é…ä¸‹ã‚’é¸æŠã™ã‚‹ã¨PDFãƒ•ã‚¡ã‚¤ãƒ«ãŒå¯¾è±¡ã«å«ã¾ã‚Œã¦ã—ã¾ã„ã¾ã™ã€‚", "ã‚¨ãƒ©ãƒ¼", 
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        
                         txtCustomPdfPath.Text = droppedPath;
                     }
                     else if (File.Exists(droppedPath))
                     {
-                        // ƒtƒ@ƒCƒ‹‚Ìê‡‚ÍeƒtƒHƒ‹ƒ_‚ğg—p
+                        // ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡ï¿½Íeï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½gï¿½p
                         string parentFolder = Path.GetDirectoryName(droppedPath);
                         if (!string.IsNullOrEmpty(parentFolder))
                         {
+                            // ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ã®é¸æŠã‚’ç¦æ­¢
+                            if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
+                                IsSubdirectory(txtFolderPath.Text, parentFolder))
+                            {
+                                MessageBox.Show("PDFä¿å­˜ãƒ‘ã‚¹ã¯ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ä»¥å¤–ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚\n" +
+                                              "é…ä¸‹ã‚’é¸æŠã™ã‚‹ã¨PDFãƒ•ã‚¡ã‚¤ãƒ«ãŒå¯¾è±¡ã«å«ã¾ã‚Œã¦ã—ã¾ã„ã¾ã™ã€‚", "ã‚¨ãƒ©ãƒ¼", 
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            
                             txtCustomPdfPath.Text = parentFolder;
                         }
                     }
                     
-                    // ƒqƒ“ƒg•\¦‚ğXV
+                    // ï¿½qï¿½ï¿½ï¿½gï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒXƒeƒLƒXƒgƒ{ƒbƒNƒX‚Ìƒhƒ‰ƒbƒOƒGƒ“ƒ^[i‹Œ”Å‚ÌŒİŠ·«ˆÛj
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½eï¿½Lï¿½Xï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½Ìƒhï¿½ï¿½ï¿½bï¿½Oï¿½Gï¿½ï¿½ï¿½^ï¿½[ï¿½iï¿½ï¿½ï¿½Å‚ÌŒİŠï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½j
         /// </summary>
         private void TxtFolderPath_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                // ƒhƒ‰ƒbƒOƒI[ƒo[‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN
+                // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½N
                 txtFolderPath.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LightBlue);
             }
             else
@@ -549,7 +621,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒXƒeƒLƒXƒgƒ{ƒbƒNƒX‚Ìƒhƒ‰ƒbƒOƒI[ƒo[i‹Œ”Å‚ÌŒİŠ·«ˆÛj
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½eï¿½Lï¿½Xï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½Ìƒhï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½iï¿½ï¿½ï¿½Å‚ÌŒİŠï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½j
         /// </summary>
         private void TxtFolderPath_DragOver(object sender, DragEventArgs e)
         {
@@ -564,20 +636,20 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒXƒeƒLƒXƒgƒ{ƒbƒNƒX‚Ìƒhƒ‰ƒbƒOƒŠ[ƒui‹Œ”Å‚ÌŒİŠ·«ˆÛj
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½eï¿½Lï¿½Xï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½Ìƒhï¿½ï¿½ï¿½bï¿½Oï¿½ï¿½ï¿½[ï¿½uï¿½iï¿½ï¿½ï¿½Å‚ÌŒİŠï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½j
         /// </summary>
         private void TxtFolderPath_DragLeave(object sender, DragEventArgs e)
         {
-            // ƒhƒ‰ƒbƒOƒŠ[ƒu‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN‚ğŒ³‚É–ß‚·
+            // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½ï¿½ï¿½[ï¿½uï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             txtFolderPath.Background = System.Windows.Media.Brushes.White;
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_ƒpƒXƒeƒLƒXƒgƒ{ƒbƒNƒX‚Ìƒhƒƒbƒvi‹Œ”Å‚ÌŒİŠ·«ˆÛj
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½eï¿½Lï¿½Xï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½Ìƒhï¿½ï¿½ï¿½bï¿½vï¿½iï¿½ï¿½ï¿½Å‚ÌŒİŠï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½j
         /// </summary>
         private void TxtFolderPath_Drop(object sender, DragEventArgs e)
         {
-            // ƒhƒ‰ƒbƒOƒI[ƒo[‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN‚ğŒ³‚É–ß‚·
+            // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             txtFolderPath.Background = System.Windows.Media.Brushes.White;
             
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -587,12 +659,12 @@ namespace Nico2PDF.Views
                 {
                     string droppedPath = files[0];
                     
-                    // ƒtƒHƒ‹ƒ_‚©ƒtƒ@ƒCƒ‹‚©‚ğ”»’è
+                    // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ğ”»’ï¿½
                     if (Directory.Exists(droppedPath))
                     {
                         txtFolderPath.Text = droppedPath;
                         
-                        // ƒvƒƒWƒFƒNƒg–¼‚ª‹ó‚Ìê‡‚ÍƒtƒHƒ‹ƒ_–¼‚ğİ’è
+                        // ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìê‡ï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½İ’ï¿½
                         if (string.IsNullOrEmpty(txtProjectName.Text))
                         {
                             txtProjectName.Text = Path.GetFileName(droppedPath);
@@ -600,13 +672,13 @@ namespace Nico2PDF.Views
                     }
                     else if (File.Exists(droppedPath))
                     {
-                        // ƒtƒ@ƒCƒ‹‚Ìê‡‚ÍeƒtƒHƒ‹ƒ_‚ğg—p
+                        // ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡ï¿½Íeï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½gï¿½p
                         string parentFolder = Path.GetDirectoryName(droppedPath);
                         if (!string.IsNullOrEmpty(parentFolder))
                         {
                             txtFolderPath.Text = parentFolder;
                             
-                            // ƒvƒƒWƒFƒNƒg–¼‚ª‹ó‚Ìê‡‚ÍƒtƒHƒ‹ƒ_–¼‚ğİ’è
+                            // ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìê‡ï¿½Íƒtï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½İ’ï¿½
                             if (string.IsNullOrEmpty(txtProjectName.Text))
                             {
                                 txtProjectName.Text = Path.GetFileName(parentFolder);
@@ -614,21 +686,21 @@ namespace Nico2PDF.Views
                         }
                     }
                     
-                    // ƒqƒ“ƒg•\¦‚ğXV
+                    // ï¿½qï¿½ï¿½ï¿½gï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒXƒeƒLƒXƒgƒ{ƒbƒNƒX‚Ìƒhƒ‰ƒbƒOƒGƒ“ƒ^[i‹Œ”Å‚ÌŒİŠ·«ˆÛj
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½eï¿½Lï¿½Xï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½Ìƒhï¿½ï¿½ï¿½bï¿½Oï¿½Gï¿½ï¿½ï¿½^ï¿½[ï¿½iï¿½ï¿½ï¿½Å‚ÌŒİŠï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½j
         /// </summary>
         private void TxtCustomPdfPath_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                // ƒhƒ‰ƒbƒOƒI[ƒo[‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN
+                // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½N
                 txtCustomPdfPath.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LightBlue);
             }
             else
@@ -638,7 +710,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒXƒeƒLƒXƒgƒ{ƒbƒNƒX‚Ìƒhƒ‰ƒbƒOƒI[ƒo[i‹Œ”Å‚ÌŒİŠ·«ˆÛj
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½eï¿½Lï¿½Xï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½Ìƒhï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½iï¿½ï¿½ï¿½Å‚ÌŒİŠï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½j
         /// </summary>
         private void TxtCustomPdfPath_DragOver(object sender, DragEventArgs e)
         {
@@ -653,20 +725,20 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒXƒeƒLƒXƒgƒ{ƒbƒNƒX‚Ìƒhƒ‰ƒbƒOƒŠ[ƒui‹Œ”Å‚ÌŒİŠ·«ˆÛj
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½eï¿½Lï¿½Xï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½Ìƒhï¿½ï¿½ï¿½bï¿½Oï¿½ï¿½ï¿½[ï¿½uï¿½iï¿½ï¿½ï¿½Å‚ÌŒİŠï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½j
         /// </summary>
         private void TxtCustomPdfPath_DragLeave(object sender, DragEventArgs e)
         {
-            // ƒhƒ‰ƒbƒOƒŠ[ƒu‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN‚ğŒ³‚É–ß‚·
+            // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½ï¿½ï¿½[ï¿½uï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             txtCustomPdfPath.Background = System.Windows.Media.Brushes.White;
         }
 
         /// <summary>
-        /// ƒJƒXƒ^ƒ€PDF•Û‘¶ƒpƒXƒeƒLƒXƒgƒ{ƒbƒNƒX‚Ìƒhƒƒbƒvi‹Œ”Å‚ÌŒİŠ·«ˆÛj
+        /// ï¿½Jï¿½Xï¿½^ï¿½ï¿½PDFï¿½Û‘ï¿½ï¿½pï¿½Xï¿½eï¿½Lï¿½Xï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½Ìƒhï¿½ï¿½ï¿½bï¿½vï¿½iï¿½ï¿½ï¿½Å‚ÌŒİŠï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½j
         /// </summary>
         private void TxtCustomPdfPath_Drop(object sender, DragEventArgs e)
         {
-            // ƒhƒ‰ƒbƒOƒI[ƒo[‚Ì‹Šo“IƒtƒB[ƒhƒoƒbƒN‚ğŒ³‚É–ß‚·
+            // ï¿½hï¿½ï¿½ï¿½bï¿½Oï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Ìï¿½ï¿½oï¿½Iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
             txtCustomPdfPath.Background = System.Windows.Media.Brushes.White;
             
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -676,27 +748,77 @@ namespace Nico2PDF.Views
                 {
                     string droppedPath = files[0];
                     
-                    // ƒtƒHƒ‹ƒ_‚©ƒtƒ@ƒCƒ‹‚©‚ğ”»’è
+                    // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ğ”»’ï¿½
                     if (Directory.Exists(droppedPath))
                     {
-                        // ƒtƒHƒ‹ƒ_ƒpƒX‚Ì‚İ‚ğİ’èiƒtƒ@ƒCƒ‹–¼‚ÍŠÜ‚ß‚È‚¢j
+                        // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½pï¿½Xï¿½Ì‚İ‚ï¿½İ’ï¿½iï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ÍŠÜ‚ß‚È‚ï¿½ï¿½j
+                        // ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ã®é¸æŠã‚’ç¦æ­¢
+                        if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
+                            IsSubdirectory(txtFolderPath.Text, droppedPath))
+                        {
+                            MessageBox.Show("PDFä¿å­˜ãƒ‘ã‚¹ã¯ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ä»¥å¤–ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚\n" +
+                                          "é…ä¸‹ã‚’é¸æŠã™ã‚‹ã¨PDFãƒ•ã‚¡ã‚¤ãƒ«ãŒå¯¾è±¡ã«å«ã¾ã‚Œã¦ã—ã¾ã„ã¾ã™ã€‚", "ã‚¨ãƒ©ãƒ¼", 
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        
                         txtCustomPdfPath.Text = droppedPath;
                     }
                     else if (File.Exists(droppedPath))
                     {
-                        // ƒtƒ@ƒCƒ‹‚Ìê‡‚ÍeƒtƒHƒ‹ƒ_‚ğg—p
+                        // ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìê‡ï¿½Íeï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½gï¿½p
                         string parentFolder = Path.GetDirectoryName(droppedPath);
                         if (!string.IsNullOrEmpty(parentFolder))
                         {
+                            // ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ã®é¸æŠã‚’ç¦æ­¢
+                            if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
+                                IsSubdirectory(txtFolderPath.Text, parentFolder))
+                            {
+                                MessageBox.Show("PDFä¿å­˜ãƒ‘ã‚¹ã¯ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚©ãƒ«ãƒ€é…ä¸‹ä»¥å¤–ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚\n" +
+                                              "é…ä¸‹ã‚’é¸æŠã™ã‚‹ã¨PDFãƒ•ã‚¡ã‚¤ãƒ«ãŒå¯¾è±¡ã«å«ã¾ã‚Œã¦ã—ã¾ã„ã¾ã™ã€‚", "ã‚¨ãƒ©ãƒ¼", 
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                            }
+                            
                             txtCustomPdfPath.Text = parentFolder;
                         }
                     }
                     
-                    // ƒqƒ“ƒg•\¦‚ğXV
+                    // ï¿½qï¿½ï¿½ï¿½gï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½V
                     UpdateDropHints();
                 }
             }
         }
+
+        /// <summary>
+        /// éšå±¤æ•°ãƒ†ã‚­ã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹ã®å…¥åŠ›åˆ¶é™ï¼ˆæ•°å­—ã®ã¿ã€1-5ï¼‰
+        /// </summary>
+        private void TxtSubfolderDepth_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            // æ•°å­—ã®ã¿è¨±å¯
+            if (!char.IsDigit(e.Text, 0))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var textBox = sender as System.Windows.Controls.TextBox;
+            var newText = textBox.Text + e.Text;
+            
+            // 1-5ã®ç¯„å›²ã®ã¿è¨±å¯
+            if (int.TryParse(newText, out int value))
+            {
+                if (value < 1 || value > 5)
+                {
+                    e.Handled = true;
+                }
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+
         #endregion
     }
 }

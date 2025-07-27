@@ -254,6 +254,7 @@ namespace Nico2PDF
                     FolderPath = dialog.FolderPath,
                     Category = dialog.Category,
                     IncludeSubfolders = dialog.IncludeSubfolders,
+                    SubfolderDepth = dialog.SubfolderDepth,
                     UseCustomPdfPath = dialog.UseCustomPdfPath,
                     CustomPdfPath = dialog.CustomPdfPath,
                     CategoryIcon = GetDefaultCategoryIcon(dialog.Category),
@@ -278,6 +279,7 @@ namespace Nico2PDF
                 dialog.FolderPath = selectedProject.FolderPath;
                 dialog.Category = selectedProject.Category;
                 dialog.IncludeSubfolders = selectedProject.IncludeSubfolders;
+                dialog.SubfolderDepth = selectedProject.SubfolderDepth;
                 dialog.UseCustomPdfPath = selectedProject.UseCustomPdfPath;
                 dialog.CustomPdfPath = selectedProject.CustomPdfPath;
 
@@ -287,6 +289,7 @@ namespace Nico2PDF
                     selectedProject.FolderPath = dialog.FolderPath;
                     selectedProject.Category = dialog.Category;
                     selectedProject.IncludeSubfolders = dialog.IncludeSubfolders;
+                    selectedProject.SubfolderDepth = dialog.SubfolderDepth;
                     selectedProject.UseCustomPdfPath = dialog.UseCustomPdfPath;
                     selectedProject.CustomPdfPath = dialog.CustomPdfPath;
                     
@@ -388,6 +391,7 @@ namespace Nico2PDF
                     FolderPath = dialog.FolderPath,
                     Category = dialog.Category,
                     IncludeSubfolders = dialog.IncludeSubfolders,
+                    SubfolderDepth = dialog.SubfolderDepth,
                     UseCustomPdfPath = dialog.UseCustomPdfPath,
                     CustomPdfPath = dialog.CustomPdfPath,
                     MergeFileName = txtMergeFileName.Text,
@@ -738,20 +742,29 @@ namespace Nico2PDF
             }
 
             var includeSubfolders = currentProject?.IncludeSubfolders ?? false;
-            var loadedFileItems = FileManagementService.LoadFilesFromFolder(selectedFolderPath, pdfOutputFolder, includeSubfolders);
+            var subfolderDepth = currentProject?.SubfolderDepth ?? 1;
+            
+            // 削除されたファイルの処理も含めてファイル更新
+            var (updatedItems, changedFiles, addedFiles, deletedFiles) = 
+                FileManagementService.UpdateFiles(selectedFolderPath, pdfOutputFolder, fileItems.ToList(), includeSubfolders, subfolderDepth);
             
             fileItems.Clear();
-            for (int i = 0; i < loadedFileItems.Count; i++)
+            for (int i = 0; i < updatedItems.Count; i++)
             {
-                loadedFileItems[i].Number = i + 1;
-                loadedFileItems[i].DisplayOrder = i;
-                fileItems.Add(loadedFileItems[i]);
+                updatedItems[i].Number = i + 1;
+                updatedItems[i].DisplayOrder = i;
+                fileItems.Add(updatedItems[i]);
             }
 
             // PDFステータスを更新（UIスレッドで実行）
             Dispatcher.BeginInvoke(() => RefreshAllPdfStatus());
 
+            // 削除されたファイルがある場合はメッセージを表示
             var statusMessage = $"{fileItems.Count}個のファイルを読み込みました";
+            if (deletedFiles.Count > 0)
+            {
+                statusMessage += $"（{deletedFiles.Count}個の不要なPDFファイルを削除しました）";
+            }
             if (includeSubfolders)
             {
                 statusMessage += " (サブフォルダを含む)";
@@ -769,8 +782,9 @@ namespace Nico2PDF
             }
 
             var includeSubfolders = currentProject?.IncludeSubfolders ?? false;
+            var subfolderDepth = currentProject?.SubfolderDepth ?? 1;
             var (updatedItems, changedFiles, addedFiles, deletedFiles) = 
-                FileManagementService.UpdateFiles(selectedFolderPath, pdfOutputFolder, fileItems.ToList(), includeSubfolders);
+                FileManagementService.UpdateFiles(selectedFolderPath, pdfOutputFolder, fileItems.ToList(), includeSubfolders, subfolderDepth);
 
             fileItems.Clear();
             foreach (var item in updatedItems)
@@ -822,7 +836,43 @@ namespace Nico2PDF
                 return;
             }
 
-            var loadedFileItems = FileManagementService.LoadFilesFromFolder(project.FolderPath, project.PdfOutputFolder, project.IncludeSubfolders);
+            // まず通常のLoadFilesFromFolderでファイルを読み込み
+            var loadedFileItems = FileManagementService.LoadFilesFromFolder(project.FolderPath, project.PdfOutputFolder, project.IncludeSubfolders, project.SubfolderDepth);
+            
+            // 削除されたファイルの処理（現在のUIにあるfileItemsコレクションと比較）
+            var deletedFiles = new List<string>();
+            var currentFilePaths = loadedFileItems.Select(f => f.FilePath).ToHashSet();
+            
+            foreach (var item in fileItems.ToList())
+            {
+                if (!currentFilePaths.Contains(item.FilePath))
+                {
+                    // 対応するPDFファイルを削除
+                    if (item.Extension.ToUpper() != "PDF")
+                    {
+                        var pdfPath = FileManagementService.GetPdfPath(item.FilePath, project.PdfOutputFolder, project.FolderPath, project.IncludeSubfolders);
+                        if (File.Exists(pdfPath))
+                        {
+                            try
+                            {
+                                File.Delete(pdfPath);
+                                deletedFiles.Add(item.FileName);
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"PDFファイル削除エラー: {ex.Message}");
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // 削除されたファイルがある場合はメッセージを表示
+            if (deletedFiles.Count > 0)
+            {
+                MessageBox.Show($"{deletedFiles.Count}個の不要なPDFファイルを削除しました。\n削除されたファイル: {string.Join(", ", deletedFiles)}", 
+                    "PDF削除完了", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
             
             // 保存された状態を復元
             foreach (var item in loadedFileItems)
