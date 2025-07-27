@@ -541,7 +541,7 @@ namespace Nico2PDF
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
                 var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.4.0";
-                Title = $"Nico2PDF {versionText} - {currentProject.Name}";
+                Title = $"nico²PDF {versionText} - {currentProject.Name}";
             }
             else
             {
@@ -551,7 +551,7 @@ namespace Nico2PDF
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
                 var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.4.0";
-                Title = $"Nico2PDF {versionText}";
+                Title = $"nico²PDF {versionText}";
             }
             
             // ヒントテキストの表示制御

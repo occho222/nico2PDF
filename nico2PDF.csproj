@@ -9,13 +9,14 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>PichonPDF_Cropped.ico</ApplicationIcon>
+    <AssemblyName>nico²PDF</AssemblyName>
     <Version>1.7.1</Version>
     <AssemblyVersion>1.7.1.0</AssemblyVersion>
     <FileVersion>1.7.1.0</FileVersion>
-    <Product>Nico2PDF</Product>
-    <Company>Nico2PDF</Company>
+    <Product>nico²PDF</Product>
+    <Company>nico²PDF</Company>
     <Copyright>Copyright © 2024</Copyright>
-    <Description>Office文書（Word、Excel、PowerPoint）をPDFに変換し、結合するWPFアプリケーション</Description>
+    <Description>Office文書（Word、Excel、PowerPoint）をPDFに変換し、結合するWPFアプリケーション nico²PDF</Description>
   </PropertyGroup>
 
   <ItemGroup>
