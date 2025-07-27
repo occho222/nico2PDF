@@ -73,13 +73,23 @@ namespace Nico2PDF
                                             .OrderBy(g => g.Key == "未分類" ? "z" : g.Key)
                                             .ToList();
 
+            // アクティブプロジェクトのカテゴリを取得
+            var activeProject = projectList.FirstOrDefault(p => p.IsActive);
+            var activeCategory = activeProject?.Category ?? "";
+            if (string.IsNullOrEmpty(activeCategory))
+            {
+                activeCategory = "未分類";
+            }
+
             foreach (var group in groupedProjects)
             {
                 var categoryGroup = new ProjectCategoryGroup
                 {
                     CategoryName = group.Key,
                     CategoryIcon = GetCategoryIcon(group.Key, group.First().CategoryIcon),
-                    CategoryColor = GetCategoryColor(group.Key, group.First().CategoryColor)
+                    CategoryColor = GetCategoryColor(group.Key, group.First().CategoryColor),
+                    // アクティブプロジェクトがあるカテゴリのみ展開、それ以外は閉じる
+                    IsExpanded = group.Key == activeCategory
                 };
 
                 // カテゴリ内でプロジェクト名順に並び替え
@@ -478,6 +488,7 @@ namespace Nico2PDF
             UpdateLatestMergedPdfDisplay();
             RestoreFileItems(project);
             UpdateProjectDisplay();
+            UpdateProjectTitle();
             SaveProjects();
         }
 
@@ -535,6 +546,18 @@ namespace Nico2PDF
             }
         }
 
+        private void UpdateProjectTitle()
+        {
+            if (currentProject != null)
+            {
+                txtCurrentProjectTitle.Text = $"- {currentProject.Name}";
+            }
+            else
+            {
+                txtCurrentProjectTitle.Text = "";
+            }
+        }
+
         private void UpdateProjectDisplay()
         {
             if (currentProject != null)
@@ -557,6 +580,9 @@ namespace Nico2PDF
                 var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.4.0";
                 Title = $"nico²PDF {versionText}";
             }
+            
+            // プロジェクトタイトルも更新
+            UpdateProjectTitle();
             
             // ヒントテキストの表示制御
             if (txtDropHint != null)
