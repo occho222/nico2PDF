@@ -1,0 +1,150 @@
+<Window x:Class="Nico2PDF.Views.CategoryManageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="カテゴリ管理" Height="650" Width="900"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+    
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ヘッダー -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="📂 カテゴリ管理" FontSize="18" FontWeight="Bold" Margin="0,0,0,5"/>
+                <TextBlock Text="プロジェクトのカテゴリを管理します。各カテゴリの名前、アイコン、色を設定できます。" 
+                           FontSize="12" Foreground="Gray"/>
+            </StackPanel>
+            
+            <Button Grid.Column="1" Content="🆕 新規カテゴリを追加" 
+                    Background="#28A745" Foreground="White" FontWeight="Bold"
+                    Width="150" Height="40" Click="BtnAddCategory_Click"/>
+        </Grid>
+
+        <!-- カテゴリ一覧 -->
+        <GroupBox Grid.Row="1" Header="カテゴリ一覧" Padding="10">
+            <DataGrid x:Name="dgCategories" AutoGenerateColumns="False" 
+                      CanUserAddRows="False" CanUserDeleteRows="False" 
+                      CanUserResizeRows="False" CanUserSortColumns="False"
+                      GridLinesVisibility="Horizontal" AlternationCount="2"
+                      RowHeight="45">
+                <DataGrid.Columns>
+                    <!-- アイコン -->
+                    <DataGridTextColumn Header="アイコン" Binding="{Binding Icon}" Width="70" 
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="18"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+                    <!-- カテゴリ名 -->
+                    <DataGridTextColumn Header="カテゴリ名" Binding="{Binding Name}" Width="200" 
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+                    <!-- 色プレビュー -->
+                    <DataGridTemplateColumn Header="色" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Background="{Binding ColorBrush}" 
+                                        Width="50" Height="25" CornerRadius="3"
+                                        BorderBrush="Gray" BorderThickness="1"
+                                        HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <!-- プロジェクト数 -->
+                    <DataGridTextColumn Header="プロジェクト数" Binding="{Binding ProjectCountText}" 
+                                        Width="100" IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+                    <!-- 操作ボタン -->
+                    <DataGridTemplateColumn Header="操作" Width="200">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Content="✏️ 編集" Width="60" Height="25" Margin="2"
+                                            Background="#FFC107" Foreground="Black" FontWeight="Bold"
+                                            Click="BtnEditCategory_Click" Tag="{Binding}"/>
+                                    <Button Content="🗑️ 削除" Width="60" Height="25" Margin="2"
+                                            Background="#DC3545" Foreground="White" FontWeight="Bold"
+                                            Click="BtnDeleteCategory_Click" Tag="{Binding}"
+                                            Visibility="{Binding DeleteButtonVisibility}"/>
+                                    <Button Content="🎨 色変更" Width="70" Height="25" Margin="2"
+                                            Background="#6F42C1" Foreground="White" FontWeight="Bold"
+                                            Click="BtnChangeColor_Click" Tag="{Binding}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <!-- 統計情報 -->
+        <Border Grid.Row="2" Background="#F8F9FA" Padding="15" Margin="0,10,0,10" CornerRadius="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock x:Name="txtTotalCategories" Text="0" FontSize="28" FontWeight="Bold" 
+                               HorizontalAlignment="Center" Foreground="#007ACC"/>
+                    <TextBlock Text="カテゴリ数" FontSize="14" HorizontalAlignment="Center" Foreground="Gray"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock x:Name="txtTotalProjects" Text="0" FontSize="28" FontWeight="Bold" 
+                               HorizontalAlignment="Center" Foreground="#28A745"/>
+                    <TextBlock Text="総プロジェクト数" FontSize="14" HorizontalAlignment="Center" Foreground="Gray"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock x:Name="txtUncategorizedProjects" Text="0" FontSize="28" FontWeight="Bold" 
+                               HorizontalAlignment="Center" Foreground="#FFC107"/>
+                    <TextBlock Text="未分類プロジェクト" FontSize="14" HorizontalAlignment="Center" Foreground="Gray"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ボタン -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="🔄 リセット" Width="100" Height="40" Margin="0,0,10,0" 
+                    Click="BtnReset_Click" Background="#6C757D" Foreground="White" FontWeight="Bold"/>
+            <Button Content="💾 保存して閉じる" Width="120" Height="40" Margin="0,0,10,0" 
+                    Click="BtnSave_Click" Background="#007ACC" Foreground="White" FontWeight="Bold"/>
+            <Button Content="❌ キャンセル" Width="100" Height="40" 
+                    Click="BtnClose_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

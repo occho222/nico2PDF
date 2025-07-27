@@ -663,22 +663,19 @@ namespace Nico2PDF
         private void BtnCategoryManage_Click(object sender, RoutedEventArgs e)
         {
             var allProjects = GetAllProjects();
-            var categories = ProjectManager.GetAvailableCategories(allProjects);
-            var categoryList = string.Join("\n", categories.Select((c, i) => $"{i + 1}. {c}"));
+            var dialog = new Views.CategoryManageDialog(allProjects);
             
-            var message = "現在のカテゴリ一覧:\n\n";
-            if (categories.Any())
+            if (dialog.ShowDialog() == true)
             {
-                message += categoryList;
+                // カテゴリ管理で変更があった場合、プロジェクト一覧を更新
+                RefreshProjectList();
+                
+                // 現在のプロジェクトがアクティブな場合、UIを更新
+                if (currentProject != null)
+                {
+                    UpdateProjectDisplay();
+                }
             }
-            else
-            {
-                message += "カテゴリはまだ設定されていません。";
-            }
-            
-            message += "\n\nプロジェクト編集画面でカテゴリを設定・変更できます。";
-            
-            MessageBox.Show(message, "カテゴリ管理", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>

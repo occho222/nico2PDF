@@ -15,49 +15,49 @@ using DragDropEffects = System.Windows.DragDropEffects;
 namespace Nico2PDF.Views
 {
     /// <summary>
-    /// �v���W�F�N�g�ҏW�_�C�A���O
+    /// プロジェクト編集ダイアログ
     /// </summary>
     public partial class ProjectEditDialog : Window
     {
-        #region �v���p�e�B
+        #region プロパティ
         /// <summary>
-        /// �v���W�F�N�g��
+        /// プロジェクト名
         /// </summary>
         public string ProjectName { get; set; } = "";
 
         /// <summary>
-        /// �v���W�F�N�g�J�e�S��
+        /// プロジェクトカテゴリ
         /// </summary>
         public string Category { get; set; } = "";
 
         /// <summary>
-        /// �t�H���_�p�X
+        /// フォルダパス
         /// </summary>
         public string FolderPath { get; set; } = "";
 
         /// <summary>
-        /// �T�u�t�H���_���܂ނ��ǂ���
+        /// サブフォルダを含むかどうか
         /// </summary>
         public bool IncludeSubfolders { get; set; } = false;
         public int SubfolderDepth { get; set; } = 1;
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X���g�p���邩�ǂ���
+        /// カスタムPDF保存パスを使用するかどうか
         /// </summary>
         public bool UseCustomPdfPath { get; set; } = false;
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X
+        /// カスタムPDF保存パス
         /// </summary>
         public string CustomPdfPath { get; set; } = "";
 
         /// <summary>
-        /// ���p�\�ȃJ�e�S�����X�g
+        /// 利用可能なカテゴリリスト
         /// </summary>
         private List<string> availableCategories = new List<string>();
         #endregion
 
-        #region �R���X�g���N�^
+        #region コンストラクタ
         public ProjectEditDialog()
         {
             InitializeComponent();
@@ -65,7 +65,7 @@ namespace Nico2PDF.Views
         }
         #endregion
 
-        #region ������
+        #region メソッド
         /// <summary>
         /// 指定されたパスがベースパスのサブディレクトリかどうかを判定
         /// </summary>
@@ -86,15 +86,15 @@ namespace Nico2PDF.Views
             }
         }
         /// <summary>
-        /// ���p�\�ȃJ�e�S����ǂݍ���
+        /// 利用可能なカテゴリを読み込み
         /// </summary>
         private void LoadAvailableCategories()
         {
             var allProjects = ProjectManager.LoadProjects();
             availableCategories = ProjectManager.GetAvailableCategories(allProjects);
             
-            // �悭�g����J�e�S����ǉ�
-            var defaultCategories = new List<string> { "�Ɩ�", "�l", "�J��", "����", "�A�[�J�C�u" };
+            // よく使うカテゴリを追加
+            var defaultCategories = new List<string> { "仕事", "個人", "開発", "資料", "アーカイブ" };
             foreach (var category in defaultCategories)
             {
                 if (!availableCategories.Contains(category))
@@ -107,9 +107,9 @@ namespace Nico2PDF.Views
         }
         #endregion
 
-        #region �C�x���g�n���h��
+        #region イベントハンドラ
         /// <summary>
-        /// �E�B���h�E�ǂݍ��ݎ�
+        /// ウィンドウ読み込み時
         /// </summary>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -121,15 +121,15 @@ namespace Nico2PDF.Views
             chkUseCustomPdfPath.IsChecked = UseCustomPdfPath;
             txtCustomPdfPath.Text = CustomPdfPath;
 
-            // �J�X�^��PDF�p�X�̗L��/������ݒ�
+            // カスタムPDFパスの有効/無効設定
             UpdateCustomPdfPathEnabled();
             
-            // �q���g�e�L�X�g�̕\������
+            // ヒントテキストの表示更新
             UpdateDropHints();
         }
 
         /// <summary>
-        /// �h���b�O&�h���b�v�q���g�̕\�����X�V
+        /// ドラッグ&ドロップヒントの表示更新
         /// </summary>
         private void UpdateDropHints()
         {
@@ -145,13 +145,13 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �t�H���_�I���{�^���N���b�N��
+        /// フォルダ選択ボタンクリック時
         /// </summary>
         private void BtnSelectFolder_Click(object sender, RoutedEventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
             {
-                dialog.Description = "�v���W�F�N�g�t�H���_��I�����Ă�������";
+                dialog.Description = "プロジェクトフォルダを選択してください";
                 if (!string.IsNullOrEmpty(txtFolderPath.Text))
                 {
                     dialog.SelectedPath = txtFolderPath.Text;
@@ -161,29 +161,29 @@ namespace Nico2PDF.Views
                 {
                     txtFolderPath.Text = dialog.SelectedPath;
                     
-                    // �v���W�F�N�g������̏ꍇ�̓t�H���_����ݒ�
+                    // プロジェクト名空の場合はフォルダ名設定
                     if (string.IsNullOrEmpty(txtProjectName.Text))
                     {
                         txtProjectName.Text = Path.GetFileName(dialog.SelectedPath);
                     }
                     
-                    // �q���g�\�����X�V
+                    // ヒント表示更新
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X�I���{�^���N���b�N��
+        /// カスタムPDF保存パス選択ボタンクリック時
         /// </summary>
         private void BtnSelectCustomPdfPath_Click(object sender, RoutedEventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
             {
-                dialog.Description = "PDF�ۑ��t�H���_��I�����Ă��������i�t�H���_�p�X�݂̂��ݒ肳��܂��j";
+                dialog.Description = "PDF保存フォルダを選択してください（フォルダパスのみ設定されます）";
                 if (!string.IsNullOrEmpty(txtCustomPdfPath.Text))
                 {
-                    // �����̃p�X���t�@�C�������܂ޏꍇ�́A�f�B���N�g���p�X�݂̂��擾
+                    // 既存のパスがファイル名を含む場合は、ディレクトリパスのみを取得
                     var existingPath = txtCustomPdfPath.Text;
                     if (File.Exists(existingPath))
                     {
@@ -195,7 +195,7 @@ namespace Nico2PDF.Views
                     }
                     else
                     {
-                        // �p�X�̐e�f�B���N�g�������݂��邩�`�F�b�N
+                        // パスの親ディレクトリが存在するかチェック
                         var parentDir = Path.GetDirectoryName(existingPath);
                         if (!string.IsNullOrEmpty(parentDir) && Directory.Exists(parentDir))
                         {
@@ -206,7 +206,7 @@ namespace Nico2PDF.Views
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    // �t�H���_�p�X�݂̂�ݒ�i�t�@�C�����͊܂߂Ȃ��j
+                    // フォルダパスのみ設定（ファイル名は含めない）
                     // プロジェクトフォルダ配下の選択を禁止
                     if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
                         IsSubdirectory(txtFolderPath.Text, dialog.SelectedPath))
@@ -219,33 +219,33 @@ namespace Nico2PDF.Views
                     
                     txtCustomPdfPath.Text = dialog.SelectedPath;
                     
-                    // �q���g�\�����X�V
+                    // ヒント表示更新
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// �T�u�t�H���_�ǂݍ��݃`�F�b�N��
+        /// サブフォルダ読み込みチェック時
         /// </summary>
         private void ChkIncludeSubfolders_Checked(object sender, RoutedEventArgs e)
         {
-            // �T�u�t�H���_���܂ޏꍇ�A�J�X�^��PDF�p�X��K�{�ɂ���
+            // サブフォルダを含む場合、カスタムPDFパス必須にする
             chkUseCustomPdfPath.IsChecked = true;
             UpdateCustomPdfPathEnabled();
         }
 
         /// <summary>
-        /// �T�u�t�H���_�ǂݍ��݃`�F�b�N������
+        /// サブフォルダ読み込みチェック解除時
         /// </summary>
         private void ChkIncludeSubfolders_Unchecked(object sender, RoutedEventArgs e)
         {
-            // �T�u�t�H���_���܂܂Ȃ��ꍇ�͔C��
+            // サブフォルダを含まない場合は任意
             UpdateCustomPdfPathEnabled();
         }
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X�g�p�`�F�b�N��
+        /// カスタムPDF保存パス使用チェック時
         /// </summary>
         private void ChkUseCustomPdfPath_Checked(object sender, RoutedEventArgs e)
         {
@@ -253,7 +253,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X�g�p�`�F�b�N������
+        /// カスタムPDF保存パス使用チェック解除時
         /// </summary>
         private void ChkUseCustomPdfPath_Unchecked(object sender, RoutedEventArgs e)
         {
@@ -261,56 +261,56 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X���͗��̗L��/�������X�V
+        /// カスタムPDF保存パス入力欄の有効/無効更新
         /// </summary>
         private void UpdateCustomPdfPathEnabled()
         {
             var includeSubfolders = chkIncludeSubfolders.IsChecked == true;
             var useCustomPdfPath = chkUseCustomPdfPath.IsChecked == true;
             
-            // �T�u�t�H���_���܂ޏꍇ�́A�J�X�^��PDF�p�X�������I�ɗL���ɂ���
+            // サブフォルダを含む場合は、カスタムPDFパスを強制的に有効にする
             if (includeSubfolders)
             {
                 chkUseCustomPdfPath.IsChecked = true;
-                chkUseCustomPdfPath.IsEnabled = false; // �`�F�b�N�{�b�N�X�𖳌����i�K�{�j
+                chkUseCustomPdfPath.IsEnabled = false; // チェックボックスを無効化（必須）
                 gridCustomPdfPath.IsEnabled = true;
             }
             else
             {
-                chkUseCustomPdfPath.IsEnabled = true; // �`�F�b�N�{�b�N�X��L�����i�C�Ӂj
+                chkUseCustomPdfPath.IsEnabled = true; // チェックボックスを有効化（任意）
                 gridCustomPdfPath.IsEnabled = useCustomPdfPath;
             }
         }
 
         /// <summary>
-        /// OK�{�^���N���b�N��
+        /// OKボタンクリック時
         /// </summary>
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtProjectName.Text))
             {
-                MessageBox.Show("�v���W�F�N�g������͂��Ă��������B", "�G���[", 
+                MessageBox.Show("プロジェクト名を入力してください。", "エラー", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtFolderPath.Text))
             {
-                MessageBox.Show("�t�H���_��I�����Ă��������B", "�G���[", 
+                MessageBox.Show("フォルダを選択してください。", "エラー", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!Directory.Exists(txtFolderPath.Text))
             {
-                MessageBox.Show("�I�����ꂽ�t�H���_�����݂��܂���B", "�G���[", 
+                MessageBox.Show("選択されたフォルダが存在しません。", "エラー", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (chkIncludeSubfolders.IsChecked == true && chkUseCustomPdfPath.IsChecked != true)
             {
-                MessageBox.Show("�T�u�t�H���_���܂ސݒ�̏ꍇ�A�J�X�^��PDF�ۑ��p�X�̐ݒ肪�K�{�ł��B", "�G���[", 
+                MessageBox.Show("サブフォルダを含む設定の場合、カスタムPDF保存パスの設定が必須です。", "エラー", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -319,7 +319,7 @@ namespace Nico2PDF.Views
             {
                 if (string.IsNullOrWhiteSpace(txtCustomPdfPath.Text))
                 {
-                    MessageBox.Show("�J�X�^��PDF�ۑ��p�X��I�����Ă��������B", "�G���[", 
+                    MessageBox.Show("カスタムPDF保存パスを選択してください。", "エラー", 
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
@@ -336,7 +336,7 @@ namespace Nico2PDF.Views
 
                 if (!Directory.Exists(txtCustomPdfPath.Text))
                 {
-                    var result = MessageBox.Show("�w�肳�ꂽPDF�ۑ��t�H���_�����݂��܂���B�쐬���܂����H", "�m�F", 
+                    var result = MessageBox.Show("指定されたPDF保存フォルダが存在しません。作成しますか？", "確認", 
                         MessageBoxButton.YesNo, MessageBoxImage.Question);
                     
                     if (result == MessageBoxResult.Yes)
@@ -347,7 +347,7 @@ namespace Nico2PDF.Views
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show($"�t�H���_�̍쐬�Ɏ��s���܂���: {ex.Message}", "�G���[", 
+                            MessageBox.Show($"フォルダの作成に失敗しました: {ex.Message}", "エラー", 
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                             return;
                         }
@@ -382,7 +382,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �L�����Z���{�^���N���b�N��
+        /// キャンセルボタンクリック時
         /// </summary>
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
@@ -391,16 +391,16 @@ namespace Nico2PDF.Views
         }
         #endregion
 
-        #region �h���b�O&�h���b�v����
+        #region ドラッグ&ドロップ処理
         /// <summary>
-        /// �t�H���_�p�X�p�h���b�O&�h���b�v�G���A��DragEnter
+        /// フォルダパス用ドラッグ&ドロップエリアのDragEnter
         /// </summary>
         private void FolderDropArea_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                // �h���b�O�I�[�o�[���̎��o�I�t�B�[�h�o�b�N
+                // ドラッグオーバー時の視覚的フィードバック
                 if (sender is Border border)
                 {
                     border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LightBlue);
@@ -414,7 +414,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �t�H���_�p�X�p�h���b�O&�h���b�v�G���A��DragOver
+        /// フォルダパス用ドラッグ&ドロップエリアのDragOver
         /// </summary>
         private void FolderDropArea_DragOver(object sender, DragEventArgs e)
         {
@@ -429,11 +429,11 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �t�H���_�p�X�p�h���b�O&�h���b�v�G���A��DragLeave
+        /// フォルダパス用ドラッグ&ドロップエリアのDragLeave
         /// </summary>
         private void FolderDropArea_DragLeave(object sender, DragEventArgs e)
         {
-            // �h���b�O���[�u���̎��o�I�t�B�[�h�o�b�N�����ɖ߂�
+            // ドラッグリーブ時の視覚的フィードバックを元に戻す
             if (sender is Border border)
             {
                 border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
@@ -442,11 +442,11 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �t�H���_�p�X�p�h���b�O&�h���b�v�G���A��Drop
+        /// フォルダパス用ドラッグ&ドロップエリアのDrop
         /// </summary>
         private void FolderDropArea_Drop(object sender, DragEventArgs e)
         {
-            // �h���b�O�I�[�o�[���̎��o�I�t�B�[�h�o�b�N�����ɖ߂�
+            // ドラッグオーバー時の視覚的フィードバックを元に戻す
             if (sender is Border border)
             {
                 border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
@@ -460,12 +460,12 @@ namespace Nico2PDF.Views
                 {
                     string droppedPath = files[0];
                     
-                    // �t�H���_���t�@�C�����𔻒�
+                    // フォルダかファイルかを判定
                     if (Directory.Exists(droppedPath))
                     {
                         txtFolderPath.Text = droppedPath;
                         
-                        // �v���W�F�N�g������̏ꍇ�̓t�H���_����ݒ�
+                        // プロジェクト名空の場合はフォルダ名設定
                         if (string.IsNullOrEmpty(txtProjectName.Text))
                         {
                             txtProjectName.Text = Path.GetFileName(droppedPath);
@@ -473,13 +473,13 @@ namespace Nico2PDF.Views
                     }
                     else if (File.Exists(droppedPath))
                     {
-                        // �t�@�C���̏ꍇ�͐e�t�H���_���g�p
+                        // ファイルの場合は親フォルダを使用
                         string parentFolder = Path.GetDirectoryName(droppedPath);
                         if (!string.IsNullOrEmpty(parentFolder))
                         {
                             txtFolderPath.Text = parentFolder;
                             
-                            // �v���W�F�N�g������̏ꍇ�̓t�H���_����ݒ�
+                            // プロジェクト名空の場合はフォルダ名設定
                             if (string.IsNullOrEmpty(txtProjectName.Text))
                             {
                                 txtProjectName.Text = Path.GetFileName(parentFolder);
@@ -487,21 +487,21 @@ namespace Nico2PDF.Views
                         }
                     }
                     
-                    // �q���g�\�����X�V
+                    // ヒント表示更新
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// PDF�ۑ��p�X�p�h���b�O&�h���b�v�G���A��DragEnter
+        /// PDF保存パス用ドラッグ&ドロップエリアのDragEnter
         /// </summary>
         private void PdfDropArea_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                // �h���b�O�I�[�o�[���̎��o�I�t�B�[�h�o�b�N
+                // ドラッグオーバー時の視覚的フィードバック
                 if (sender is Border border)
                 {
                     border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LightBlue);
@@ -515,7 +515,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// PDF�ۑ��p�X�p�h���b�O&�h���b�v�G���A��DragOver
+        /// PDF保存パス用ドラッグ&ドロップエリアのDragOver
         /// </summary>
         private void PdfDropArea_DragOver(object sender, DragEventArgs e)
         {
@@ -530,11 +530,11 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// PDF�ۑ��p�X�p�h���b�O&�h���b�v�G���A��DragLeave
+        /// PDF保存パス用ドラッグ&ドロップエリアのDragLeave
         /// </summary>
         private void PdfDropArea_DragLeave(object sender, DragEventArgs e)
         {
-            // �h���b�O���[�u���̎��o�I�t�B�[�h�o�b�N�����ɖ߂�
+            // ドラッグリーブ時の視覚的フィードバックを元に戻す
             if (sender is Border border)
             {
                 border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
@@ -543,11 +543,11 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// PDF�ۑ��p�X�p�h���b�O&�h���b�v�G���A��Drop
+        /// PDF保存パス用ドラッグ&ドロップエリアのDrop
         /// </summary>
         private void PdfDropArea_Drop(object sender, DragEventArgs e)
         {
-            // �h���b�O�I�[�o�[���̎��o�I�t�B�[�h�o�b�N�����ɖ߂�
+            // ドラッグオーバー時の視覚的フィードバックを元に戻す
             if (sender is Border border)
             {
                 border.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 249, 250));
@@ -561,10 +561,10 @@ namespace Nico2PDF.Views
                 {
                     string droppedPath = files[0];
                     
-                    // �t�H���_���t�@�C�����𔻒�
+                    // フォルダかファイルかを判定
                     if (Directory.Exists(droppedPath))
                     {
-                        // �t�H���_�p�X�݂̂�ݒ�i�t�@�C�����͊܂߂Ȃ��j
+                        // フォルダパスのみ設定（ファイル名は含めない）
                         // プロジェクトフォルダ配下の選択を禁止
                         if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
                             IsSubdirectory(txtFolderPath.Text, droppedPath))
@@ -579,7 +579,7 @@ namespace Nico2PDF.Views
                     }
                     else if (File.Exists(droppedPath))
                     {
-                        // �t�@�C���̏ꍇ�͐e�t�H���_���g�p
+                        // ファイルの場合は親フォルダを使用
                         string parentFolder = Path.GetDirectoryName(droppedPath);
                         if (!string.IsNullOrEmpty(parentFolder))
                         {
@@ -597,21 +597,21 @@ namespace Nico2PDF.Views
                         }
                     }
                     
-                    // �q���g�\�����X�V
+                    // ヒント表示更新
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// �t�H���_�p�X�e�L�X�g�{�b�N�X�̃h���b�O�G���^�[�i���ł̌݊����ێ��j
+        /// フォルダパステキストボックスのドラッグエンター（互換性保持）
         /// </summary>
         private void TxtFolderPath_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                // �h���b�O�I�[�o�[���̎��o�I�t�B�[�h�o�b�N
+                // ドラッグオーバー時の視覚的フィードバック
                 txtFolderPath.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LightBlue);
             }
             else
@@ -621,7 +621,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �t�H���_�p�X�e�L�X�g�{�b�N�X�̃h���b�O�I�[�o�[�i���ł̌݊����ێ��j
+        /// フォルダパステキストボックスのドラッグオーバー（互換性保持）
         /// </summary>
         private void TxtFolderPath_DragOver(object sender, DragEventArgs e)
         {
@@ -636,20 +636,20 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �t�H���_�p�X�e�L�X�g�{�b�N�X�̃h���b�O���[�u�i���ł̌݊����ێ��j
+        /// フォルダパステキストボックスのドラッグリーブ（互換性保持）
         /// </summary>
         private void TxtFolderPath_DragLeave(object sender, DragEventArgs e)
         {
-            // �h���b�O���[�u���̎��o�I�t�B�[�h�o�b�N�����ɖ߂�
+            // ドラッグリーブ時の視覚的フィードバックを元に戻す
             txtFolderPath.Background = System.Windows.Media.Brushes.White;
         }
 
         /// <summary>
-        /// �t�H���_�p�X�e�L�X�g�{�b�N�X�̃h���b�v�i���ł̌݊����ێ��j
+        /// フォルダパステキストボックスのドロップ（互換性保持）
         /// </summary>
         private void TxtFolderPath_Drop(object sender, DragEventArgs e)
         {
-            // �h���b�O�I�[�o�[���̎��o�I�t�B�[�h�o�b�N�����ɖ߂�
+            // ドラッグオーバー時の視覚的フィードバックを元に戻す
             txtFolderPath.Background = System.Windows.Media.Brushes.White;
             
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -659,12 +659,12 @@ namespace Nico2PDF.Views
                 {
                     string droppedPath = files[0];
                     
-                    // �t�H���_���t�@�C�����𔻒�
+                    // フォルダかファイルかを判定
                     if (Directory.Exists(droppedPath))
                     {
                         txtFolderPath.Text = droppedPath;
                         
-                        // �v���W�F�N�g������̏ꍇ�̓t�H���_����ݒ�
+                        // プロジェクト名空の場合はフォルダ名設定
                         if (string.IsNullOrEmpty(txtProjectName.Text))
                         {
                             txtProjectName.Text = Path.GetFileName(droppedPath);
@@ -672,13 +672,13 @@ namespace Nico2PDF.Views
                     }
                     else if (File.Exists(droppedPath))
                     {
-                        // �t�@�C���̏ꍇ�͐e�t�H���_���g�p
+                        // ファイルの場合は親フォルダを使用
                         string parentFolder = Path.GetDirectoryName(droppedPath);
                         if (!string.IsNullOrEmpty(parentFolder))
                         {
                             txtFolderPath.Text = parentFolder;
                             
-                            // �v���W�F�N�g������̏ꍇ�̓t�H���_����ݒ�
+                            // プロジェクト名空の場合はフォルダ名設定
                             if (string.IsNullOrEmpty(txtProjectName.Text))
                             {
                                 txtProjectName.Text = Path.GetFileName(parentFolder);
@@ -686,21 +686,21 @@ namespace Nico2PDF.Views
                         }
                     }
                     
-                    // �q���g�\�����X�V
+                    // ヒント表示更新
                     UpdateDropHints();
                 }
             }
         }
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X�e�L�X�g�{�b�N�X�̃h���b�O�G���^�[�i���ł̌݊����ێ��j
+        /// カスタムPDF保存パステキストボックスのドラッグエンター（互換性保持）
         /// </summary>
         private void TxtCustomPdfPath_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                // �h���b�O�I�[�o�[���̎��o�I�t�B�[�h�o�b�N
+                // ドラッグオーバー時の視覚的フィードバック
                 txtCustomPdfPath.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.LightBlue);
             }
             else
@@ -710,7 +710,7 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X�e�L�X�g�{�b�N�X�̃h���b�O�I�[�o�[�i���ł̌݊����ێ��j
+        /// カスタムPDF保存パステキストボックスのドラッグオーバー（互換性保持）
         /// </summary>
         private void TxtCustomPdfPath_DragOver(object sender, DragEventArgs e)
         {
@@ -725,20 +725,20 @@ namespace Nico2PDF.Views
         }
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X�e�L�X�g�{�b�N�X�̃h���b�O���[�u�i���ł̌݊����ێ��j
+        /// カスタムPDF保存パステキストボックスのドラッグリーブ（互換性保持）
         /// </summary>
         private void TxtCustomPdfPath_DragLeave(object sender, DragEventArgs e)
         {
-            // �h���b�O���[�u���̎��o�I�t�B�[�h�o�b�N�����ɖ߂�
+            // ドラッグリーブ時の視覚的フィードバックを元に戻す
             txtCustomPdfPath.Background = System.Windows.Media.Brushes.White;
         }
 
         /// <summary>
-        /// �J�X�^��PDF�ۑ��p�X�e�L�X�g�{�b�N�X�̃h���b�v�i���ł̌݊����ێ��j
+        /// カスタムPDF保存パステキストボックスのドロップ（互換性保持）
         /// </summary>
         private void TxtCustomPdfPath_Drop(object sender, DragEventArgs e)
         {
-            // �h���b�O�I�[�o�[���̎��o�I�t�B�[�h�o�b�N�����ɖ߂�
+            // ドラッグオーバー時の視覚的フィードバックを元に戻す
             txtCustomPdfPath.Background = System.Windows.Media.Brushes.White;
             
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -748,10 +748,10 @@ namespace Nico2PDF.Views
                 {
                     string droppedPath = files[0];
                     
-                    // �t�H���_���t�@�C�����𔻒�
+                    // フォルダかファイルかを判定
                     if (Directory.Exists(droppedPath))
                     {
-                        // �t�H���_�p�X�݂̂�ݒ�i�t�@�C�����͊܂߂Ȃ��j
+                        // フォルダパスのみ設定（ファイル名は含めない）
                         // プロジェクトフォルダ配下の選択を禁止
                         if (!string.IsNullOrWhiteSpace(txtFolderPath.Text) && 
                             IsSubdirectory(txtFolderPath.Text, droppedPath))
@@ -766,7 +766,7 @@ namespace Nico2PDF.Views
                     }
                     else if (File.Exists(droppedPath))
                     {
-                        // �t�@�C���̏ꍇ�͐e�t�H���_���g�p
+                        // ファイルの場合は親フォルダを使用
                         string parentFolder = Path.GetDirectoryName(droppedPath);
                         if (!string.IsNullOrEmpty(parentFolder))
                         {
@@ -784,7 +784,7 @@ namespace Nico2PDF.Views
                         }
                     }
                     
-                    // �q���g�\�����X�V
+                    // ヒント表示更新
                     UpdateDropHints();
                 }
             }
