@@ -1108,6 +1108,16 @@ namespace Nico2PDF
             }
         }
 
+        private void BtnExcelPrintSettings_Click(object sender, RoutedEventArgs e)
+        {
+            ShowExcelPrintSettingsDialog();
+        }
+
+        private void MenuExcelPrintSettings_Click(object sender, RoutedEventArgs e)
+        {
+            ShowExcelPrintSettingsDialog();
+        }
+
         private void MenuResetDisplayName_Click(object sender, RoutedEventArgs e)
         {
             var selectedItem = dgFiles.SelectedItem as FileItem;
@@ -1280,6 +1290,40 @@ namespace Nico2PDF
                 }
             }
         }
+
+        private void ShowExcelPrintSettingsDialog()
+        {
+            var excelFiles = fileItems.Where(f => IsExcelFile(f.Extension)).ToList();
+            if (!excelFiles.Any())
+            {
+                MessageBox.Show("Excelファイル（.xls, .xlsx, .xlsm）が見つかりません。", "情報", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dialog = new Nico2PDF.Views.PrintSettingsDialog();
+            dialog.Owner = this;
+            dialog.SetFileItems(fileItems.ToList());
+
+            if (dialog.ShowDialog() == true)
+            {
+                // ダイアログで何かしらの設定が適用された場合の処理
+                // 現在のプロジェクト状態を保存
+                SaveCurrentProjectState();
+                txtStatus.Text = "Excel印刷設定が適用されました。";
+            }
+        }
+
+        /// <summary>
+        /// Excelファイルかどうかを判定
+        /// </summary>
+        /// <param name="extension">拡張子</param>
+        /// <returns>Excelファイルの場合true</returns>
+        private static bool IsExcelFile(string extension)
+        {
+            return extension.ToUpper() is "XLS" or "XLSX" or "XLSM";
+        }
+
         #endregion
 
         #region PDF処理

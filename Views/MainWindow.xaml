@@ -22,6 +22,7 @@
         <ContextMenu x:Key="FileListContextMenu">
             <MenuItem Header="📝 ファイル名変更" Click="MenuRenameFile_Click"/>
             <MenuItem Header="📋 一括リネーム" Click="MenuBatchRename_Click"/>
+            <MenuItem Header="🖨️ Excel印刷設定" Click="MenuExcelPrintSettings_Click"/>
             <Separator/>
             <MenuItem Header="🔄 表示名リセット" Click="MenuResetDisplayName_Click"/>
             <Separator/>
@@ -226,9 +227,12 @@
                         <Button x:Name="btnRenameFile" Content="📝 名前変更" Width="90" Height="25" Margin="0,0,3,0" 
                                 Click="BtnRenameFile_Click" ToolTip="選択したファイルの名前を変更" 
                                 Background="#FD7E14" Foreground="White"/>
-                        <Button x:Name="btnBatchRename" Content="📋 一括変更" Width="90" Height="25" Margin="0,0,5,0" 
+                        <Button x:Name="btnBatchRename" Content="📋 一括変更" Width="90" Height="25" Margin="0,0,3,0" 
                                 Click="BtnBatchRename_Click" ToolTip="複数ファイルの名前を一括変更" 
                                 Background="#E83E8C" Foreground="White"/>
+                        <Button x:Name="btnExcelPrintSettings" Content="🖨️ 印刷設定" Width="90" Height="25" Margin="0,0,5,0" 
+                                Click="BtnExcelPrintSettings_Click" ToolTip="Excelファイルの印刷設定を一括変更" 
+                                Background="#6F42C1" Foreground="White"/>
                     </StackPanel>
                     
                     <!-- ファイル並び替えボタン -->
@@ -411,7 +415,7 @@
                 </StatusBarItem>
                 <StatusBarItem HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="txtVersion" Text="v1.2.0" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtVersion" Text="v1.3.0" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <ProgressBar x:Name="progressBar" Width="200" Height="20" Visibility="Collapsed"/>
                     </StackPanel>
                 </StatusBarItem>
