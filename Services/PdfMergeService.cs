@@ -34,10 +34,13 @@ namespace Nico2PDF.Services
         /// <param name="footerPosition">フッタの位置（0:左, 1:中央, 2:右）</param>
         /// <param name="footerOffsetX">フッタのX軸オフセット</param>
         /// <param name="footerOffsetY">フッタのY軸オフセット</param>
+        /// <param name="pageNumberFontSize">ページ番号のフォントサイズ</param>
+        /// <param name="headerFontSize">ヘッダのフォントサイズ</param>
+        /// <param name="footerFontSize">フッタのフォントサイズ</param>
         public static void MergePdfFiles(List<string> pdfFilePaths, string outputPath, bool addPageNumber = false, bool addBookmarks = false, List<FileItem> fileItems = null, bool addHeaderFooter = false, string headerFooterText = "", float headerFooterFontSize = 10.0f,
-            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f,
-            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f,
-            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f)
+            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f, float pageNumberFontSize = 10.0f,
+            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f, float headerFontSize = 10.0f,
+            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f, float footerFontSize = 10.0f)
         {
             using (var document = new Document())
             using (var copy = new PdfCopy(document, new FileStream(outputPath, FileMode.Create)))
@@ -90,9 +93,9 @@ namespace Nico2PDF.Services
             if (addPageNumber || addHeaderFooter)
             {
                 AddPageNumbersAndHeaderFooter(outputPath, addPageNumber, addHeaderFooter, headerFooterText, headerFooterFontSize,
-                    pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
-                    headerPosition, headerOffsetX, headerOffsetY,
-                    footerPosition, footerOffsetX, footerOffsetY);
+                    pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
+                    headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
+                    footerPosition, footerOffsetX, footerOffsetY, footerFontSize);
             }
         }
 
@@ -129,9 +132,9 @@ namespace Nico2PDF.Services
         /// <param name="footerOffsetX">フッタのX軸オフセット</param>
         /// <param name="footerOffsetY">フッタのY軸オフセット</param>
         private static void AddPageNumbersAndHeaderFooter(string pdfPath, bool addPageNumber, bool addHeaderFooter, string headerFooterText, float headerFooterFontSize, 
-            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f,
-            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f,
-            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f)
+            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f, float pageNumberFontSize = 10.0f,
+            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f, float headerFontSize = 10.0f,
+            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f, float footerFontSize = 10.0f)
         {
             var tempPath = pdfPath + ".tmp";
 
@@ -149,7 +152,7 @@ namespace Nico2PDF.Services
                     if (addPageNumber)
                     {
                         cb.BeginText();
-                        cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false), 10);
+                        cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false), pageNumberFontSize);
                         
                         float x, y;
                         int alignment;
@@ -195,7 +198,7 @@ namespace Nico2PDF.Services
                         
                         // ヘッダを追加
                         cb.BeginText();
-                        cb.SetFontAndSize(font, headerFooterFontSize);
+                        cb.SetFontAndSize(font, headerFontSize);
                         
                         float headerX;
                         int headerAlignment;
@@ -226,7 +229,7 @@ namespace Nico2PDF.Services
 
                         // フッタを追加
                         cb.BeginText();
-                        cb.SetFontAndSize(font, headerFooterFontSize);
+                        cb.SetFontAndSize(font, footerFontSize);
                         
                         float footerX;
                         int footerAlignment;
@@ -282,10 +285,13 @@ namespace Nico2PDF.Services
         /// <param name="footerPosition">フッタの位置（0:左, 1:中央, 2:右）</param>
         /// <param name="footerOffsetX">フッタのX軸オフセット</param>
         /// <param name="footerOffsetY">フッタのY軸オフセット</param>
+        /// <param name="pageNumberFontSize">ページ番号のフォントサイズ</param>
+        /// <param name="headerFontSize">ヘッダのフォントサイズ</param>
+        /// <param name="footerFontSize">フッタのフォントサイズ</param>
         public static void MergePdfFilesWithAdvancedBookmarks(List<string> pdfFilePaths, string outputPath, List<FileItem> fileItems, bool addPageNumber = false, bool groupByFolder = false, bool addHeaderFooter = false, string headerFooterText = "", float headerFooterFontSize = 10.0f,
-            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f,
-            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f,
-            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f)
+            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f, float pageNumberFontSize = 10.0f,
+            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f, float headerFontSize = 10.0f,
+            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f, float footerFontSize = 10.0f)
         {
             using (var document = new Document())
             using (var copy = new PdfCopy(document, new FileStream(outputPath, FileMode.Create)))
@@ -317,9 +323,9 @@ namespace Nico2PDF.Services
             if (addPageNumber || addHeaderFooter)
             {
                 AddPageNumbersAndHeaderFooter(outputPath, addPageNumber, addHeaderFooter, headerFooterText, headerFooterFontSize,
-                    pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
-                    headerPosition, headerOffsetX, headerOffsetY,
-                    footerPosition, footerOffsetX, footerOffsetY);
+                    pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
+                    headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
+                    footerPosition, footerOffsetX, footerOffsetY, footerFontSize);
             }
         }
 

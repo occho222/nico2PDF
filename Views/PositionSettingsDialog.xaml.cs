@@ -197,14 +197,17 @@ namespace Nico2PDF.Views
             cmbPageNumberPosition.SelectedIndex = project.PageNumberPosition;
             txtPageNumberOffsetX.Text = project.PageNumberOffsetX.ToString("0.0");
             txtPageNumberOffsetY.Text = project.PageNumberOffsetY.ToString("0.0");
+            txtPageNumberFontSize.Text = project.PageNumberFontSize.ToString("0.0");
             
             cmbHeaderPosition.SelectedIndex = project.HeaderPosition;
             txtHeaderOffsetX.Text = project.HeaderOffsetX.ToString("0.0");
             txtHeaderOffsetY.Text = project.HeaderOffsetY.ToString("0.0");
+            txtHeaderFontSize.Text = project.HeaderFontSize.ToString("0.0");
             
             cmbFooterPosition.SelectedIndex = project.FooterPosition;
             txtFooterOffsetX.Text = project.FooterOffsetX.ToString("0.0");
             txtFooterOffsetY.Text = project.FooterOffsetY.ToString("0.0");
+            txtFooterFontSize.Text = project.FooterFontSize.ToString("0.0");
         }
 
         /// <summary>
@@ -218,14 +221,17 @@ namespace Nico2PDF.Views
                 project.PageNumberPosition = PageNumberPosition;
                 project.PageNumberOffsetX = PageNumberOffsetX;
                 project.PageNumberOffsetY = PageNumberOffsetY;
+                project.PageNumberFontSize = PageNumberFontSize;
                 
                 project.HeaderPosition = HeaderPosition;
                 project.HeaderOffsetX = HeaderOffsetX;
                 project.HeaderOffsetY = HeaderOffsetY;
+                project.HeaderFontSize = HeaderFontSize;
                 
                 project.FooterPosition = FooterPosition;
                 project.FooterOffsetX = FooterOffsetX;
                 project.FooterOffsetY = FooterOffsetY;
+                project.FooterFontSize = FooterFontSize;
             }
         }
 

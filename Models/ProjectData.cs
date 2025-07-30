@@ -236,6 +236,21 @@ namespace Nico2PDF.Models
         public float FooterOffsetY { get; set; } = 20.0f;
 
         /// <summary>
+        /// ページ番号のフォントサイズ
+        /// </summary>
+        public float PageNumberFontSize { get; set; } = 10.0f;
+
+        /// <summary>
+        /// ヘッダのフォントサイズ
+        /// </summary>
+        public float HeaderFontSize { get; set; } = 10.0f;
+
+        /// <summary>
+        /// フッタのフォントサイズ
+        /// </summary>
+        public float FooterFontSize { get; set; } = 10.0f;
+
+        /// <summary>
         /// �ŐV�̌���PDF�t�@�C���p�X
         /// </summary>
         public string LatestMergedPdfPath { get; set; } = "";

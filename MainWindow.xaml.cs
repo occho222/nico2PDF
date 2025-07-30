@@ -1589,12 +1589,15 @@ namespace Nico2PDF
             var pageNumberPosition = currentProject?.PageNumberPosition ?? 0;
             var pageNumberOffsetX = currentProject?.PageNumberOffsetX ?? 20.0f;
             var pageNumberOffsetY = currentProject?.PageNumberOffsetY ?? 20.0f;
+            var pageNumberFontSize = currentProject?.PageNumberFontSize ?? 10.0f;
             var headerPosition = currentProject?.HeaderPosition ?? 0;
             var headerOffsetX = currentProject?.HeaderOffsetX ?? 20.0f;
             var headerOffsetY = currentProject?.HeaderOffsetY ?? 20.0f;
+            var headerFontSize = currentProject?.HeaderFontSize ?? 10.0f;
             var footerPosition = currentProject?.FooterPosition ?? 2;
             var footerOffsetX = currentProject?.FooterOffsetX ?? 20.0f;
             var footerOffsetY = currentProject?.FooterOffsetY ?? 20.0f;
+            var footerFontSize = currentProject?.FooterFontSize ?? 10.0f;
             
             var timestamp = DateTime.Now.ToString("yyMMddHHmmss");
             var outputFileName = $"{mergeFileName}_{timestamp}.pdf";
@@ -1614,25 +1617,25 @@ namespace Nico2PDF
                     {
                         // 高度なしおり機能を使用（フォルダ別グループ化）
                         PdfMergeService.MergePdfFilesWithAdvancedBookmarks(pdfFilePaths, outputPath, allFiles, addPageNumber, true, addHeaderFooter, headerFooterText, headerFooterFontSize,
-                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
-                            headerPosition, headerOffsetX, headerOffsetY,
-                            footerPosition, footerOffsetX, footerOffsetY);
+                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
+                            headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
+                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize);
                     }
                     else if (addBookmarks)
                     {
                         // 基本的なしおり機能を使用
                         PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, true, allFiles, addHeaderFooter, headerFooterText, headerFooterFontSize,
-                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
-                            headerPosition, headerOffsetX, headerOffsetY,
-                            footerPosition, footerOffsetX, footerOffsetY);
+                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
+                            headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
+                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize);
                     }
                     else
                     {
                         // しおりなしで結合
                         PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, false, null, addHeaderFooter, headerFooterText, headerFooterFontSize,
-                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
-                            headerPosition, headerOffsetX, headerOffsetY,
-                            footerPosition, footerOffsetX, footerOffsetY);
+                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
+                            headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
+                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize);
                     }
                     mergeSuccess = true;
                 }
