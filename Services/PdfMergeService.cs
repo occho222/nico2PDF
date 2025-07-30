@@ -10,29 +10,41 @@ using Nico2PDF.Models;
 namespace Nico2PDF.Services
 {
     /// <summary>
-    /// PDFŒ‹‡ƒT[ƒrƒX
+    /// PDFï¿½ï¿½ï¿½ï¿½ï¿½Tï¿½[ï¿½rï¿½X
     /// </summary>
     public class PdfMergeService
     {
         /// <summary>
-        /// PDFƒtƒ@ƒCƒ‹‚ğŒ‹‡
+        /// PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
-        /// <param name="pdfFilePaths">Œ‹‡‚·‚éPDFƒtƒ@ƒCƒ‹ƒpƒXƒŠƒXƒg</param>
-        /// <param name="outputPath">o—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="addPageNumber">ƒy[ƒW”Ô†’Ç‰Áƒtƒ‰ƒO</param>
-        /// <param name="addBookmarks">‚µ‚¨‚è’Ç‰Áƒtƒ‰ƒO</param>
-        /// <param name="fileItems">ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒgi‚µ‚¨‚è¶¬—pj</param>
-        /// <param name="addHeaderFooter">ƒwƒbƒ_Eƒtƒbƒ^’Ç‰Áƒtƒ‰ƒO</param>
-        /// <param name="headerFooterText">ƒwƒbƒ_Eƒtƒbƒ^ƒeƒLƒXƒg</param>
-        /// <param name="headerFooterFontSize">ƒwƒbƒ_Eƒtƒbƒ^ƒtƒHƒ“ƒgƒTƒCƒY</param>
-        public static void MergePdfFiles(List<string> pdfFilePaths, string outputPath, bool addPageNumber = false, bool addBookmarks = false, List<FileItem> fileItems = null, bool addHeaderFooter = false, string headerFooterText = "", float headerFooterFontSize = 10.0f)
+        /// <param name="pdfFilePaths">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="outputPath">ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="addPageNumber">ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O</param>
+        /// <param name="addBookmarks">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O</param>
+        /// <param name="fileItems">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½gï¿½iï¿½ï¿½ï¿½ï¿½ï¿½è¶ï¿½ï¿½ï¿½pï¿½j</param>
+        /// <param name="addHeaderFooter">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O</param>
+        /// <param name="headerFooterText">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½eï¿½Lï¿½Xï¿½g</param>
+        /// <param name="headerFooterFontSize">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Tï¿½Cï¿½Y</param>
+        /// <param name="pageNumberPosition">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®ä½ç½®ï¼ˆ0:å³ä¸Š, 1:å³ä¸‹, 2:å·¦ä¸Š, 3:å·¦ä¸‹ï¼‰</param>
+        /// <param name="pageNumberOffsetX">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="pageNumberOffsetY">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="headerPosition">ãƒ˜ãƒƒãƒ€ã®ä½ç½®ï¼ˆ0:å·¦, 1:ä¸­å¤®, 2:å³ï¼‰</param>
+        /// <param name="headerOffsetX">ãƒ˜ãƒƒãƒ€ã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="headerOffsetY">ãƒ˜ãƒƒãƒ€ã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="footerPosition">ãƒ•ãƒƒã‚¿ã®ä½ç½®ï¼ˆ0:å·¦, 1:ä¸­å¤®, 2:å³ï¼‰</param>
+        /// <param name="footerOffsetX">ãƒ•ãƒƒã‚¿ã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="footerOffsetY">ãƒ•ãƒƒã‚¿ã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        public static void MergePdfFiles(List<string> pdfFilePaths, string outputPath, bool addPageNumber = false, bool addBookmarks = false, List<FileItem> fileItems = null, bool addHeaderFooter = false, string headerFooterText = "", float headerFooterFontSize = 10.0f,
+            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f,
+            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f,
+            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f)
         {
             using (var document = new Document())
             using (var copy = new PdfCopy(document, new FileStream(outputPath, FileMode.Create)))
             {
                 document.Open();
 
-                // ‚µ‚¨‚è—p‚Ìî•ñ‚ğ‹L˜^
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½Ìï¿½ï¿½ï¿½ï¿½Lï¿½^
                 var bookmarks = new List<Dictionary<string, object>>();
                 int currentPage = 1;
 
@@ -43,14 +55,14 @@ namespace Nico2PDF.Services
 
                     using (var reader = new PdfReader(pdfPath))
                     {
-                        // PDF‚Ìƒy[ƒW‚ğ’Ç‰Á
+                        // PDFï¿½Ìƒyï¿½[ï¿½Wï¿½ï¿½Ç‰ï¿½
                         for (int i = 1; i <= reader.NumberOfPages; i++)
                         {
                             var page = copy.GetImportedPage(reader, i);
                             copy.AddPage(page);
                         }
 
-                        // ‚µ‚¨‚èî•ñ‚ğ’Ç‰Á
+                        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‰ï¿½
                         if (addBookmarks && fileItems != null && fileIndex < fileItems.Count)
                         {
                             var fileItem = fileItems[fileIndex];
@@ -67,44 +79,59 @@ namespace Nico2PDF.Services
                     }
                 }
 
-                // ‚µ‚¨‚è‚ğİ’è
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
                 if (addBookmarks && bookmarks.Any())
                 {
                     copy.Outlines = bookmarks;
                 }
             }
 
-            // ƒy[ƒW”Ô†‚Ü‚½‚Íƒwƒbƒ_Eƒtƒbƒ^’Ç‰ÁiƒIƒvƒVƒ‡ƒ“j
+            // ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½Ü‚ï¿½ï¿½Íƒwï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½Ç‰ï¿½ï¿½iï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½j
             if (addPageNumber || addHeaderFooter)
             {
-                AddPageNumbersAndHeaderFooter(outputPath, addPageNumber, addHeaderFooter, headerFooterText, headerFooterFontSize);
+                AddPageNumbersAndHeaderFooter(outputPath, addPageNumber, addHeaderFooter, headerFooterText, headerFooterFontSize,
+                    pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
+                    headerPosition, headerOffsetX, headerOffsetY,
+                    footerPosition, footerOffsetX, footerOffsetY);
             }
         }
 
         /// <summary>
-        /// ‚µ‚¨‚è‚Ìƒ^ƒCƒgƒ‹‚ğ¶¬
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒ^ï¿½Cï¿½gï¿½ï¿½ï¿½ğ¶ï¿½
         /// </summary>
-        /// <param name="fileItem">ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€</param>
-        /// <returns>‚µ‚¨‚èƒ^ƒCƒgƒ‹</returns>
+        /// <param name="fileItem">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½</param>
+        /// <returns>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½Cï¿½gï¿½ï¿½</returns>
         private static string GetBookmarkTitle(FileItem fileItem)
         {
-            // •\¦–¼iƒŠƒl[ƒ€‚³‚ê‚Ä‚¢‚éê‡‚Í‚»‚ê‚ğg—pj‚ğŠg’£q‚È‚µ‚Åæ“¾
+            // ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½lï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ê‡ï¿½Í‚ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½pï¿½jï¿½ï¿½ï¿½gï¿½ï¿½ï¿½qï¿½È‚ï¿½ï¿½Åæ“¾
             var displayName = fileItem.DisplayName;
             var titleWithoutExtension = Path.GetFileNameWithoutExtension(displayName);
             
-            // ”Ô†‚ğ’Ç‰Á‚µ‚Ä‚æ‚è\‘¢‰»‚³‚ê‚½‚µ‚¨‚èƒ^ƒCƒgƒ‹‚É‚·‚é
+            // ï¿½Ôï¿½ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
             return $"{fileItem.Number:D3}_{titleWithoutExtension}";
         }
 
         /// <summary>
-        /// PDF‚Éƒy[ƒW”Ô†‚Æƒwƒbƒ_Eƒtƒbƒ^‚ğ’Ç‰Á
+        /// PDFï¿½Éƒyï¿½[ï¿½Wï¿½Ôï¿½ï¿½Æƒwï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½ï¿½Ç‰ï¿½
         /// </summary>
-        /// <param name="pdfPath">PDFƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="addPageNumber">ƒy[ƒW”Ô†’Ç‰Áƒtƒ‰ƒO</param>
-        /// <param name="addHeaderFooter">ƒwƒbƒ_Eƒtƒbƒ^’Ç‰Áƒtƒ‰ƒO</param>
-        /// <param name="headerFooterText">ƒwƒbƒ_Eƒtƒbƒ^ƒeƒLƒXƒg</param>
-        /// <param name="headerFooterFontSize">ƒwƒbƒ_Eƒtƒbƒ^ƒtƒHƒ“ƒgƒTƒCƒY</param>
-        private static void AddPageNumbersAndHeaderFooter(string pdfPath, bool addPageNumber, bool addHeaderFooter, string headerFooterText, float headerFooterFontSize)
+        /// <param name="pdfPath">PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="addPageNumber">ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O</param>
+        /// <param name="addHeaderFooter">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O</param>
+        /// <param name="headerFooterText">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½eï¿½Lï¿½Xï¿½g</param>
+        /// <param name="headerFooterFontSize">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Tï¿½Cï¿½Y</param>
+        /// <param name="pageNumberPosition">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®ä½ç½®ï¼ˆ0:å³ä¸Š, 1:å³ä¸‹, 2:å·¦ä¸Š, 3:å·¦ä¸‹ï¼‰</param>
+        /// <param name="pageNumberOffsetX">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="pageNumberOffsetY">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="headerPosition">ãƒ˜ãƒƒãƒ€ã®ä½ç½®ï¼ˆ0:å·¦, 1:ä¸­å¤®, 2:å³ï¼‰</param>
+        /// <param name="headerOffsetX">ãƒ˜ãƒƒãƒ€ã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="headerOffsetY">ãƒ˜ãƒƒãƒ€ã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="footerPosition">ãƒ•ãƒƒã‚¿ã®ä½ç½®ï¼ˆ0:å·¦, 1:ä¸­å¤®, 2:å³ï¼‰</param>
+        /// <param name="footerOffsetX">ãƒ•ãƒƒã‚¿ã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="footerOffsetY">ãƒ•ãƒƒã‚¿ã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        private static void AddPageNumbersAndHeaderFooter(string pdfPath, bool addPageNumber, bool addHeaderFooter, string headerFooterText, float headerFooterFontSize, 
+            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f,
+            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f,
+            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f)
         {
             var tempPath = pdfPath + ".tmp";
 
@@ -118,39 +145,114 @@ namespace Nico2PDF.Services
                     var cb = stamper.GetOverContent(i);
                     var pageSize = reader.GetPageSize(i);
 
-                    // ƒy[ƒW”Ô†‚ğ’Ç‰Ái‰Eãj
+                    // ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã‚’è¿½åŠ 
                     if (addPageNumber)
                     {
                         cb.BeginText();
                         cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false), 10);
-                        // ƒy[ƒW”Ô†‚ğ‰Eã‚É”z’uixÀ•WF‰E’[‚©‚ç20ptAyÀ•WFã’[‚©‚ç20ptj
-                        cb.ShowTextAligned(PdfContentByte.ALIGN_RIGHT,
-                            $"{i} / {totalPages}",
-                            pageSize.Width - 20, pageSize.Height - 20, 0);
+                        
+                        float x, y;
+                        int alignment;
+                        
+                        // ä½ç½®ã«å¿œã˜ã¦Xã€Yåº§æ¨™ã¨ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆã‚’è¨­å®š
+                        switch (pageNumberPosition)
+                        {
+                            case 0: // å³ä¸Š
+                                x = pageSize.Width - pageNumberOffsetX;
+                                y = pageSize.Height - pageNumberOffsetY;
+                                alignment = PdfContentByte.ALIGN_RIGHT;
+                                break;
+                            case 1: // å³ä¸‹
+                                x = pageSize.Width - pageNumberOffsetX;
+                                y = pageNumberOffsetY;
+                                alignment = PdfContentByte.ALIGN_RIGHT;
+                                break;
+                            case 2: // å·¦ä¸Š
+                                x = pageNumberOffsetX;
+                                y = pageSize.Height - pageNumberOffsetY;
+                                alignment = PdfContentByte.ALIGN_LEFT;
+                                break;
+                            case 3: // å·¦ä¸‹
+                                x = pageNumberOffsetX;
+                                y = pageNumberOffsetY;
+                                alignment = PdfContentByte.ALIGN_LEFT;
+                                break;
+                            default: // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯å³ä¸Š
+                                x = pageSize.Width - pageNumberOffsetX;
+                                y = pageSize.Height - pageNumberOffsetY;
+                                alignment = PdfContentByte.ALIGN_RIGHT;
+                                break;
+                        }
+                        
+                        cb.ShowTextAligned(alignment, $"{i} / {totalPages}", x, y, 0);
                         cb.EndText();
                     }
 
-                    // ƒwƒbƒ_Eƒtƒbƒ^‚ğ’Ç‰Á
+                    // ãƒ˜ãƒƒãƒ€ãƒ»ãƒ•ãƒƒã‚¿ã‚’è¿½åŠ 
                     if (addHeaderFooter && !string.IsNullOrEmpty(headerFooterText))
                     {
                         var font = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
                         
-                        // ƒwƒbƒ_i¶ãj
+                        // ãƒ˜ãƒƒãƒ€ã‚’è¿½åŠ 
                         cb.BeginText();
                         cb.SetFontAndSize(font, headerFooterFontSize);
-                        // ƒwƒbƒ_‚ğ¶ã‚É”z’u
-                        cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT,
-                            headerFooterText,
-                            20, pageSize.Height - 20, 0);
+                        
+                        float headerX;
+                        int headerAlignment;
+                        
+                        // ãƒ˜ãƒƒãƒ€ã®ä½ç½®ã«å¿œã˜ã¦Xåº§æ¨™ã¨ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆã‚’è¨­å®š
+                        switch (headerPosition)
+                        {
+                            case 0: // å·¦
+                                headerX = headerOffsetX;
+                                headerAlignment = PdfContentByte.ALIGN_LEFT;
+                                break;
+                            case 1: // ä¸­å¤®
+                                headerX = pageSize.Width / 2;
+                                headerAlignment = PdfContentByte.ALIGN_CENTER;
+                                break;
+                            case 2: // å³
+                                headerX = pageSize.Width - headerOffsetX;
+                                headerAlignment = PdfContentByte.ALIGN_RIGHT;
+                                break;
+                            default: // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯å·¦
+                                headerX = headerOffsetX;
+                                headerAlignment = PdfContentByte.ALIGN_LEFT;
+                                break;
+                        }
+                        
+                        cb.ShowTextAligned(headerAlignment, headerFooterText, headerX, pageSize.Height - headerOffsetY, 0);
                         cb.EndText();
 
-                        // ƒtƒbƒ^i‰E‰ºj
+                        // ãƒ•ãƒƒã‚¿ã‚’è¿½åŠ 
                         cb.BeginText();
                         cb.SetFontAndSize(font, headerFooterFontSize);
-                        // ƒtƒbƒ^‚ğ‰E‰º‚É”z’u
-                        cb.ShowTextAligned(PdfContentByte.ALIGN_RIGHT,
-                            headerFooterText,
-                            pageSize.Width - 20, 20, 0);
+                        
+                        float footerX;
+                        int footerAlignment;
+                        
+                        // ãƒ•ãƒƒã‚¿ã®ä½ç½®ã«å¿œã˜ã¦Xåº§æ¨™ã¨ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆã‚’è¨­å®š
+                        switch (footerPosition)
+                        {
+                            case 0: // å·¦
+                                footerX = footerOffsetX;
+                                footerAlignment = PdfContentByte.ALIGN_LEFT;
+                                break;
+                            case 1: // ä¸­å¤®
+                                footerX = pageSize.Width / 2;
+                                footerAlignment = PdfContentByte.ALIGN_CENTER;
+                                break;
+                            case 2: // å³
+                                footerX = pageSize.Width - footerOffsetX;
+                                footerAlignment = PdfContentByte.ALIGN_RIGHT;
+                                break;
+                            default: // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯å³
+                                footerX = pageSize.Width - footerOffsetX;
+                                footerAlignment = PdfContentByte.ALIGN_RIGHT;
+                                break;
+                        }
+                        
+                        cb.ShowTextAligned(footerAlignment, headerFooterText, footerX, footerOffsetY, 0);
                         cb.EndText();
                     }
                 }
@@ -161,17 +263,29 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ‚“x‚È‚µ‚¨‚è‹@”\FŠK‘w\‘¢‚Å‚µ‚¨‚è‚ğì¬
+        /// ï¿½ï¿½ï¿½xï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½\ï¿½Fï¿½Kï¿½wï¿½\ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì¬
         /// </summary>
-        /// <param name="pdfFilePaths">Œ‹‡‚·‚éPDFƒtƒ@ƒCƒ‹ƒpƒXƒŠƒXƒg</param>
-        /// <param name="outputPath">o—Íƒtƒ@ƒCƒ‹ƒpƒX</param>
-        /// <param name="fileItems">ƒtƒ@ƒCƒ‹ƒAƒCƒeƒ€ƒŠƒXƒg</param>
-        /// <param name="addPageNumber">ƒy[ƒW”Ô†’Ç‰Áƒtƒ‰ƒO</param>
-        /// <param name="groupByFolder">ƒtƒHƒ‹ƒ_•Ê‚ÉƒOƒ‹[ƒv‰»‚·‚é‚©‚Ç‚¤‚©</param>
-        /// <param name="addHeaderFooter">ƒwƒbƒ_Eƒtƒbƒ^’Ç‰Áƒtƒ‰ƒO</param>
-        /// <param name="headerFooterText">ƒwƒbƒ_Eƒtƒbƒ^ƒeƒLƒXƒg</param>
-        /// <param name="headerFooterFontSize">ƒwƒbƒ_Eƒtƒbƒ^ƒtƒHƒ“ƒgƒTƒCƒY</param>
-        public static void MergePdfFilesWithAdvancedBookmarks(List<string> pdfFilePaths, string outputPath, List<FileItem> fileItems, bool addPageNumber = false, bool groupByFolder = false, bool addHeaderFooter = false, string headerFooterText = "", float headerFooterFontSize = 10.0f)
+        /// <param name="pdfFilePaths">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PDFï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="outputPath">ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X</param>
+        /// <param name="fileItems">ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g</param>
+        /// <param name="addPageNumber">ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O</param>
+        /// <param name="groupByFolder">ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ê‚ÉƒOï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½</param>
+        /// <param name="addHeaderFooter">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½Ç‰ï¿½ï¿½tï¿½ï¿½ï¿½O</param>
+        /// <param name="headerFooterText">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½eï¿½Lï¿½Xï¿½g</param>
+        /// <param name="headerFooterFontSize">ï¿½wï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Tï¿½Cï¿½Y</param>
+        /// <param name="pageNumberPosition">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®ä½ç½®ï¼ˆ0:å³ä¸Š, 1:å³ä¸‹, 2:å·¦ä¸Š, 3:å·¦ä¸‹ï¼‰</param>
+        /// <param name="pageNumberOffsetX">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="pageNumberOffsetY">ãƒšãƒ¼ã‚¸æŒ¯ã‚Šã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="headerPosition">ãƒ˜ãƒƒãƒ€ã®ä½ç½®ï¼ˆ0:å·¦, 1:ä¸­å¤®, 2:å³ï¼‰</param>
+        /// <param name="headerOffsetX">ãƒ˜ãƒƒãƒ€ã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="headerOffsetY">ãƒ˜ãƒƒãƒ€ã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="footerPosition">ãƒ•ãƒƒã‚¿ã®ä½ç½®ï¼ˆ0:å·¦, 1:ä¸­å¤®, 2:å³ï¼‰</param>
+        /// <param name="footerOffsetX">ãƒ•ãƒƒã‚¿ã®Xè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        /// <param name="footerOffsetY">ãƒ•ãƒƒã‚¿ã®Yè»¸ã‚ªãƒ•ã‚»ãƒƒãƒˆ</param>
+        public static void MergePdfFilesWithAdvancedBookmarks(List<string> pdfFilePaths, string outputPath, List<FileItem> fileItems, bool addPageNumber = false, bool groupByFolder = false, bool addHeaderFooter = false, string headerFooterText = "", float headerFooterFontSize = 10.0f,
+            int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f,
+            int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f,
+            int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f)
         {
             using (var document = new Document())
             using (var copy = new PdfCopy(document, new FileStream(outputPath, FileMode.Create)))
@@ -183,31 +297,34 @@ namespace Nico2PDF.Services
 
                 if (groupByFolder)
                 {
-                    // ƒtƒHƒ‹ƒ_•Ê‚ÉƒOƒ‹[ƒv‰»‚µ‚½‚µ‚¨‚è\‘¢‚ğì¬
+                    // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ê‚ÉƒOï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ì¬
                     CreateFolderGroupedBookmarks(pdfFilePaths, fileItems, copy, bookmarks, ref currentPage);
                 }
                 else
                 {
-                    // ’Êí‚Ìƒtƒ‰ƒbƒg‚È‚µ‚¨‚è\‘¢‚ğì¬
+                    // ï¿½Êï¿½Ìƒtï¿½ï¿½ï¿½bï¿½gï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ì¬
                     CreateFlatBookmarks(pdfFilePaths, fileItems, copy, bookmarks, ref currentPage);
                 }
 
-                // ‚µ‚¨‚è‚ğİ’è
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
                 if (bookmarks.Any())
                 {
                     copy.Outlines = bookmarks;
                 }
             }
 
-            // ƒy[ƒW”Ô†‚Ü‚½‚Íƒwƒbƒ_Eƒtƒbƒ^’Ç‰ÁiƒIƒvƒVƒ‡ƒ“j
+            // ï¿½yï¿½[ï¿½Wï¿½Ôï¿½ï¿½Ü‚ï¿½ï¿½Íƒwï¿½bï¿½_ï¿½Eï¿½tï¿½bï¿½^ï¿½Ç‰ï¿½ï¿½iï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½j
             if (addPageNumber || addHeaderFooter)
             {
-                AddPageNumbersAndHeaderFooter(outputPath, addPageNumber, addHeaderFooter, headerFooterText, headerFooterFontSize);
+                AddPageNumbersAndHeaderFooter(outputPath, addPageNumber, addHeaderFooter, headerFooterText, headerFooterFontSize,
+                    pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
+                    headerPosition, headerOffsetX, headerOffsetY,
+                    footerPosition, footerOffsetX, footerOffsetY);
             }
         }
 
         /// <summary>
-        /// ƒtƒ‰ƒbƒg‚È‚µ‚¨‚è\‘¢‚ğì¬
+        /// ï¿½tï¿½ï¿½ï¿½bï¿½gï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ì¬
         /// </summary>
         private static void CreateFlatBookmarks(List<string> pdfFilePaths, List<FileItem> fileItems, PdfCopy copy, List<Dictionary<string, object>> bookmarks, ref int currentPage)
         {
@@ -218,14 +335,14 @@ namespace Nico2PDF.Services
 
                 using (var reader = new PdfReader(pdfPath))
                 {
-                    // PDF‚Ìƒy[ƒW‚ğ’Ç‰Á
+                    // PDFï¿½Ìƒyï¿½[ï¿½Wï¿½ï¿½Ç‰ï¿½
                     for (int i = 1; i <= reader.NumberOfPages; i++)
                     {
                         var page = copy.GetImportedPage(reader, i);
                         copy.AddPage(page);
                     }
 
-                    // ‚µ‚¨‚èî•ñ‚ğ’Ç‰Á
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‰ï¿½
                     if (fileItems != null && fileIndex < fileItems.Count)
                     {
                         var fileItem = fileItems[fileIndex];
@@ -244,20 +361,20 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// ƒtƒHƒ‹ƒ_•Ê‚ÉƒOƒ‹[ƒv‰»‚µ‚½‚µ‚¨‚è\‘¢‚ğì¬
+        /// ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ê‚ÉƒOï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ì¬
         /// </summary>
         private static void CreateFolderGroupedBookmarks(List<string> pdfFilePaths, List<FileItem> fileItems, PdfCopy copy, List<Dictionary<string, object>> bookmarks, ref int currentPage)
         {
-            // ƒtƒHƒ‹ƒ_•Ê‚Éƒtƒ@ƒCƒ‹‚ğƒOƒ‹[ƒv‰»
+            // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ê‚Éƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½
             var folderGroups = fileItems?
                 .Select((item, index) => new { Item = item, Index = index, PdfPath = pdfFilePaths[index] })
-                .GroupBy(x => x.Item.FolderName ?? "ƒ‹[ƒg")
+                .GroupBy(x => x.Item.FolderName ?? "ï¿½ï¿½ï¿½[ï¿½g")
                 .OrderBy(g => g.Key)
                 .ToList();
 
             if (folderGroups == null || !folderGroups.Any())
             {
-                // ƒtƒHƒ‹ƒ_î•ñ‚ª‚È‚¢ê‡‚Íƒtƒ‰ƒbƒg\‘¢‚ÉƒtƒH[ƒ‹ƒoƒbƒN
+                // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ñ‚ª‚È‚ï¿½ï¿½ê‡ï¿½Íƒtï¿½ï¿½ï¿½bï¿½gï¿½\ï¿½ï¿½ï¿½Éƒtï¿½Hï¿½[ï¿½ï¿½ï¿½oï¿½bï¿½N
                 CreateFlatBookmarks(pdfFilePaths, fileItems, copy, bookmarks, ref currentPage);
                 return;
             }
@@ -267,21 +384,21 @@ namespace Nico2PDF.Services
                 var folderStartPage = currentPage;
                 var childBookmarks = new List<Dictionary<string, object>>();
 
-                // ƒtƒHƒ‹ƒ_“à‚ÌŠeƒtƒ@ƒCƒ‹‚ğˆ—
+                // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ÌŠeï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 foreach (var fileInfo in folderGroup.OrderBy(x => x.Item.DisplayOrder))
                 {
                     var startPage = currentPage;
 
                     using (var reader = new PdfReader(fileInfo.PdfPath))
                     {
-                        // PDF‚Ìƒy[ƒW‚ğ’Ç‰Á
+                        // PDFï¿½Ìƒyï¿½[ï¿½Wï¿½ï¿½Ç‰ï¿½
                         for (int i = 1; i <= reader.NumberOfPages; i++)
                         {
                             var page = copy.GetImportedPage(reader, i);
                             copy.AddPage(page);
                         }
 
-                        // q‚µ‚¨‚èî•ñ‚ğ’Ç‰Á
+                        // ï¿½qï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‰ï¿½
                         var childBookmark = new Dictionary<string, object>
                         {
                             ["Title"] = GetBookmarkTitle(fileInfo.Item),
@@ -294,7 +411,7 @@ namespace Nico2PDF.Services
                     }
                 }
 
-                // ƒtƒHƒ‹ƒ_ƒŒƒxƒ‹‚Ì‚µ‚¨‚è‚ğì¬
+                // ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½xï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì¬
                 var folderBookmark = new Dictionary<string, object>
                 {
                     ["Title"] = folderGroup.Key,

@@ -485,6 +485,7 @@ namespace Nico2PDF
             if (txtHeaderFooterFontSize != null)
                 txtHeaderFooterFontSize.Text = project.HeaderFooterFontSize.ToString("0.0");
 
+
             UpdateLatestMergedPdfDisplay();
             RestoreFileItems(project);
             UpdateProjectDisplay();
@@ -522,6 +523,7 @@ namespace Nico2PDF
                 {
                     currentProject.HeaderFooterFontSize = fontSize;
                 }
+
                 
                 currentProject.LastAccessDate = DateTime.Now;
 
@@ -1581,6 +1583,18 @@ namespace Nico2PDF
             {
                 headerFooterFontSize = 10.0f;
             }
+
+            // 新しい位置設定を取得（currentProjectから）
+            // 位置設定を取得（プロジェクトから）
+            var pageNumberPosition = currentProject?.PageNumberPosition ?? 0;
+            var pageNumberOffsetX = currentProject?.PageNumberOffsetX ?? 20.0f;
+            var pageNumberOffsetY = currentProject?.PageNumberOffsetY ?? 20.0f;
+            var headerPosition = currentProject?.HeaderPosition ?? 0;
+            var headerOffsetX = currentProject?.HeaderOffsetX ?? 20.0f;
+            var headerOffsetY = currentProject?.HeaderOffsetY ?? 20.0f;
+            var footerPosition = currentProject?.FooterPosition ?? 2;
+            var footerOffsetX = currentProject?.FooterOffsetX ?? 20.0f;
+            var footerOffsetY = currentProject?.FooterOffsetY ?? 20.0f;
             
             var timestamp = DateTime.Now.ToString("yyMMddHHmmss");
             var outputFileName = $"{mergeFileName}_{timestamp}.pdf";
@@ -1599,17 +1613,26 @@ namespace Nico2PDF
                     if (addBookmarks && (includeSubfolders && groupByFolder))
                     {
                         // 高度なしおり機能を使用（フォルダ別グループ化）
-                        PdfMergeService.MergePdfFilesWithAdvancedBookmarks(pdfFilePaths, outputPath, allFiles, addPageNumber, true, addHeaderFooter, headerFooterText, headerFooterFontSize);
+                        PdfMergeService.MergePdfFilesWithAdvancedBookmarks(pdfFilePaths, outputPath, allFiles, addPageNumber, true, addHeaderFooter, headerFooterText, headerFooterFontSize,
+                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
+                            headerPosition, headerOffsetX, headerOffsetY,
+                            footerPosition, footerOffsetX, footerOffsetY);
                     }
                     else if (addBookmarks)
                     {
                         // 基本的なしおり機能を使用
-                        PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, true, allFiles, addHeaderFooter, headerFooterText, headerFooterFontSize);
+                        PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, true, allFiles, addHeaderFooter, headerFooterText, headerFooterFontSize,
+                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
+                            headerPosition, headerOffsetX, headerOffsetY,
+                            footerPosition, footerOffsetX, footerOffsetY);
                     }
                     else
                     {
                         // しおりなしで結合
-                        PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, false, null, addHeaderFooter, headerFooterText, headerFooterFontSize);
+                        PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, false, null, addHeaderFooter, headerFooterText, headerFooterFontSize,
+                            pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY,
+                            headerPosition, headerOffsetX, headerOffsetY,
+                            footerPosition, footerOffsetX, footerOffsetY);
                     }
                     mergeSuccess = true;
                 }
@@ -2204,6 +2227,58 @@ namespace Nico2PDF
             {
                 // 従来通り、すべて同じフォルダに出力
                 return Path.Combine(pdfOutputFolder, Path.GetFileNameWithoutExtension(originalFilePath) + ".pdf");
+            }
+        }
+
+        /// <summary>
+        /// 位置設定ボタンクリック
+        /// </summary>
+        private void BtnPositionSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentProject == null)
+            {
+                MessageBox.Show("プロジェクトが選択されていません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var dialog = new PositionSettingsDialog(currentProject);
+            dialog.Owner = this;
+            
+            if (dialog.ShowDialog() == true)
+            {
+                // ダイアログの結果をプロジェクトに反映
+                dialog.SaveToProject(currentProject);
+                
+                // プロジェクトを保存
+                SaveProjects();
+                
+                MessageBox.Show("位置設定を保存しました。", "設定完了", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        /// <summary>
+        /// ページ設定ボタンクリック
+        /// </summary>
+        private void BtnPageSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentProject == null)
+            {
+                MessageBox.Show("プロジェクトが選択されていません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var dialog = new PositionSettingsDialog(currentProject);
+            dialog.Owner = this;
+            
+            if (dialog.ShowDialog() == true)
+            {
+                // ダイアログの結果をプロジェクトに反映
+                dialog.SaveToProject(currentProject);
+                
+                // プロジェクトを保存
+                SaveProjects();
+                
+                MessageBox.Show("ページ設定を保存しました。", "設定完了", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         #endregion

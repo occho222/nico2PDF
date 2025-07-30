@@ -191,6 +191,51 @@ namespace Nico2PDF.Models
         public float HeaderFooterFontSize { get; set; } = 10.0f;
 
         /// <summary>
+        /// ページ振りの位置（0:右上, 1:右下, 2:左上, 3:左下）
+        /// </summary>
+        public int PageNumberPosition { get; set; } = 0;
+
+        /// <summary>
+        /// ページ振りのX軸オフセット
+        /// </summary>
+        public float PageNumberOffsetX { get; set; } = 20.0f;
+
+        /// <summary>
+        /// ページ振りのY軸オフセット
+        /// </summary>
+        public float PageNumberOffsetY { get; set; } = 20.0f;
+
+        /// <summary>
+        /// ヘッダの位置（0:左, 1:中央, 2:右）
+        /// </summary>
+        public int HeaderPosition { get; set; } = 0;
+
+        /// <summary>
+        /// ヘッダのX軸オフセット
+        /// </summary>
+        public float HeaderOffsetX { get; set; } = 20.0f;
+
+        /// <summary>
+        /// ヘッダのY軸オフセット
+        /// </summary>
+        public float HeaderOffsetY { get; set; } = 20.0f;
+
+        /// <summary>
+        /// フッタの位置（0:左, 1:中央, 2:右）
+        /// </summary>
+        public int FooterPosition { get; set; } = 2;
+
+        /// <summary>
+        /// フッタのX軸オフセット
+        /// </summary>
+        public float FooterOffsetX { get; set; } = 20.0f;
+
+        /// <summary>
+        /// フッタのY軸オフセット
+        /// </summary>
+        public float FooterOffsetY { get; set; } = 20.0f;
+
+        /// <summary>
         /// �ŐV�̌���PDF�t�@�C���p�X
         /// </summary>
         public string LatestMergedPdfPath { get; set; } = "";

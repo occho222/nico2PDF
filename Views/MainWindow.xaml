@@ -376,8 +376,6 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
 
                         <CheckBox x:Name="chkAddHeaderFooter" Content="ヘッダ・フッタ:" Grid.Column="0" 
@@ -386,26 +384,33 @@
                         <TextBox x:Name="txtHeaderFooterText" Grid.Column="1" Margin="5,0" 
                                  IsEnabled="{Binding IsChecked, ElementName=chkAddHeaderFooter}"
                                  ToolTip="ヘッダとフッタに表示するテキストを入力してください"/>
-                        <Label Content="サイズ:" Grid.Column="2" 
-                               IsEnabled="{Binding IsChecked, ElementName=chkAddHeaderFooter}"/>
-                        <TextBox x:Name="txtHeaderFooterFontSize" Grid.Column="3" Margin="5,0" Text="10"
-                                 IsEnabled="{Binding IsChecked, ElementName=chkAddHeaderFooter}"
-                                 ToolTip="フォントサイズを指定してください（例：10）"/>
                     </Grid>
                     
+                    
                     <!-- 結合PDFファイル操作行 -->
-                    <Grid Grid.Row="3" Margin="0,5,0,0">
+                    <Grid Grid.Row="4" Margin="0,5,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Label Content="最新結合PDF:" Grid.Column="0"/>
-                        <TextBox x:Name="txtLatestMergedPDF" Grid.Column="1" Margin="5,0" 
+                        <!-- ページ設定ボタン -->
+                        <Button x:Name="btnPageSettings" Content="📄 ページ設定" Grid.Row="0" Grid.Column="2" 
+                                Width="120" Height="25" Margin="5,0,0,5" Click="BtnPageSettings_Click"
+                                Background="#6C757D" Foreground="White" FontWeight="Bold"
+                                ToolTip="ページ番号のサイズ、位置を設定"/>
+
+                        <!-- 最新結合PDF -->
+                        <Label Content="最新結合PDF:" Grid.Row="1" Grid.Column="0"/>
+                        <TextBox x:Name="txtLatestMergedPDF" Grid.Row="1" Grid.Column="1" Margin="5,0" 
                                  IsReadOnly="True" Background="#F8F9FA" 
                                  Text="まだ結合されていません"/>
-                        <Button x:Name="btnOpenLatestMergedPDF" Content="📄 最新PDFを開く" Grid.Column="2" 
+                        <Button x:Name="btnOpenLatestMergedPDF" Content="📄 最新PDFを開く" Grid.Row="1" Grid.Column="2" 
                                 Width="120" Margin="5,0" Click="BtnOpenLatestMergedPDF_Click"
                                 Background="#FFC107" Foreground="Black" FontWeight="Bold"/>
                     </Grid>
