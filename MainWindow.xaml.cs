@@ -30,6 +30,7 @@ namespace Nico2PDF
         private ProjectData? currentProject = null;
         private string selectedFolderPath = "";
         private string pdfOutputFolder = "";
+        private AppSettings appSettings = new AppSettings();
         #endregion
 
         #region コンストラクタ
@@ -37,6 +38,7 @@ namespace Nico2PDF
         {
             InitializeComponent();
             InitializeDataBindings();
+            LoadAppSettings();
             LoadProjects();
             RestoreActiveProject();
             UpdateProjectDisplay();
@@ -248,6 +250,55 @@ namespace Nico2PDF
             catch
             {
                 txtVersion.Text = "v1.4.0";
+            }
+        }
+
+        /// <summary>
+        /// アプリケーション設定を読み込む
+        /// </summary>
+        private void LoadAppSettings()
+        {
+            appSettings = AppSettings.Load();
+            
+            // UI要素に設定を反映
+            txtHeaderText.Text = appSettings.HeaderText;
+            txtFooterText.Text = appSettings.FooterText;
+            chkAddHeader.IsChecked = appSettings.AddHeader;
+            chkAddFooter.IsChecked = appSettings.AddFooter;
+            txtMergeFileName.Text = appSettings.MergeFileName;
+            chkAddPageNumber.IsChecked = appSettings.AddPageNumber;
+            chkAddBookmarks.IsChecked = appSettings.AddBookmarks;
+            chkGroupByFolder.IsChecked = appSettings.GroupByFolder;
+        }
+
+        /// <summary>
+        /// アプリケーション設定を保存する
+        /// </summary>
+        private void SaveAppSettings()
+        {
+            appSettings.UpdateFromMainWindow(
+                txtHeaderText.Text ?? "",
+                txtFooterText.Text ?? "",
+                chkAddHeader.IsChecked ?? false,
+                chkAddFooter.IsChecked ?? false,
+                txtMergeFileName.Text ?? "結合PDF",
+                chkAddPageNumber.IsChecked ?? false,
+                chkAddBookmarks.IsChecked ?? true,
+                chkGroupByFolder.IsChecked ?? false
+            );
+            
+            appSettings.Save();
+        }
+
+        /// <summary>
+        /// 設定変更時に呼び出されるイベントハンドラ
+        /// </summary>
+        private void OnSettingsChanged(object sender, RoutedEventArgs e)
+        {
+            // アプリ起動中は設定の自動保存を行う
+            if (IsLoaded)
+            {
+                SaveAppSettings();
             }
         }
         #endregion
@@ -473,17 +524,11 @@ namespace Nico2PDF
             chkAddBookmarks.IsChecked = project.AddBookmarks;
             chkGroupByFolder.IsChecked = project.GroupByFolder;
             
-            // ヘッダフッタのUIコントロールを検索して設定
-            var chkAddHeaderFooter = FindName("chkAddHeaderFooter") as System.Windows.Controls.CheckBox;
-            var txtHeaderFooterText = FindName("txtHeaderFooterText") as System.Windows.Controls.TextBox;
-            var txtHeaderFooterFontSize = FindName("txtHeaderFooterFontSize") as System.Windows.Controls.TextBox;
-            
-            if (chkAddHeaderFooter != null)
-                chkAddHeaderFooter.IsChecked = project.AddHeaderFooter;
-            if (txtHeaderFooterText != null)
-                txtHeaderFooterText.Text = project.HeaderFooterText;
-            if (txtHeaderFooterFontSize != null)
-                txtHeaderFooterFontSize.Text = project.HeaderFooterFontSize.ToString("0.0");
+            // ヘッダ・フッタの個別設定をUIに反映
+            chkAddHeader.IsChecked = project.AddHeader;
+            chkAddFooter.IsChecked = project.AddFooter;
+            txtHeaderText.Text = project.HeaderText;
+            txtFooterText.Text = project.FooterText;
 
 
             UpdateLatestMergedPdfDisplay();
@@ -510,6 +555,12 @@ namespace Nico2PDF
                 currentProject.AddBookmarks = chkAddBookmarks.IsChecked ?? true;
                 currentProject.GroupByFolder = chkGroupByFolder.IsChecked ?? false;
                 
+                // ヘッダ・フッタ設定をプロジェクトに保存
+                currentProject.AddHeader = chkAddHeader.IsChecked ?? false;
+                currentProject.AddFooter = chkAddFooter.IsChecked ?? false;
+                currentProject.HeaderText = txtHeaderText.Text ?? "";
+                currentProject.FooterText = txtFooterText.Text ?? "";
+
                 // ヘッダフッタのUIコントロールを検索して設定
                 var chkAddHeaderFooter = FindName("chkAddHeaderFooter") as System.Windows.Controls.CheckBox;
                 var txtHeaderFooterText = FindName("txtHeaderFooterText") as System.Windows.Controls.TextBox;
@@ -546,6 +597,9 @@ namespace Nico2PDF
 
                 SaveProjects();
             }
+            
+            // アプリケーション設定も同時に保存
+            SaveAppSettings();
         }
 
         private void UpdateProjectTitle()
@@ -1573,8 +1627,25 @@ namespace Nico2PDF
             var addPageNumber = chkAddPageNumber.IsChecked == true;
             var addBookmarks = chkAddBookmarks.IsChecked == true;
             var groupByFolder = chkGroupByFolder.IsChecked == true;
-            var addHeaderFooter = (FindName("chkAddHeaderFooter") as System.Windows.Controls.CheckBox)?.IsChecked == true;
-            var headerFooterText = (FindName("txtHeaderFooterText") as System.Windows.Controls.TextBox)?.Text ?? "";
+            var addHeader = chkAddHeader.IsChecked == true;
+            var addFooter = chkAddFooter.IsChecked == true;
+            var headerText = txtHeaderText.Text ?? "";
+            var footerText = txtFooterText.Text ?? "";
+            var addHeaderFooter = addHeader || addFooter;
+            var headerFooterText = addHeader ? headerText : footerText;
+            
+            // メイン画面の設定をプロジェクトに保存
+            if (currentProject != null)
+            {
+                currentProject.AddHeader = addHeader;
+                currentProject.AddFooter = addFooter;
+                currentProject.HeaderText = headerText;
+                currentProject.FooterText = footerText;
+                currentProject.MergeFileName = txtMergeFileName.Text;
+                currentProject.AddPageNumber = chkAddPageNumber.IsChecked == true;
+                currentProject.AddBookmarks = chkAddBookmarks.IsChecked == true;
+                currentProject.GroupByFolder = chkGroupByFolder.IsChecked == true;
+            }
             var headerFooterFontSize = 10.0f;
             
             // フォントサイズをパース
@@ -1619,7 +1690,8 @@ namespace Nico2PDF
                         PdfMergeService.MergePdfFilesWithAdvancedBookmarks(pdfFilePaths, outputPath, allFiles, addPageNumber, true, addHeaderFooter, headerFooterText, headerFooterFontSize,
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
-                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize);
+                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
+                            addHeader, addFooter, headerText, footerText);
                     }
                     else if (addBookmarks)
                     {
@@ -1627,7 +1699,8 @@ namespace Nico2PDF
                         PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, true, allFiles, addHeaderFooter, headerFooterText, headerFooterFontSize,
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
-                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize);
+                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
+                            addHeader, addFooter, headerText, footerText);
                     }
                     else
                     {
@@ -1635,7 +1708,8 @@ namespace Nico2PDF
                         PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, false, null, addHeaderFooter, headerFooterText, headerFooterFontSize,
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
-                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize);
+                            footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
+                            addHeader, addFooter, headerText, footerText);
                     }
                     mergeSuccess = true;
                 }
@@ -1881,6 +1955,7 @@ namespace Nico2PDF
         protected override void OnClosed(EventArgs e)
         {
             SaveCurrentProjectState();
+            SaveAppSettings();
             base.OnClosed(e);
         }
         #endregion
@@ -2269,6 +2344,12 @@ namespace Nico2PDF
                 MessageBox.Show("プロジェクトが選択されていません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            // メイン画面のヘッダ・フッタ設定をプロジェクトに反映
+            currentProject.AddHeader = chkAddHeader.IsChecked == true;
+            currentProject.AddFooter = chkAddFooter.IsChecked == true;
+            currentProject.HeaderText = txtHeaderText.Text ?? "";
+            currentProject.FooterText = txtFooterText.Text ?? "";
 
             var dialog = new PositionSettingsDialog(currentProject);
             dialog.Owner = this;

@@ -181,9 +181,29 @@ namespace Nico2PDF.Models
         public bool AddHeaderFooter { get; set; } = false;
 
         /// <summary>
+        /// ヘッダ追加フラグ
+        /// </summary>
+        public bool AddHeader { get; set; } = false;
+
+        /// <summary>
+        /// フッタ追加フラグ
+        /// </summary>
+        public bool AddFooter { get; set; } = false;
+
+        /// <summary>
         /// �w�b�_�E�t�b�^�e�L�X�g
         /// </summary>
         public string HeaderFooterText { get; set; } = "";
+
+        /// <summary>
+        /// ヘッダテキスト
+        /// </summary>
+        public string HeaderText { get; set; } = "";
+
+        /// <summary>
+        /// フッタテキスト
+        /// </summary>
+        public string FooterText { get; set; } = "";
 
         /// <summary>
         /// �w�b�_�E�t�b�^�t�H���g�T�C�Y

@@ -344,12 +344,15 @@
                         </Grid.ColumnDefinitions>
 
                         <Label Content="結合ファイル名:" Grid.Column="0"/>
-                        <TextBox x:Name="txtMergeFileName" Grid.Column="1" Margin="5,0" Text="結合PDF"/>
+                        <TextBox x:Name="txtMergeFileName" Grid.Column="1" Margin="5,0" Text="結合PDF"
+                                 TextChanged="OnSettingsChanged"/>
                         <CheckBox x:Name="chkAddPageNumber" Content="ページ番号追加" Grid.Column="2" 
-                                  Margin="10,0" VerticalAlignment="Center"/>
+                                  Margin="10,0" VerticalAlignment="Center"
+                                  Checked="OnSettingsChanged" Unchecked="OnSettingsChanged"/>
                         <CheckBox x:Name="chkAddBookmarks" Content="しおり追加" Grid.Column="3" 
                                   Margin="10,0" VerticalAlignment="Center" IsChecked="True"
-                                  ToolTip="PDF結合時にファイル名をしおりとして追加します"/>
+                                  ToolTip="PDF結合時にファイル名をしおりとして追加します"
+                                  Checked="OnSettingsChanged" Unchecked="OnSettingsChanged"/>
                     </Grid>
                     
                     <!-- しおり設定行 -->
@@ -364,7 +367,8 @@
                             <CheckBox x:Name="chkGroupByFolder" Content="フォルダ別にグループ化" 
                                       Margin="0,0,15,0" VerticalAlignment="Center"
                                       IsEnabled="{Binding IsChecked, ElementName=chkAddBookmarks}"
-                                      ToolTip="サブフォルダを含む場合、フォルダ別に階層構造でしおりを作成します"/>
+                                      ToolTip="サブフォルダを含む場合、フォルダ別に階層構造でしおりを作成します"
+                                      Checked="OnSettingsChanged" Unchecked="OnSettingsChanged"/>
                             <TextBlock Text="※ しおりにはファイルの表示名が使用されます" 
                                        FontSize="10" Foreground="Gray" VerticalAlignment="Center"
                                        Visibility="{Binding IsChecked, ElementName=chkAddBookmarks, Converter={StaticResource BooleanToVisibilityConverter}}"/>
@@ -373,17 +377,34 @@
                     
                     <!-- ヘッダ・フッタ設定行 -->
                     <Grid Grid.Row="2" Margin="0,5,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <CheckBox x:Name="chkAddHeaderFooter" Content="ヘッダ・フッタ:" Grid.Column="0" 
+                        <!-- ヘッダ設定 -->
+                        <CheckBox x:Name="chkAddHeader" Content="ヘッダ:" Grid.Row="0" Grid.Column="0" 
                                   Margin="0,0,5,0" VerticalAlignment="Center"
-                                  ToolTip="ヘッダは左上、フッタは右下に同じテキストを追加します"/>
-                        <TextBox x:Name="txtHeaderFooterText" Grid.Column="1" Margin="5,0" 
-                                 IsEnabled="{Binding IsChecked, ElementName=chkAddHeaderFooter}"
-                                 ToolTip="ヘッダとフッタに表示するテキストを入力してください"/>
+                                  ToolTip="ヘッダテキストを追加します" 
+                                  Checked="OnSettingsChanged" Unchecked="OnSettingsChanged"/>
+                        <TextBox x:Name="txtHeaderText" Grid.Row="0" Grid.Column="1" Margin="5,0,0,3" 
+                                 IsEnabled="{Binding IsChecked, ElementName=chkAddHeader}"
+                                 ToolTip="ヘッダに表示するテキストを入力してください"
+                                 TextChanged="OnSettingsChanged"/>
+
+                        <!-- フッタ設定 -->
+                        <CheckBox x:Name="chkAddFooter" Content="フッタ:" Grid.Row="1" Grid.Column="0" 
+                                  Margin="0,3,5,0" VerticalAlignment="Center"
+                                  ToolTip="フッタテキストを追加します"
+                                  Checked="OnSettingsChanged" Unchecked="OnSettingsChanged"/>
+                        <TextBox x:Name="txtFooterText" Grid.Row="1" Grid.Column="1" Margin="5,3,0,0" 
+                                 IsEnabled="{Binding IsChecked, ElementName=chkAddFooter}"
+                                 ToolTip="フッタに表示するテキストを入力してください"
+                                 TextChanged="OnSettingsChanged"/>
                     </Grid>
                     
                     
