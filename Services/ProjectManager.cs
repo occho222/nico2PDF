@@ -14,6 +14,12 @@ namespace Nico2PDF.Services
     public class ProjectManager
     {
         private static readonly string ProjectsFilePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Nico2PDF",
+            "projects.json"
+        );
+
+        private static readonly string LegacyProjectsFilePath = Path.Combine(
             Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppDomain.CurrentDomain.BaseDirectory,
             "projects.json"
         );
@@ -26,6 +32,7 @@ namespace Nico2PDF.Services
         {
             try
             {
+                // 新しい場所にprojects.jsonが存在する場合
                 if (File.Exists(ProjectsFilePath))
                 {
                     var json = File.ReadAllText(ProjectsFilePath);
@@ -39,6 +46,38 @@ namespace Nico2PDF.Services
                         {
                             project.SubfolderDepth = 1;
                         }
+                    }
+                    
+                    return projects;
+                }
+                
+                // 古い場所にprojects.jsonが存在する場合は移行
+                if (File.Exists(LegacyProjectsFilePath))
+                {
+                    var json = File.ReadAllText(LegacyProjectsFilePath);
+                    var projects = JsonSerializer.Deserialize<List<ProjectData>>(json) ?? new List<ProjectData>();
+                    
+                    // 既存プロジェクトの SubfolderDepth マイグレーション
+                    foreach (var project in projects)
+                    {
+                        // SubfolderDepthが0の場合はデフォルト値(1)を設定
+                        if (project.SubfolderDepth == 0)
+                        {
+                            project.SubfolderDepth = 1;
+                        }
+                    }
+                    
+                    // 新しい場所に保存
+                    SaveProjects(projects);
+                    
+                    // 古いファイルを削除
+                    try
+                    {
+                        File.Delete(LegacyProjectsFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"古いprojects.jsonファイルの削除に失敗しました: {ex.Message}");
                     }
                     
                     return projects;

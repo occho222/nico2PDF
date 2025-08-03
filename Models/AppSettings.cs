@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace Nico2PDF.Models
@@ -10,6 +11,12 @@ namespace Nico2PDF.Models
     public class AppSettings
     {
         private static readonly string SettingsFilePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Nico2PDF",
+            "settings.json"
+        );
+
+        private static readonly string LegacySettingsFilePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Nico2PDF",
             "settings.json"
@@ -63,11 +70,41 @@ namespace Nico2PDF.Models
         {
             try
             {
+                // 新しい場所に設定ファイルが存在する場合
                 if (File.Exists(SettingsFilePath))
                 {
                     var jsonString = File.ReadAllText(SettingsFilePath);
                     var settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
                     return settings ?? new AppSettings();
+                }
+                
+                // 古い場所に設定ファイルが存在する場合は移行
+                if (File.Exists(LegacySettingsFilePath))
+                {
+                    var jsonString = File.ReadAllText(LegacySettingsFilePath);
+                    var settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
+                    if (settings != null)
+                    {
+                        // 新しい場所に保存
+                        settings.Save();
+                        
+                        // 古いファイルを削除
+                        try
+                        {
+                            File.Delete(LegacySettingsFilePath);
+                            var legacyDir = Path.GetDirectoryName(LegacySettingsFilePath);
+                            if (!string.IsNullOrEmpty(legacyDir) && Directory.Exists(legacyDir) && !Directory.EnumerateFileSystemEntries(legacyDir).Any())
+                            {
+                                Directory.Delete(legacyDir);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"古い設定ファイルの削除に失敗しました: {ex.Message}");
+                        }
+                        
+                        return settings;
+                    }
                 }
             }
             catch (Exception ex)
