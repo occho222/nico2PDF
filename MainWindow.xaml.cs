@@ -5,10 +5,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Win32;
 using Nico2PDF.Models;
 using Nico2PDF.Services;
 using Nico2PDF.Views;
@@ -2365,6 +2367,129 @@ namespace Nico2PDF
                 MessageBox.Show("ページ設定を保存しました。", "設定完了", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+        #endregion
+
+        #region インポート・エクスポート機能
+        /// <summary>
+        /// プロジェクトデータをエクスポート
+        /// </summary>
+        private void MenuExportProjects_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "JSON ファイル (*.json)|*.json",
+                    Title = "プロジェクトデータをエクスポート",
+                    FileName = $"Nico2PDF_Projects_{DateTime.Now:yyyyMMdd_HHmmss}.json"
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    var projects = ProjectManager.LoadProjects();
+                    var options = new JsonSerializerOptions
+                    {
+                        WriteIndented = true,
+                        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    };
+
+                    var jsonString = JsonSerializer.Serialize(projects, options);
+                    File.WriteAllText(saveFileDialog.FileName, jsonString);
+
+                    MessageBox.Show($"プロジェクトデータを正常にエクスポートしました。\n\nファイル: {saveFileDialog.FileName}", 
+                        "エクスポート完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"プロジェクトデータのエクスポートに失敗しました。\n\nエラー: {ex.Message}", 
+                    "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// プロジェクトデータをインポート
+        /// </summary>
+        private void MenuImportProjects_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openFileDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "JSON ファイル (*.json)|*.json",
+                    Title = "プロジェクトデータをインポート"
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    var result = MessageBox.Show(
+                        "プロジェクトデータをインポートします。\n\n" +
+                        "既存のプロジェクトと同じ名前のプロジェクトがある場合は上書きされます。\n" +
+                        "続行しますか？",
+                        "インポート確認",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question
+                    );
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        var jsonString = File.ReadAllText(openFileDialog.FileName);
+                        var importedProjects = JsonSerializer.Deserialize<List<ProjectData>>(jsonString);
+
+                        if (importedProjects != null)
+                        {
+                            var existingProjects = ProjectManager.LoadProjects();
+                            var importCount = 0;
+                            var updateCount = 0;
+
+                            foreach (var importedProject in importedProjects)
+                            {
+                                var existingProject = existingProjects.FirstOrDefault(p => p.Name == importedProject.Name);
+                                if (existingProject != null)
+                                {
+                                    // 既存プロジェクトを更新（アクティブ状態は保持）
+                                    var wasActive = existingProject.IsActive;
+                                    existingProjects.Remove(existingProject);
+                                    importedProject.IsActive = wasActive;
+                                    existingProjects.Add(importedProject);
+                                    updateCount++;
+                                }
+                                else
+                                {
+                                    // 新規プロジェクトを追加（非アクティブにする）
+                                    importedProject.IsActive = false;
+                                    existingProjects.Add(importedProject);
+                                    importCount++;
+                                }
+                            }
+
+                            ProjectManager.SaveProjects(existingProjects);
+                            LoadProjects();
+
+                            MessageBox.Show(
+                                $"プロジェクトデータを正常にインポートしました。\n\n" +
+                                $"新規追加: {importCount}件\n" +
+                                $"更新: {updateCount}件",
+                                "インポート完了",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information
+                            );
+                        }
+                        else
+                        {
+                            MessageBox.Show("ファイルの形式が正しくありません。", "エラー", 
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"プロジェクトデータのインポートに失敗しました。\n\nエラー: {ex.Message}", 
+                    "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         #endregion
     }
 }
