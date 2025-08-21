@@ -283,42 +283,53 @@ namespace Nico2PDF.Services
         {
             try
             {
-                // Windowsのシステムフォントフォルダから日本語フォントを取得
-                var fontPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "msgothic.ttc,0");
-                if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "msgothic.ttc")))
-                {
-                    return BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-                }
-            }
-            catch { }
-
-            try
-            {
-                // msgothic.ttcが見つからない場合、meiryoを試す
-                var fontPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "meiryo.ttc,0");
-                if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "meiryo.ttc")))
-                {
-                    return BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-                }
-            }
-            catch { }
-
-            try
-            {
-                // フォント名での指定を試す
-                return BaseFont.CreateFont("MS Gothic", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-            }
-            catch { }
-
-            try
-            {
-                // 最終的にはArialのUnicodeエンコーディングを試す
-                return BaseFont.CreateFont("Arial", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+                // iTextSharpの組み込み日本語フォントを試す（推奨方法）
+                return BaseFont.CreateFont("HeiseiKakuGo-W5", "UniJIS-UCS2-H", BaseFont.NOT_EMBEDDED);
             }
             catch
             {
-                // 最終的にはHelveticaにフォールバック（ただし日本語は表示されない）
-                return BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+                try
+                {
+                    // 別の組み込み日本語フォント
+                    return BaseFont.CreateFont("HeiseiMin-W3", "UniJIS-UCS2-H", BaseFont.NOT_EMBEDDED);
+                }
+                catch
+                {
+                    try
+                    {
+                        // MS Gothicフォントファイルの直接指定
+                        var windir = Environment.GetEnvironmentVariable("WINDIR") ?? @"C:\Windows";
+                        var fontPath = Path.Combine(windir, @"Fonts\msgothic.ttc,0");
+                        if (File.Exists(Path.Combine(windir, @"Fonts\msgothic.ttc")))
+                        {
+                            return BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                        }
+                    }
+                    catch { }
+
+                    try
+                    {
+                        // Meiryoフォントを試す
+                        var windir = Environment.GetEnvironmentVariable("WINDIR") ?? @"C:\Windows";
+                        var fontPath = Path.Combine(windir, @"Fonts\meiryo.ttc,0");
+                        if (File.Exists(Path.Combine(windir, @"Fonts\meiryo.ttc")))
+                        {
+                            return BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                        }
+                    }
+                    catch { }
+
+                    try
+                    {
+                        // Arial Unicode MSを試す（多言語対応）
+                        return BaseFont.CreateFont("Arial Unicode MS", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+                    }
+                    catch { }
+
+                    // 最終的にはHelveticaにフォールバック
+                    System.Diagnostics.Debug.WriteLine("警告: 日本語フォントが見つかりません。英数字のみ表示されます。");
+                    return BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+                }
             }
         }
 
