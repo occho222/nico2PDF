@@ -155,7 +155,9 @@ namespace Nico2PDF.Services
                     if (addPageNumber)
                     {
                         cb.BeginText();
-                        cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false), pageNumberFontSize);
+                        // 日本語対応フォントを使用
+                        var pageNumberFont = CreateJapaneseFont();
+                        cb.SetFontAndSize(pageNumberFont, pageNumberFontSize);
                         
                         float x, y;
                         int alignment;
@@ -194,7 +196,8 @@ namespace Nico2PDF.Services
                         cb.EndText();
                     }
 
-                    var font = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+                    // 日本語対応フォントを使用
+                    var font = CreateJapaneseFont();
 
                     // ヘッダを追加
                     if ((addHeaderFooter && !string.IsNullOrEmpty(headerFooterText)) || (addHeader && !string.IsNullOrEmpty(headerText)))
@@ -270,6 +273,53 @@ namespace Nico2PDF.Services
 
             File.Delete(pdfPath);
             File.Move(tempPath, pdfPath);
+        }
+
+        /// <summary>
+        /// 日本語対応フォントを作成
+        /// </summary>
+        /// <returns>日本語対応BaseFont</returns>
+        private static BaseFont CreateJapaneseFont()
+        {
+            try
+            {
+                // Windowsのシステムフォントフォルダから日本語フォントを取得
+                var fontPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "msgothic.ttc,0");
+                if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "msgothic.ttc")))
+                {
+                    return BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                }
+            }
+            catch { }
+
+            try
+            {
+                // msgothic.ttcが見つからない場合、meiryoを試す
+                var fontPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "meiryo.ttc,0");
+                if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "meiryo.ttc")))
+                {
+                    return BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                }
+            }
+            catch { }
+
+            try
+            {
+                // フォント名での指定を試す
+                return BaseFont.CreateFont("MS Gothic", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            }
+            catch { }
+
+            try
+            {
+                // 最終的にはArialのUnicodeエンコーディングを試す
+                return BaseFont.CreateFont("Arial", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            }
+            catch
+            {
+                // 最終的にはHelveticaにフォールバック（ただし日本語は表示されない）
+                return BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+            }
         }
 
         /// <summary>
