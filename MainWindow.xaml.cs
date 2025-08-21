@@ -1481,6 +1481,20 @@ namespace Nico2PDF
                 return;
             }
 
+            // ファイルが開かれているかどうかを事前に確認
+            var selectedFilePaths = selectedFiles.Select(f => f.FilePath).ToList();
+            var filesInUse = PdfConversionService.GetFilesInUse(selectedFilePaths);
+            
+            if (filesInUse.Any())
+            {
+                var message = "以下のファイルが他のアプリケーションで開かれています。\n";
+                message += "PDF変換を実行する前にファイルを閉じてください。\n\n";
+                message += string.Join("\n", filesInUse);
+                
+                MessageBox.Show(message, "ファイルが開かれています", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (!Directory.Exists(pdfOutputFolder))
                 Directory.CreateDirectory(pdfOutputFolder);
 
@@ -2577,6 +2591,20 @@ namespace Nico2PDF
             
             if (!filesToConvert.Any())
                 return;
+
+            // ファイルが開かれているかどうかを事前に確認
+            var filePaths = filesToConvert.Select(f => f.FilePath).ToList();
+            var filesInUse = PdfConversionService.GetFilesInUse(filePaths);
+            
+            if (filesInUse.Any())
+            {
+                var message = "以下のファイルが他のアプリケーションで開かれています。\n";
+                message += "PDF変換を実行する前にファイルを閉じてください。\n\n";
+                message += string.Join("\n", filesInUse);
+                
+                MessageBox.Show(message, "ファイルが開かれています", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             if (!Directory.Exists(pdfOutputFolder))
                 Directory.CreateDirectory(pdfOutputFolder);

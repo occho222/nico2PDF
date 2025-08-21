@@ -839,5 +839,47 @@ namespace Nico2PDF.Services
             
             return relativePath.Replace('/', Path.DirectorySeparatorChar);
         }
+
+        /// <summary>
+        /// ファイルが他のプロセスによって開かれているかどうかを確認
+        /// </summary>
+        /// <param name="filePath">確認するファイルのパス</param>
+        /// <returns>ファイルが開かれている場合はtrue</returns>
+        public static bool IsFileInUse(string filePath)
+        {
+            try
+            {
+                using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    return false;
+                }
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 複数のファイルが開かれているかどうかを確認
+        /// </summary>
+        /// <param name="filePaths">確認するファイルパスのリスト</param>
+        /// <returns>開かれているファイルのリスト</returns>
+        public static List<string> GetFilesInUse(List<string> filePaths)
+        {
+            var filesInUse = new List<string>();
+            foreach (var filePath in filePaths)
+            {
+                if (IsFileInUse(filePath))
+                {
+                    filesInUse.Add(Path.GetFileName(filePath));
+                }
+            }
+            return filesInUse;
+        }
     }
 }
