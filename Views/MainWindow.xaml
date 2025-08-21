@@ -454,7 +454,7 @@
                 </StatusBarItem>
                 <StatusBarItem HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="txtVersion" Text="v1.7.5" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtVersion" Text="v1.7.6" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <ProgressBar x:Name="progressBar" Width="200" Height="20" Visibility="Collapsed"/>
                     </StackPanel>
                 </StatusBarItem>

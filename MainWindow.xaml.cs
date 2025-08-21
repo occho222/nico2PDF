@@ -830,11 +830,14 @@ namespace Nico2PDF
                 FileManagementService.UpdateFiles(selectedFolderPath, pdfOutputFolder, fileItems.ToList(), includeSubfolders, subfolderDepth);
             
             fileItems.Clear();
-            for (int i = 0; i < updatedItems.Count; i++)
+            
+            // 名前順でソートしてから追加
+            var sortedItems = updatedItems.OrderBy(f => f.FileName).ToList();
+            for (int i = 0; i < sortedItems.Count; i++)
             {
-                updatedItems[i].Number = i + 1;
-                updatedItems[i].DisplayOrder = i;
-                fileItems.Add(updatedItems[i]);
+                sortedItems[i].Number = i + 1;
+                sortedItems[i].DisplayOrder = i;
+                fileItems.Add(sortedItems[i]);
             }
 
             // PDFステータスを更新（UIスレッドで実行）
@@ -868,9 +871,14 @@ namespace Nico2PDF
                 FileManagementService.UpdateFiles(selectedFolderPath, pdfOutputFolder, fileItems.ToList(), includeSubfolders, subfolderDepth);
 
             fileItems.Clear();
-            foreach (var item in updatedItems)
+            
+            // 名前順でソートしてから追加
+            var sortedItems = updatedItems.OrderBy(f => f.FileName).ToList();
+            for (int i = 0; i < sortedItems.Count; i++)
             {
-                fileItems.Add(item);
+                sortedItems[i].Number = i + 1;
+                sortedItems[i].DisplayOrder = i;
+                fileItems.Add(sortedItems[i]);
             }
 
             // PDFステータスを更新（UIスレッドで実行）
