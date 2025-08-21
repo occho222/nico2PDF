@@ -210,6 +210,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- 第1行：メイン機能ボタン -->
@@ -226,12 +227,10 @@
                     <Button x:Name="btnCopyToClipboard" Content="📋 クリップボード" Width="120" Margin="0,0,5,0" 
                             Click="BtnCopyToClipboard_Click" Background="#6F42C1" Foreground="White"
                             ToolTip="ファイル一覧をクリップボードにコピーします"/>
-                    <CheckBox x:Name="chkSelectAll" Content="全選択" Margin="20,0,0,0" 
-                              VerticalAlignment="Center" Click="ChkSelectAll_Click"/>
                 </StackPanel>
 
                 <!-- 第2行：ファイル操作・並び替えボタン -->
-                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,5">
                     <!-- ファイル操作ボタン -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
                         <TextBlock Text="ファイル操作:" VerticalAlignment="Center" Margin="0,0,5,0" FontWeight="Bold"/>
@@ -256,6 +255,12 @@
                         <Button x:Name="btnSortByName" Content="名前順" Width="60" Height="25" 
                                 Click="BtnSortByName_Click" ToolTip="ファイル名順に並び替え"/>
                     </StackPanel>
+                </StackPanel>
+
+                <!-- 第3行：全選択チェックボックス -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
+                    <CheckBox x:Name="chkSelectAll" Content="全選択" VerticalAlignment="Center" 
+                              Click="ChkSelectAll_Click" FontWeight="Bold"/>
                 </StackPanel>
             </Grid>
 
@@ -452,7 +457,7 @@
                 </StatusBarItem>
                 <StatusBarItem HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="txtVersion" Text="v1.8.0" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtVersion" Text="v1.8.1" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <ProgressBar x:Name="progressBar" Width="200" Height="20" Visibility="Collapsed"/>
                     </StackPanel>
                 </StatusBarItem>
