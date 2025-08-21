@@ -6,6 +6,8 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.Threading.Tasks;
 using Nico2PDF.Models;
+using System.Diagnostics;
+using System.Windows;
 
 namespace Nico2PDF.Services
 {
@@ -14,6 +16,9 @@ namespace Nico2PDF.Services
     /// </summary>
     public class PdfMergeService
     {
+        // 日本語フォントのキャッシュ
+        private static BaseFont? _cachedJapaneseFont = null;
+        private static readonly object _fontLock = new object();
         /// <summary>
         /// PDF�t�@�C��������
         /// </summary>
@@ -276,60 +281,82 @@ namespace Nico2PDF.Services
         }
 
         /// <summary>
-        /// 日本語対応フォントを作成
+        /// 日本語対応フォントを作成（キャッシュ機能付き）
         /// </summary>
         /// <returns>日本語対応BaseFont</returns>
         private static BaseFont CreateJapaneseFont()
         {
-            try
+            lock (_fontLock)
             {
-                // iTextSharpの組み込み日本語フォントを試す（推奨方法）
-                return BaseFont.CreateFont("HeiseiKakuGo-W5", "UniJIS-UCS2-H", BaseFont.NOT_EMBEDDED);
-            }
-            catch
-            {
-                try
+                // キャッシュされたフォントがあれば返す
+                if (_cachedJapaneseFont != null)
                 {
-                    // 別の組み込み日本語フォント
-                    return BaseFont.CreateFont("HeiseiMin-W3", "UniJIS-UCS2-H", BaseFont.NOT_EMBEDDED);
+                    return _cachedJapaneseFont;
                 }
-                catch
+
+                Debug.WriteLine("=== 日本語フォント作成開始 ===");
+                
+                // 最もシンプルで確実な方法から順番に試す
+                var fontCandidates = new[]
+                {
+                    // 1. 確実に存在するWindowsシステムフォント
+                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\msmincho.ttc,0", Name = "MS Mincho", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\meiryo.ttc,0", Name = "Meiryo", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    
+                    // 2. システムフォント名での指定
+                    new { Path = "MS Gothic", Name = "MS Gothic (Name)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = "MS UI Gothic", Name = "MS UI Gothic (Name)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = "Meiryo", Name = "Meiryo (Name)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    
+                    // 3. 埋め込み版も試す
+                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic (Embedded)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.EMBEDDED },
+                };
+
+                foreach (var candidate in fontCandidates)
                 {
                     try
                     {
-                        // MS Gothicフォントファイルの直接指定
-                        var windir = Environment.GetEnvironmentVariable("WINDIR") ?? @"C:\Windows";
-                        var fontPath = Path.Combine(windir, @"Fonts\msgothic.ttc,0");
-                        if (File.Exists(Path.Combine(windir, @"Fonts\msgothic.ttc")))
+                        Debug.WriteLine($"フォント試行: {candidate.Name}");
+                        
+                        // ファイルパスの場合は存在確認
+                        if (candidate.Path.Contains(@"\"))
                         {
-                            return BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                            var filePath = candidate.Path.Contains(",") ? candidate.Path.Split(',')[0] : candidate.Path;
+                            if (!File.Exists(filePath))
+                            {
+                                Debug.WriteLine($"  ファイルが存在しません: {filePath}");
+                                continue;
+                            }
+                        }
+                        
+                        var font = BaseFont.CreateFont(candidate.Path, candidate.Encoding, candidate.Embedded);
+                        
+                        // 日本語文字のテスト
+                        var testText = "こんにちは";
+                        var testBytes = font.ConvertToBytes(testText, candidate.Encoding);
+                        if (testBytes != null && testBytes.Length > 0)
+                        {
+                            Debug.WriteLine($"  成功: {candidate.Name} - 日本語対応確認済み");
+                            _cachedJapaneseFont = font;  // キャッシュに保存
+                            return font;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"  失敗: {candidate.Name} - 日本語文字変換でnullまたは空");
                         }
                     }
-                    catch { }
-
-                    try
+                    catch (Exception ex)
                     {
-                        // Meiryoフォントを試す
-                        var windir = Environment.GetEnvironmentVariable("WINDIR") ?? @"C:\Windows";
-                        var fontPath = Path.Combine(windir, @"Fonts\meiryo.ttc,0");
-                        if (File.Exists(Path.Combine(windir, @"Fonts\meiryo.ttc")))
-                        {
-                            return BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-                        }
+                        Debug.WriteLine($"  エラー ({candidate.Name}): {ex.Message}");
                     }
-                    catch { }
-
-                    try
-                    {
-                        // Arial Unicode MSを試す（多言語対応）
-                        return BaseFont.CreateFont("Arial Unicode MS", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-                    }
-                    catch { }
-
-                    // 最終的にはHelveticaにフォールバック
-                    System.Diagnostics.Debug.WriteLine("警告: 日本語フォントが見つかりません。英数字のみ表示されます。");
-                    return BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
                 }
+
+                // 全て失敗した場合の最終手段
+                Debug.WriteLine("警告: すべての日本語フォントの読み込みに失敗しました。Helveticaを使用します。");
+                var fallbackFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+                _cachedJapaneseFont = fallbackFont;
+                return fallbackFont;
             }
         }
 
