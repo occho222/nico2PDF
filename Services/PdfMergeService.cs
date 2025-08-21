@@ -334,7 +334,15 @@ namespace Nico2PDF.Services
                         
                         // 日本語文字のテスト
                         var testText = "こんにちは";
-                        var testBytes = font.ConvertToBytes(testText, candidate.Encoding);
+                        byte[] testBytes;
+                        try
+                        {
+                            testBytes = font.ConvertToBytes(testText);
+                        }
+                        catch
+                        {
+                            continue; // フォントが日本語をサポートしていない
+                        }
                         if (testBytes != null && testBytes.Length > 0)
                         {
                             Debug.WriteLine($"  成功: {candidate.Name} - 日本語対応確認済み");
