@@ -263,7 +263,7 @@
 
             <!-- ファイル一覧 -->
             <DataGrid x:Name="dgFiles" Grid.Row="2" Margin="10" AutoGenerateColumns="False" 
-                      CanUserAddRows="False" CanUserDeleteRows="False" 
+                      CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"
                       ContextMenu="{StaticResource FileListContextMenu}">
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Header="選択" Binding="{Binding IsSelected}" Width="50"/>
@@ -454,7 +454,7 @@
                 </StatusBarItem>
                 <StatusBarItem HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="txtVersion" Text="v1.7.4" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtVersion" Text="v1.7.5" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <ProgressBar x:Name="progressBar" Width="200" Height="20" Visibility="Collapsed"/>
                     </StackPanel>
                 </StatusBarItem>
