@@ -1621,10 +1621,69 @@ namespace Nico2PDF
             {
                 var message = "以下のファイルに対応するPDFファイルが見つかりません:\n\n";
                 message += string.Join("\n", missingPdfFiles);
-                message += "\n\n先にPDF変換を実行してください。";
+                message += "\n\n不足しているファイルを自動的にPDF化してから結合しますか？";
                 
-                MessageBox.Show(message, "PDFファイル不足", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                var result = MessageBox.Show(message, "PDFファイル不足", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                
+                if (result == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+                else if (result == MessageBoxResult.Yes)
+                {
+                    // 不足しているファイルをPDF化する
+                    await ConvertMissingFilesToPdf(missingPdfFiles, allFiles);
+                    
+                    // PDF化後に再度パスを取得
+                    pdfFilePaths.Clear();
+                    missingPdfFiles.Clear();
+                    
+                    foreach (var file in allFiles)
+                    {
+                        string pdfPath;
+                        if (file.Extension.ToLower() == "pdf")
+                        {
+                            pdfPath = GetPdfPath(file.FilePath, pdfOutputFolder, baseFolderPath, includeSubfolders);
+                        }
+                        else
+                        {
+                            if (includeSubfolders)
+                            {
+                                var fileInfo = new FileInfo(file.FilePath);
+                                var relativePath = GetRelativePath(baseFolderPath, fileInfo.DirectoryName!);
+                                var outputDir = Path.Combine(pdfOutputFolder, relativePath);
+                                pdfPath = Path.Combine(outputDir, Path.GetFileNameWithoutExtension(file.FileName) + ".pdf");
+                            }
+                            else
+                            {
+                                pdfPath = Path.Combine(pdfOutputFolder, Path.GetFileNameWithoutExtension(file.FileName) + ".pdf");
+                            }
+                        }
+
+                        if (File.Exists(pdfPath))
+                        {
+                            pdfFilePaths.Add(pdfPath);
+                        }
+                        else
+                        {
+                            missingPdfFiles.Add(file.FileName);
+                        }
+                    }
+                    
+                    // まだ不足しているファイルがある場合
+                    if (missingPdfFiles.Any())
+                    {
+                        var remainingMessage = "以下のファイルはPDF化に失敗しました。これらのファイルを除外して結合を続行しますか？\n\n";
+                        remainingMessage += string.Join("\n", missingPdfFiles);
+                        
+                        var continueResult = MessageBox.Show(remainingMessage, "PDF化失敗", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (continueResult == MessageBoxResult.No)
+                        {
+                            return;
+                        }
+                    }
+                }
+                // result == MessageBoxResult.No の場合は、不足ファイルを無視して結合を続行
             }
 
             // mergePDFフォルダの場所を決定（カスタムPDF保存パスを考慮）
@@ -2496,6 +2555,73 @@ namespace Nico2PDF
                 MessageBox.Show($"プロジェクトデータのインポートに失敗しました。\n\nエラー: {ex.Message}", 
                     "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        /// <summary>
+        /// 不足しているPDFファイルを自動的に変換する
+        /// </summary>
+        /// <param name="missingFileNames">不足しているファイル名のリスト</param>
+        /// <param name="allFiles">全ファイルのリスト</param>
+        private async Task ConvertMissingFilesToPdf(List<string> missingFileNames, List<FileItem> allFiles)
+        {
+            var filesToConvert = allFiles.Where(f => missingFileNames.Contains(f.FileName)).ToList();
+            
+            if (!filesToConvert.Any())
+                return;
+
+            if (!Directory.Exists(pdfOutputFolder))
+                Directory.CreateDirectory(pdfOutputFolder);
+
+            var includeSubfolders = currentProject?.IncludeSubfolders ?? false;
+            var baseFolderPath = selectedFolderPath;
+
+            progressBar.Visibility = Visibility.Visible;
+            progressBar.Maximum = filesToConvert.Count;
+            progressBar.Value = 0;
+
+            var convertedFiles = new List<FileItem>();
+
+            await Task.Run(() =>
+            {
+                foreach (var file in filesToConvert)
+                {
+                    try
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            txtStatus.Text = $"PDF化中: {file.DisplayName}";
+                        });
+
+                        // サブフォルダを含む場合、出力ディレクトリを確保
+                        if (includeSubfolders)
+                        {
+                            FileManagementService.EnsurePdfOutputDirectory(file.FilePath, pdfOutputFolder, baseFolderPath, includeSubfolders);
+                        }
+
+                        PdfConversionService.ConvertToPdf(file.FilePath, pdfOutputFolder, file.TargetPages, baseFolderPath, includeSubfolders);
+
+                        // 変換成功したファイルをリストに追加
+                        convertedFiles.Add(file);
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            // 個別ファイルのステータス更新（即座に反映）
+                            UpdateIndividualPdfStatus(file, includeSubfolders);
+                            progressBar.Value++;
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            txtStatus.Text = $"変換エラー: {file.DisplayName} - {ex.Message}";
+                        });
+                    }
+                }
+            });
+
+            progressBar.Visibility = Visibility.Collapsed;
+            txtStatus.Text = $"{convertedFiles.Count}個のファイルをPDF化しました";
         }
 
         #endregion
