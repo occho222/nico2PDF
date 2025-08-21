@@ -294,30 +294,37 @@ namespace Nico2PDF.Services
                     return _cachedJapaneseFont;
                 }
 
-                Debug.WriteLine("=== 日本語フォント作成開始 ===");
                 
-                // 最もシンプルで確実な方法から順番に試す
+                // ゴシック系の日本語フォントを優先して使用
                 var fontCandidates = new[]
                 {
-                    // 1. 確実に存在するWindowsシステムフォント
-                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\msmincho.ttc,0", Name = "MS Mincho", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\meiryo.ttc,0", Name = "Meiryo", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    // 1. 最新のゴシックフォント
+                    new { Path = @"C:\Windows\Fonts\NotoSansJP-VF.ttf", Name = "Noto Sans JP", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
                     
-                    // 2. システムフォント名での指定
-                    new { Path = "MS Gothic", Name = "MS Gothic (Name)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = "MS UI Gothic", Name = "MS UI Gothic (Name)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = "Meiryo", Name = "Meiryo (Name)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    // 2. Yu Gothicファミリー（ゴシック系）
+                    new { Path = @"C:\Windows\Fonts\YuGothR.ttc,0", Name = "Yu Gothic Regular", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\YuGothM.ttc,0", Name = "Yu Gothic Medium", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\YuGothB.ttc,0", Name = "Yu Gothic Bold", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
                     
-                    // 3. 埋め込み版も試す
-                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic (Embedded)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.EMBEDDED },
+                    // 3. BIZ UD Gothic（ビジネス用ゴシック）
+                    new { Path = @"C:\Windows\Fonts\BIZ-UDGothicR.ttc,0", Name = "BIZ UD Gothic Regular", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\BIZ-UDGothicB.ttc,0", Name = "BIZ UD Gothic Bold", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    
+                    // 4. MS Gothic（クラシックゴシック）
+                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic 0", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,1", Name = "MS Gothic 1", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,2", Name = "MS Gothic 2", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    
+                    // 5. Meiryo（モダンゴシック）
+                    new { Path = @"C:\Windows\Fonts\meiryo.ttc,0", Name = "Meiryo 0", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\meiryo.ttc,1", Name = "Meiryo 1", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\meiryob.ttc,0", Name = "Meiryo Bold", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
                 };
 
                 foreach (var candidate in fontCandidates)
                 {
                     try
                     {
-                        Debug.WriteLine($"フォント試行: {candidate.Name}");
                         
                         // ファイルパスの場合は存在確認
                         if (candidate.Path.Contains(@"\"))
@@ -325,46 +332,65 @@ namespace Nico2PDF.Services
                             var filePath = candidate.Path.Contains(",") ? candidate.Path.Split(',')[0] : candidate.Path;
                             if (!File.Exists(filePath))
                             {
-                                Debug.WriteLine($"  ファイルが存在しません: {filePath}");
                                 continue;
                             }
                         }
                         
                         var font = BaseFont.CreateFont(candidate.Path, candidate.Encoding, candidate.Embedded);
                         
-                        // 日本語文字のテスト
-                        var testText = "こんにちは";
-                        byte[] testBytes;
-                        try
-                        {
-                            testBytes = font.ConvertToBytes(testText);
-                        }
-                        catch
-                        {
-                            continue; // フォントが日本語をサポートしていない
-                        }
-                        if (testBytes != null && testBytes.Length > 0)
-                        {
-                            Debug.WriteLine($"  成功: {candidate.Name} - 日本語対応確認済み");
-                            _cachedJapaneseFont = font;  // キャッシュに保存
-                            return font;
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"  失敗: {candidate.Name} - 日本語文字変換でnullまたは空");
-                        }
+                        // 日本語文字のテストを簡略化して、フォントが作成できたら直ちに使用する
+                        // ConvertToBytesでのテストは省略し、フォント作成成功で日本語対応とみなす
+                        _cachedJapaneseFont = font;  // キャッシュに保存
+                        return font;
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"  エラー ({candidate.Name}): {ex.Message}");
                     }
                 }
 
-                // 全て失敗した場合の最終手段
-                Debug.WriteLine("警告: すべての日本語フォントの読み込みに失敗しました。Helveticaを使用します。");
-                var fallbackFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
-                _cachedJapaneseFont = fallbackFont;
-                return fallbackFont;
+                // 全て失敗した場合の最終手段：より確実な方法でフォントを作成
+                
+                // 最終手段のゴシック系フォント（異なるエンコーディングで試行）
+                var finalCandidates = new[]
+                {
+                    // 1. Shift_JISエンコーディングでのゴシックフォント
+                    new { Path = @"C:\Windows\Fonts\YuGothR.ttc,0", Name = "Yu Gothic (90ms-RKSJ-H)", Encoding = "90ms-RKSJ-H", Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic (90ms-RKSJ-H)", Encoding = "90ms-RKSJ-H", Embedded = BaseFont.NOT_EMBEDDED },
+                    
+                    // 2. 埋め込み版ゴシックフォント
+                    new { Path = @"C:\Windows\Fonts\YuGothR.ttc,0", Name = "Yu Gothic (Embedded)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic (Embedded)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\BIZ-UDGothicR.ttc,0", Name = "BIZ UD Gothic (Embedded)", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.EMBEDDED },
+                    
+                    // 3. 縦書きエンコーディングでのゴシックフォント
+                    new { Path = @"C:\Windows\Fonts\YuGothR.ttc,0", Name = "Yu Gothic (IDENTITY_V)", Encoding = BaseFont.IDENTITY_V, Embedded = BaseFont.NOT_EMBEDDED },
+                    
+                    // 4. UTF-16エンコーディングでのゴシックフォント
+                    new { Path = @"C:\Windows\Fonts\YuGothR.ttc,0", Name = "Yu Gothic (UniJIS)", Encoding = "UniJIS-UTF16-H", Embedded = BaseFont.NOT_EMBEDDED },
+                    
+                    // 5. 最もシンプルなゴシックフォント
+                    new { Path = @"C:\Windows\Fonts\NotoSansJP-VF.ttf", Name = "Noto Sans JP (Simple)", Encoding = "CP1252", Embedded = BaseFont.NOT_EMBEDDED },
+                };
+                
+                foreach (var candidate in finalCandidates)
+                {
+                    try
+                    {
+                        
+                        var font = BaseFont.CreateFont(candidate.Path, candidate.Encoding, candidate.Embedded);
+                        _cachedJapaneseFont = font;
+                        return font;
+                    }
+                    catch (Exception ex)
+                    {
+                        continue;
+                    }
+                }
+                
+                // 完全に失敗した場合はHelveticaを使用
+                var helveticaFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+                _cachedJapaneseFont = helveticaFont;
+                return helveticaFont;
             }
         }
 

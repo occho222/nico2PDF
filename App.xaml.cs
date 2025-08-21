@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Windows;
 using Application = System.Windows.Application;
 
@@ -9,6 +10,10 @@ namespace Nico2PDF
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // .NET Core/6でiTextSharpを使用するために必要：レガシーエンコーディングを登録
+            // iTextSharpが内部でwindows-1252などのコードページを使用するため
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             // グローバル例外ハンドラー
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;

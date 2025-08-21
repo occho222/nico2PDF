@@ -304,7 +304,7 @@ namespace Nico2PDF
             }
             catch
             {
-                txtVersion.Text = "v1.4.0";
+                txtVersion.Text = "v1.8.7";
             }
         }
 
@@ -701,7 +701,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.4.0";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.7";
                 Title = $"nico²PDF {versionText} - {currentProject.Name}";
             }
             else
@@ -711,7 +711,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.4.0";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.7";
                 Title = $"nico²PDF {versionText}";
             }
             

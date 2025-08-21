@@ -10,9 +10,9 @@
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>PichonPDF_Cropped.ico</ApplicationIcon>
     <AssemblyName>nico²PDF</AssemblyName>
-    <Version>1.8.6</Version>
-    <AssemblyVersion>1.8.6.0</AssemblyVersion>
-    <FileVersion>1.8.6.0</FileVersion>
+    <Version>1.8.7</Version>
+    <AssemblyVersion>1.8.7.0</AssemblyVersion>
+    <FileVersion>1.8.7.0</FileVersion>
     <Product>nico²PDF</Product>
     <Company>nico²PDF</Company>
     <Copyright>Copyright © 2024</Copyright>
@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="iTextSharp" Version="5.5.13.4" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.8" />
     <PackageReference Include="System.Text.Json" Version="9.0.6" />
     <PackageReference Include="Microsoft.Office.Interop.Word" Version="15.0.4797.1004" />
     <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1001" />
