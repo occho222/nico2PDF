@@ -60,6 +60,9 @@ namespace Nico2PDF
             categoryGroups.Clear();
             var projectList = ProjectManager.LoadProjects();
             
+            // 一時プロジェクト（ささっとPDF化・結合用）が存在しない場合は作成
+            EnsureTemporaryProjectExists(projectList);
+            
             // 既存プロジェクトのアイコンを修正
             FixExistingProjectIcons(projectList);
             
@@ -138,6 +141,55 @@ namespace Nico2PDF
             }
         }
 
+        /// <summary>
+        /// 一時プロジェクト（ささっとPDF化・結合用）が存在することを確認し、なければ作成
+        /// </summary>
+        /// <param name="projectList">プロジェクトリスト</param>
+        private void EnsureTemporaryProjectExists(List<ProjectData> projectList)
+        {
+            // 既に一時プロジェクトが存在するかチェック
+            var temporaryProject = projectList.FirstOrDefault(p => p.IsTemporaryProject);
+            
+            if (temporaryProject == null)
+            {
+                // 一時プロジェクトを新規作成
+                var tempProject = new ProjectData
+                {
+                    Name = "ささっとPDF化・結合",
+                    Category = "システム",
+                    CategoryIcon = "⚡",
+                    CategoryColor = "#FFC107",
+                    CategoryDescription = "一時的なPDF変換・結合用の特別なプロジェクトです",
+                    IsTemporaryProject = true,
+                    FolderPath = "",
+                    CreatedDate = DateTime.Now,
+                    LastAccessDate = DateTime.Now,
+                    MergeFileName = "ささっと結合PDF"
+                };
+                
+                projectList.Add(tempProject);
+                ProjectManager.SaveProjects(projectList);
+            }
+        }
+
+        /// <summary>
+        /// 一時プロジェクト選択時の通知を表示
+        /// </summary>
+        private void ShowTemporaryProjectNotification()
+        {
+            var message = "「ささっとPDF化・結合」プロジェクトが選択されました。\n\n";
+            message += "このプロジェクトは一時的なPDF変換・結合作業用に設計されています。\n\n";
+            message += "特徴：\n";
+            message += "• フォルダを選択するだけで即座にファイル読み込み\n";
+            message += "• 簡単にPDF変換・結合が可能\n";
+            message += "• 設定は自動で最適化されます\n\n";
+            message += "使い方：フォルダをドラッグ&ドロップまたは「フォルダ選択」ボタンから\n";
+            message += "処理したいフォルダを選択してください。";
+
+            MessageBox.Show(message, "ささっとPDF化・結合プロジェクト", 
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private string GetDefaultCategoryIcon(string category)
         {
             return category switch
@@ -162,6 +214,7 @@ namespace Nico2PDF
                 "保留" => "⏸️",
                 "重要" => "⭐",
                 "緊急" => "🚨",
+                "システム" => "⚡",
                 _ => "📁"
             };
         }
@@ -337,6 +390,15 @@ namespace Nico2PDF
         {
             if (treeProjects.SelectedItem is ProjectData selectedProject)
             {
+                // 一時プロジェクトは編集不可
+                if (selectedProject.IsTemporaryProject)
+                {
+                    MessageBox.Show("「ささっとPDF化・結合」プロジェクトは編集できません。\n\n" +
+                        "このプロジェクトは特別なシステムプロジェクトです。",
+                        "編集不可", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
                 var dialog = new ProjectEditDialog();
                 dialog.ProjectName = selectedProject.Name;
                 dialog.FolderPath = selectedProject.FolderPath;
@@ -383,6 +445,14 @@ namespace Nico2PDF
         {
             if (treeProjects.SelectedItem is ProjectData selectedProject)
             {
+                // 一時プロジェクトは削除不可
+                if (selectedProject.IsTemporaryProject)
+                {
+                    MessageBox.Show("「ささっとPDF化・結合」プロジェクトは削除できません。\n\n" +
+                        "このプロジェクトは特別なシステムプロジェクトです。",
+                        "削除不可", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
                 var result = MessageBox.Show($"プロジェクト '{selectedProject.Name}' を削除しますか？",
                     "確認", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
@@ -516,6 +586,12 @@ namespace Nico2PDF
             // 新しいプロジェクトをアクティブに設定
             project.IsActive = true;
             currentProject = project;
+
+            // 一時プロジェクトが選択された場合の通知
+            if (project.IsTemporaryProject)
+            {
+                ShowTemporaryProjectNotification();
+            }
 
             // UIを更新
             selectedFolderPath = project.FolderPath;

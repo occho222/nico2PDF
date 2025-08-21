@@ -311,6 +311,11 @@ namespace Nico2PDF.Models
         public string CategoryIcon { get; set; } = "??";
 
         /// <summary>
+        /// 一時用プロジェクト（ささっとPDF化・結合用）フラグ
+        /// </summary>
+        public bool IsTemporaryProject { get; set; } = false;
+
+        /// <summary>
         /// �\�����iJSON��Ώہj
         /// </summary>
         [JsonIgnore]
