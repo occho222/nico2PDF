@@ -10,9 +10,9 @@
     <Platforms>AnyCPU;x64</Platforms>
     <ApplicationIcon>PichonPDF_Cropped.ico</ApplicationIcon>
     <AssemblyName>nico²PDF</AssemblyName>
-    <Version>1.7.7</Version>
-    <AssemblyVersion>1.7.7.0</AssemblyVersion>
-    <FileVersion>1.7.7.0</FileVersion>
+    <Version>1.7.8</Version>
+    <AssemblyVersion>1.7.8.0</AssemblyVersion>
+    <FileVersion>1.7.8.0</FileVersion>
     <Product>nico²PDF</Product>
     <Company>nico²PDF</Company>
     <Copyright>Copyright © 2024</Copyright>

@@ -810,11 +810,17 @@ namespace Nico2PDF
                     }
                     
                     txtStatus.Text = "フォルダが選択されました";
+                    
+                    // 自動的にファイル読み込みを実行
+                    LoadFilesFromFolder();
                 }
             }
         }
 
-        private void BtnReadFolder_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// フォルダからファイルを読み込む共通メソッド
+        /// </summary>
+        private void LoadFilesFromFolder()
         {
             if (string.IsNullOrEmpty(selectedFolderPath))
             {
@@ -2263,6 +2269,9 @@ namespace Nico2PDF
             }
             
             txtStatus.Text = "フォルダがドラッグ&ドロップで選択されました";
+            
+            // 自動的にファイル読み込みを実行
+            LoadFilesFromFolder();
         }
         #endregion
 
