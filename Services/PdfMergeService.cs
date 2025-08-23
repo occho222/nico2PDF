@@ -18,6 +18,7 @@ namespace Nico2PDF.Services
     {
         // 日本語フォントのキャッシュ
         private static BaseFont? _cachedJapaneseFont = null;
+        private static string? _cachedFontName = null;
         private static readonly object _fontLock = new object();
         /// <summary>
         /// PDF�t�@�C��������
@@ -46,7 +47,7 @@ namespace Nico2PDF.Services
             int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f, float pageNumberFontSize = 10.0f,
             int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f, float headerFontSize = 10.0f,
             int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f, float footerFontSize = 10.0f,
-            bool addHeader = false, bool addFooter = false, string headerText = "", string footerText = "")
+            bool addHeader = false, bool addFooter = false, string headerText = "", string footerText = "", string headerFooterFont = "MS Gothic")
         {
             using (var document = new Document())
             using (var copy = new PdfCopy(document, new FileStream(outputPath, FileMode.Create)))
@@ -102,7 +103,7 @@ namespace Nico2PDF.Services
                     pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                     headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
                     footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
-                    addHeader, addFooter, headerText, footerText);
+                    addHeader, addFooter, headerText, footerText, headerFooterFont);
             }
         }
 
@@ -142,7 +143,7 @@ namespace Nico2PDF.Services
             int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f, float pageNumberFontSize = 10.0f,
             int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f, float headerFontSize = 10.0f,
             int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f, float footerFontSize = 10.0f,
-            bool addHeader = false, bool addFooter = false, string headerText = "", string footerText = "")
+            bool addHeader = false, bool addFooter = false, string headerText = "", string footerText = "", string headerFooterFont = "MS Gothic")
         {
             var tempPath = pdfPath + ".tmp";
 
@@ -161,7 +162,7 @@ namespace Nico2PDF.Services
                     {
                         cb.BeginText();
                         // 日本語対応フォントを使用
-                        var pageNumberFont = CreateJapaneseFont();
+                        var pageNumberFont = CreateJapaneseFont(headerFooterFont);
                         cb.SetFontAndSize(pageNumberFont, pageNumberFontSize);
                         
                         float x, y;
@@ -202,7 +203,7 @@ namespace Nico2PDF.Services
                     }
 
                     // 日本語対応フォントを使用
-                    var font = CreateJapaneseFont();
+                    var font = CreateJapaneseFont(headerFooterFont);
 
                     // ヘッダを追加
                     if ((addHeaderFooter && !string.IsNullOrEmpty(headerFooterText)) || (addHeader && !string.IsNullOrEmpty(headerText)))
@@ -284,42 +285,49 @@ namespace Nico2PDF.Services
         /// 日本語対応フォントを作成（キャッシュ機能付き）
         /// </summary>
         /// <returns>日本語対応BaseFont</returns>
-        private static BaseFont CreateJapaneseFont()
+        private static BaseFont CreateJapaneseFont(string preferredFont = "MS Gothic")
         {
             lock (_fontLock)
             {
-                // キャッシュされたフォントがあれば返す
-                if (_cachedJapaneseFont != null)
+                // キャッシュされたフォントがあり、同じフォント名の場合は返す
+                if (_cachedJapaneseFont != null && _cachedFontName == preferredFont)
                 {
                     return _cachedJapaneseFont;
                 }
 
-                
-                // ゴシック系の日本語フォントを優先して使用
-                var fontCandidates = new[]
+                // 全フォント候補をリスト化
+                var allFontCandidates = new[]
                 {
-                    // 1. 最新のゴシックフォント
                     new { Path = @"C:\Windows\Fonts\NotoSansJP-VF.ttf", Name = "Noto Sans JP", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    
-                    // 2. Yu Gothicファミリー（ゴシック系）
-                    new { Path = @"C:\Windows\Fonts\YuGothR.ttc,0", Name = "Yu Gothic Regular", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\YuGothM.ttc,0", Name = "Yu Gothic Medium", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\YuGothB.ttc,0", Name = "Yu Gothic Bold", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    
-                    // 3. BIZ UD Gothic（ビジネス用ゴシック）
-                    new { Path = @"C:\Windows\Fonts\BIZ-UDGothicR.ttc,0", Name = "BIZ UD Gothic Regular", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\BIZ-UDGothicB.ttc,0", Name = "BIZ UD Gothic Bold", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    
-                    // 4. MS Gothic（クラシックゴシック）
-                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic 0", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,1", Name = "MS Gothic 1", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,2", Name = "MS Gothic 2", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    
-                    // 5. Meiryo（モダンゴシック）
-                    new { Path = @"C:\Windows\Fonts\meiryo.ttc,0", Name = "Meiryo 0", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\meiryo.ttc,1", Name = "Meiryo 1", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
-                    new { Path = @"C:\Windows\Fonts\meiryob.ttc,0", Name = "Meiryo Bold", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\YuGothR.ttc,0", Name = "Yu Gothic", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\YuGothM.ttc,0", Name = "Yu Gothic UI", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\BIZ-UDPGothicR.ttc,0", Name = "BIZ UDPGothic", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\BIZ-UDGothicR.ttc,0", Name = "BIZ UDGothic", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\msgothic.ttc,0", Name = "MS Gothic", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\meiryo.ttc,0", Name = "Meiryo", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\meiryo.ttc,1", Name = "Meiryo UI", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\msmincho.ttc,0", Name = "MS Mincho", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
+                    new { Path = @"C:\Windows\Fonts\YuMinR.ttc,0", Name = "Yu Mincho", Encoding = BaseFont.IDENTITY_H, Embedded = BaseFont.NOT_EMBEDDED },
                 };
+
+                // 指定されたフォントを最初に試すための候補リストを作成
+                var fontCandidates = new List<dynamic>();
+                
+                // 指定されたフォントを最初に追加
+                var preferredCandidate = allFontCandidates.FirstOrDefault(f => f.Name == preferredFont);
+                if (preferredCandidate != null)
+                {
+                    fontCandidates.Add(preferredCandidate);
+                }
+                
+                // 残りのフォントを追加（ゴシック系優先順）
+                foreach (var candidate in allFontCandidates)
+                {
+                    if (candidate.Name != preferredFont)
+                    {
+                        fontCandidates.Add(candidate);
+                    }
+                }
 
                 foreach (var candidate in fontCandidates)
                 {
@@ -341,6 +349,7 @@ namespace Nico2PDF.Services
                         // 日本語文字のテストを簡略化して、フォントが作成できたら直ちに使用する
                         // ConvertToBytesでのテストは省略し、フォント作成成功で日本語対応とみなす
                         _cachedJapaneseFont = font;  // キャッシュに保存
+                        _cachedFontName = preferredFont;  // キャッシュしたフォント名を保存
                         return font;
                     }
                     catch (Exception ex)
@@ -379,6 +388,7 @@ namespace Nico2PDF.Services
                         
                         var font = BaseFont.CreateFont(candidate.Path, candidate.Encoding, candidate.Embedded);
                         _cachedJapaneseFont = font;
+                        _cachedFontName = preferredFont;
                         return font;
                     }
                     catch (Exception ex)
@@ -390,6 +400,7 @@ namespace Nico2PDF.Services
                 // 完全に失敗した場合はHelveticaを使用
                 var helveticaFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
                 _cachedJapaneseFont = helveticaFont;
+                _cachedFontName = preferredFont;
                 return helveticaFont;
             }
         }
@@ -421,7 +432,7 @@ namespace Nico2PDF.Services
             int pageNumberPosition = 0, float pageNumberOffsetX = 20.0f, float pageNumberOffsetY = 20.0f, float pageNumberFontSize = 10.0f,
             int headerPosition = 0, float headerOffsetX = 20.0f, float headerOffsetY = 20.0f, float headerFontSize = 10.0f,
             int footerPosition = 2, float footerOffsetX = 20.0f, float footerOffsetY = 20.0f, float footerFontSize = 10.0f,
-            bool addHeader = false, bool addFooter = false, string headerText = "", string footerText = "")
+            bool addHeader = false, bool addFooter = false, string headerText = "", string footerText = "", string headerFooterFont = "MS Gothic")
         {
             using (var document = new Document())
             using (var copy = new PdfCopy(document, new FileStream(outputPath, FileMode.Create)))
@@ -456,7 +467,7 @@ namespace Nico2PDF.Services
                     pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                     headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
                     footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
-                    addHeader, addFooter, headerText, footerText);
+                    addHeader, addFooter, headerText, footerText, headerFooterFont);
             }
         }
 

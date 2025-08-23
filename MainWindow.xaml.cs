@@ -304,7 +304,7 @@ namespace Nico2PDF
             }
             catch
             {
-                txtVersion.Text = "v1.8.7";
+                txtVersion.Text = "v1.8.8";
             }
         }
 
@@ -324,6 +324,16 @@ namespace Nico2PDF
             chkAddPageNumber.IsChecked = appSettings.AddPageNumber;
             chkAddBookmarks.IsChecked = appSettings.AddBookmarks;
             chkGroupByFolder.IsChecked = appSettings.GroupByFolder;
+            
+            // フォント設定を反映
+            for (int i = 0; i < cmbHeaderFooterFont.Items.Count; i++)
+            {
+                if (((ComboBoxItem)cmbHeaderFooterFont.Items[i]).Content.ToString() == appSettings.HeaderFooterFont)
+                {
+                    cmbHeaderFooterFont.SelectedIndex = i;
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -331,6 +341,12 @@ namespace Nico2PDF
         /// </summary>
         private void SaveAppSettings()
         {
+            string selectedFont = "MS Gothic";
+            if (cmbHeaderFooterFont.SelectedItem != null)
+            {
+                selectedFont = ((ComboBoxItem)cmbHeaderFooterFont.SelectedItem).Content.ToString() ?? "MS Gothic";
+            }
+            
             appSettings.UpdateFromMainWindow(
                 txtHeaderText.Text ?? "",
                 txtFooterText.Text ?? "",
@@ -339,7 +355,8 @@ namespace Nico2PDF
                 txtMergeFileName.Text ?? "結合PDF",
                 chkAddPageNumber.IsChecked ?? false,
                 chkAddBookmarks.IsChecked ?? true,
-                chkGroupByFolder.IsChecked ?? false
+                chkGroupByFolder.IsChecked ?? false,
+                selectedFont
             );
             
             appSettings.Save();
@@ -701,7 +718,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.7";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.8";
                 Title = $"nico²PDF {versionText} - {currentProject.Name}";
             }
             else
@@ -711,7 +728,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.7";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.8";
                 Title = $"nico²PDF {versionText}";
             }
             
@@ -1835,6 +1852,13 @@ namespace Nico2PDF
             var footerOffsetY = currentProject?.FooterOffsetY ?? 20.0f;
             var footerFontSize = currentProject?.FooterFontSize ?? 10.0f;
             
+            // フォント設定を取得
+            string selectedFont = "MS Gothic";
+            if (cmbHeaderFooterFont.SelectedItem != null)
+            {
+                selectedFont = ((ComboBoxItem)cmbHeaderFooterFont.SelectedItem).Content.ToString() ?? "MS Gothic";
+            }
+            
             var timestamp = DateTime.Now.ToString("yyMMddHHmmss");
             var outputFileName = $"{mergeFileName}_{timestamp}.pdf";
             var outputPath = Path.Combine(mergeFolder, outputFileName);
@@ -1856,7 +1880,7 @@ namespace Nico2PDF
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
                             footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
-                            addHeader, addFooter, headerText, footerText);
+                            addHeader, addFooter, headerText, footerText, selectedFont);
                     }
                     else if (addBookmarks)
                     {
@@ -1865,7 +1889,7 @@ namespace Nico2PDF
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
                             footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
-                            addHeader, addFooter, headerText, footerText);
+                            addHeader, addFooter, headerText, footerText, selectedFont);
                     }
                     else
                     {
@@ -1874,7 +1898,7 @@ namespace Nico2PDF
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
                             footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
-                            addHeader, addFooter, headerText, footerText);
+                            addHeader, addFooter, headerText, footerText, selectedFont);
                     }
                     mergeSuccess = true;
                 }

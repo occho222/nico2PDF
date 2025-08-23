@@ -63,6 +63,11 @@ namespace Nico2PDF.Models
         public bool GroupByFolder { get; set; } = false;
 
         /// <summary>
+        /// ヘッダ・フッタ用フォント名
+        /// </summary>
+        public string HeaderFooterFont { get; set; } = "MS Gothic";
+
+        /// <summary>
         /// 設定をファイルから読み込む
         /// </summary>
         /// <returns>読み込まれた設定</returns>
@@ -154,8 +159,9 @@ namespace Nico2PDF.Models
         /// <param name="addPageNumber">ページ番号追加フラグ</param>
         /// <param name="addBookmarks">しおり追加フラグ</param>
         /// <param name="groupByFolder">フォルダ別グループ化フラグ</param>
+        /// <param name="headerFooterFont">ヘッダ・フッタ用フォント名</param>
         public void UpdateFromMainWindow(string headerText, string footerText, bool addHeader, bool addFooter,
-            string mergeFileName, bool addPageNumber, bool addBookmarks, bool groupByFolder)
+            string mergeFileName, bool addPageNumber, bool addBookmarks, bool groupByFolder, string headerFooterFont)
         {
             HeaderText = headerText;
             FooterText = footerText;
@@ -165,6 +171,7 @@ namespace Nico2PDF.Models
             AddPageNumber = addPageNumber;
             AddBookmarks = addBookmarks;
             GroupByFolder = groupByFolder;
+            HeaderFooterFont = headerFooterFont;
         }
     }
 }
