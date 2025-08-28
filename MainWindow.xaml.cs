@@ -304,7 +304,7 @@ namespace Nico2PDF
             }
             catch
             {
-                txtVersion.Text = "v1.9.1";
+                txtVersion.Text = "v1.9.2";
             }
         }
 
@@ -718,7 +718,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.1";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.2";
                 Title = $"nico²PDF {versionText} - {currentProject.Name}";
             }
             else
@@ -728,7 +728,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.1";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.2";
                 Title = $"nico²PDF {versionText}";
             }
             
@@ -1725,6 +1725,47 @@ namespace Nico2PDF
             return IsExcelFile(extension) || IsWordFile(extension) || IsPowerPointFile(extension);
         }
 
+        /// <summary>
+        /// 詳細なPDF結合エラーを表示
+        /// </summary>
+        private void ShowDetailedPdfMergeError(PdfMergeException ex)
+        {
+            var errorDetails = new System.Text.StringBuilder();
+            errorDetails.AppendLine(ex.Summary);
+            errorDetails.AppendLine();
+            errorDetails.AppendLine("失敗したファイル:");
+            
+            foreach (var error in ex.Errors)
+            {
+                errorDetails.AppendLine($"• {error.FileName}: {error.ErrorMessage}");
+                if (!string.IsNullOrEmpty(error.ErrorType) && error.ErrorType != "Exception")
+                {
+                    errorDetails.AppendLine($"  エラータイプ: {error.ErrorType}");
+                }
+            }
+
+            // エラーの種類に応じた対処法を提示
+            errorDetails.AppendLine();
+            errorDetails.AppendLine("対処法:");
+            
+            var hasFileNotFound = ex.Errors.Any(e => e.ErrorType == "FileNotFound");
+            var hasAccessDenied = ex.Errors.Any(e => e.ErrorType == nameof(UnauthorizedAccessException));
+            var hasInvalidPdf = ex.Errors.Any(e => e.ErrorType == "InvalidPdf" || e.ErrorType == "InvalidPdfException");
+            var hasPasswordProtected = ex.Errors.Any(e => e.ErrorType == "BadPasswordException");
+
+            if (hasFileNotFound)
+                errorDetails.AppendLine("• ファイルが存在するか確認してください");
+            if (hasAccessDenied)
+                errorDetails.AppendLine("• ファイルが他のプログラムで開かれていないか確認してください");
+            if (hasInvalidPdf)
+                errorDetails.AppendLine("• PDFファイルが破損していないか確認してください");
+            if (hasPasswordProtected)
+                errorDetails.AppendLine("• パスワード保護されたPDFファイルは事前にパスワードを解除してください");
+
+            MessageBox.Show(errorDetails.ToString(), "PDF結合エラー詳細", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
         #endregion
 
         #region PDF処理
@@ -2067,8 +2108,15 @@ namespace Nico2PDF
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        MessageBox.Show($"PDF結合エラー: {ex.Message}", "エラー",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        if (ex is PdfMergeException pdfMergeEx)
+                        {
+                            ShowDetailedPdfMergeError(pdfMergeEx);
+                        }
+                        else
+                        {
+                            MessageBox.Show($"PDF結合エラー: {ex.Message}", "エラー",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     });
                 }
             });

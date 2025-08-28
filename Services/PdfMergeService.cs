@@ -12,6 +12,51 @@ using System.Windows;
 namespace Nico2PDF.Services
 {
     /// <summary>
+    /// PDF結合エラー情報
+    /// </summary>
+    public class PdfMergeErrorInfo
+    {
+        public string FileName { get; set; } = "";
+        public string FilePath { get; set; } = "";
+        public string ErrorMessage { get; set; } = "";
+        public string ErrorType { get; set; } = "";
+        public Exception? OriginalException { get; set; }
+    }
+
+    /// <summary>
+    /// PDF結合専用例外
+    /// </summary>
+    public class PdfMergeException : Exception
+    {
+        public List<PdfMergeErrorInfo> Errors { get; }
+        public string Summary { get; }
+
+        public PdfMergeException(string summary, List<PdfMergeErrorInfo> errors) 
+            : base($"{summary}\n詳細:\n{string.Join("\n", errors.Select(e => $"• {e.FileName}: {e.ErrorMessage}"))}")
+        {
+            Summary = summary;
+            Errors = errors;
+        }
+
+        public PdfMergeException(string fileName, string filePath, string errorMessage, Exception innerException)
+            : base($"ファイル '{fileName}' で結合エラーが発生しました: {errorMessage}", innerException)
+        {
+            Summary = $"ファイル '{fileName}' で結合エラーが発生しました";
+            Errors = new List<PdfMergeErrorInfo>
+            {
+                new PdfMergeErrorInfo
+                {
+                    FileName = fileName,
+                    FilePath = filePath,
+                    ErrorMessage = errorMessage,
+                    ErrorType = innerException.GetType().Name,
+                    OriginalException = innerException
+                }
+            };
+        }
+    }
+
+    /// <summary>
     /// PDF�����T�[�r�X
     /// </summary>
     public class PdfMergeService
@@ -569,6 +614,25 @@ namespace Nico2PDF.Services
                 };
                 bookmarks.Add(folderBookmark);
             }
+        }
+
+        /// <summary>
+        /// 詳細なエラーメッセージを生成
+        /// </summary>
+        private static string GetDetailedErrorMessage(Exception ex, string filePath)
+        {
+            var fileName = Path.GetFileName(filePath);
+            
+            return ex.GetType().Name switch
+            {
+                nameof(FileNotFoundException) => $"ファイルが見つかりません: {fileName}",
+                nameof(UnauthorizedAccessException) => $"ファイルへのアクセスが拒否されました: {fileName}（ファイルが他のプログラムで開かれている可能性があります）",
+                nameof(IOException) => $"ファイルの読み込み中にI/Oエラーが発生しました: {fileName}",
+                "InvalidPdfException" => $"無効なPDFファイルです: {fileName}",
+                "BadPasswordException" => $"パスワードで保護されたPDFファイルです: {fileName}",
+                nameof(OutOfMemoryException) => $"メモリ不足です。ファイルサイズが大きすぎる可能性があります: {fileName}",
+                _ => $"予期しないエラーが発生しました: {fileName} ({ex.Message})"
+            };
         }
     }
 }
