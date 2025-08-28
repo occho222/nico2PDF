@@ -206,7 +206,7 @@ namespace Nico2PDF.Services
                     var font = CreateJapaneseFont(headerFooterFont);
 
                     // ヘッダを追加
-                    if ((addHeaderFooter && !string.IsNullOrEmpty(headerFooterText)) || (addHeader && !string.IsNullOrEmpty(headerText)))
+                    if (addHeader && !string.IsNullOrEmpty(headerText))
                     {
                         cb.BeginText();
                         cb.SetFontAndSize(font, headerFontSize);
@@ -235,13 +235,13 @@ namespace Nico2PDF.Services
                                 break;
                         }
                         
-                        var displayHeaderText = addHeader && !string.IsNullOrEmpty(headerText) ? headerText : headerFooterText;
+                        var displayHeaderText = headerText;
                         cb.ShowTextAligned(headerAlignment, displayHeaderText, headerX, pageSize.Height - headerOffsetY, 0);
                         cb.EndText();
                     }
 
                     // フッタを追加
-                    if ((addHeaderFooter && !string.IsNullOrEmpty(headerFooterText)) || (addFooter && !string.IsNullOrEmpty(footerText)))
+                    if (addFooter && !string.IsNullOrEmpty(footerText))
                     {
                         cb.BeginText();
                         cb.SetFontAndSize(font, footerFontSize);
@@ -270,7 +270,7 @@ namespace Nico2PDF.Services
                                 break;
                         }
                         
-                        var displayFooterText = addFooter && !string.IsNullOrEmpty(footerText) ? footerText : headerFooterText;
+                        var displayFooterText = footerText;
                         cb.ShowTextAligned(footerAlignment, displayFooterText, footerX, footerOffsetY, 0);
                         cb.EndText();
                     }

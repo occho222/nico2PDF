@@ -304,7 +304,7 @@ namespace Nico2PDF
             }
             catch
             {
-                txtVersion.Text = "v1.8.8";
+                txtVersion.Text = "v1.8.9";
             }
         }
 
@@ -718,7 +718,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.8";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.9";
                 Title = $"nico²PDF {versionText} - {currentProject.Name}";
             }
             else
@@ -728,7 +728,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.8";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.9";
                 Title = $"nico²PDF {versionText}";
             }
             
@@ -1813,8 +1813,6 @@ namespace Nico2PDF
             var addFooter = chkAddFooter.IsChecked == true;
             var headerText = txtHeaderText.Text ?? "";
             var footerText = txtFooterText.Text ?? "";
-            var addHeaderFooter = addHeader || addFooter;
-            var headerFooterText = addHeader ? headerText : footerText;
             
             // メイン画面の設定をプロジェクトに保存
             if (currentProject != null)
@@ -1876,7 +1874,7 @@ namespace Nico2PDF
                     if (addBookmarks && (includeSubfolders && groupByFolder))
                     {
                         // 高度なしおり機能を使用（フォルダ別グループ化）
-                        PdfMergeService.MergePdfFilesWithAdvancedBookmarks(pdfFilePaths, outputPath, allFiles, addPageNumber, true, addHeaderFooter, headerFooterText, headerFooterFontSize,
+                        PdfMergeService.MergePdfFilesWithAdvancedBookmarks(pdfFilePaths, outputPath, allFiles, addPageNumber, true, false, "", headerFooterFontSize,
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
                             footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
@@ -1885,7 +1883,7 @@ namespace Nico2PDF
                     else if (addBookmarks)
                     {
                         // 基本的なしおり機能を使用
-                        PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, true, allFiles, addHeaderFooter, headerFooterText, headerFooterFontSize,
+                        PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, true, allFiles, false, "", headerFooterFontSize,
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
                             footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
@@ -1894,7 +1892,7 @@ namespace Nico2PDF
                     else
                     {
                         // しおりなしで結合
-                        PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, false, null, addHeaderFooter, headerFooterText, headerFooterFontSize,
+                        PdfMergeService.MergePdfFiles(pdfFilePaths, outputPath, addPageNumber, false, null, false, "", headerFooterFontSize,
                             pageNumberPosition, pageNumberOffsetX, pageNumberOffsetY, pageNumberFontSize,
                             headerPosition, headerOffsetX, headerOffsetY, headerFontSize,
                             footerPosition, footerOffsetX, footerOffsetY, footerFontSize,
@@ -1931,7 +1929,7 @@ namespace Nico2PDF
                 {
                     statusParts.Add("しおり付き");
                 }
-                if (addHeaderFooter && !string.IsNullOrEmpty(headerFooterText))
+                if ((addHeader && !string.IsNullOrEmpty(headerText)) || (addFooter && !string.IsNullOrEmpty(footerText)))
                 {
                     statusParts.Add("ヘッダ・フッタ付き");
                 }
