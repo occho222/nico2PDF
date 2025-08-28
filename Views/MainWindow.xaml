@@ -240,9 +240,12 @@
                         <Button x:Name="btnBatchRename" Content="📋 一括変更" Width="90" Height="25" Margin="0,0,3,0" 
                                 Click="BtnBatchRename_Click" ToolTip="複数ファイルの名前を一括変更" 
                                 Background="#E83E8C" Foreground="White"/>
-                        <Button x:Name="btnExcelPrintSettings" Content="🖨️ 印刷設定" Width="90" Height="25" Margin="0,0,5,0" 
+                        <Button x:Name="btnExcelPrintSettings" Content="🖨️ 印刷設定" Width="90" Height="25" Margin="0,0,3,0" 
                                 Click="BtnExcelPrintSettings_Click" ToolTip="Excelファイルの印刷設定を一括変更" 
                                 Background="#6F42C1" Foreground="White"/>
+                        <Button x:Name="btnRemove1_1" Content="🗑️ 1-1削除" Width="90" Height="25" Margin="0,0,5,0" 
+                                Click="BtnRemove1_1_Click" ToolTip="Excelファイルの「1-1」を一括削除" 
+                                Background="#DC3545" Foreground="White"/>
                     </StackPanel>
                     
                     <!-- ファイル並び替えボタン -->
@@ -475,7 +478,7 @@
                 </StatusBarItem>
                 <StatusBarItem HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="txtVersion" Text="v1.8.9" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtVersion" Text="v1.9.0" FontSize="11" Foreground="Gray" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <ProgressBar x:Name="progressBar" Width="200" Height="20" Visibility="Collapsed"/>
                     </StackPanel>
                 </StatusBarItem>

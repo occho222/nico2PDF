@@ -304,7 +304,7 @@ namespace Nico2PDF
             }
             catch
             {
-                txtVersion.Text = "v1.8.9";
+                txtVersion.Text = "v1.9.0";
             }
         }
 
@@ -718,7 +718,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.9";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.0";
                 Title = $"nico²PDF {versionText} - {currentProject.Name}";
             }
             else
@@ -728,7 +728,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.8.9";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.0";
                 Title = $"nico²PDF {versionText}";
             }
             
@@ -1326,6 +1326,48 @@ namespace Nico2PDF
             }
 
             ShowBatchRenameDialog(selectedItems);
+        }
+
+        /// <summary>
+        /// 「1-1」一括削除ボタンのクリックイベント
+        /// </summary>
+        private void BtnRemove1_1_Click(object sender, RoutedEventArgs e)
+        {
+            var itemsWithOneDashOne = fileItems.Where(f => f.TargetPages == "1-1").ToList();
+            
+            if (!itemsWithOneDashOne.Any())
+            {
+                MessageBox.Show("「1-1」が設定されているファイルがありません。", "情報", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"「1-1」が設定されている{itemsWithOneDashOne.Count}個のファイルの対象ページを空白にします。\n\n" +
+                "続行しますか？",
+                "一括削除確認",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                foreach (var item in itemsWithOneDashOne)
+                {
+                    item.TargetPages = "";
+                }
+
+                // DataGridの表示を更新
+                dgFiles.Items.Refresh();
+
+                // プロジェクトデータを保存
+                if (currentProject != null)
+                {
+                    SaveCurrentProjectState();
+                }
+
+                txtStatus.Text = $"「1-1」を{itemsWithOneDashOne.Count}個のファイルから削除しました。";
+            }
         }
 
         private void MenuRenameFile_Click(object sender, RoutedEventArgs e)
