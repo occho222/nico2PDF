@@ -304,7 +304,7 @@ namespace Nico2PDF
             }
             catch
             {
-                txtVersion.Text = "v1.9.0";
+                txtVersion.Text = "v1.9.1";
             }
         }
 
@@ -718,7 +718,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.0";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.1";
                 Title = $"nico²PDF {versionText} - {currentProject.Name}";
             }
             else
@@ -728,7 +728,7 @@ namespace Nico2PDF
                 // バージョン情報も含めてタイトルを設定
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetName().Version;
-                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.0";
+                var versionText = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.9.1";
                 Title = $"nico²PDF {versionText}";
             }
             
@@ -1168,6 +1168,87 @@ namespace Nico2PDF
             SaveCurrentProjectState();
         }
 
+        /// <summary>
+        /// Excelファイルのみ選択
+        /// </summary>
+        private void BtnSelectExcel_Click(object sender, RoutedEventArgs e)
+        {
+            SelectFilesByExtension(IsExcelFile, "Excel");
+        }
+
+        /// <summary>
+        /// Wordファイルのみ選択
+        /// </summary>
+        private void BtnSelectWord_Click(object sender, RoutedEventArgs e)
+        {
+            SelectFilesByExtension(IsWordFile, "Word");
+        }
+
+        /// <summary>
+        /// PowerPointファイルのみ選択
+        /// </summary>
+        private void BtnSelectPowerPoint_Click(object sender, RoutedEventArgs e)
+        {
+            SelectFilesByExtension(IsPowerPointFile, "PowerPoint");
+        }
+
+        /// <summary>
+        /// PDFファイルのみ選択
+        /// </summary>
+        private void BtnSelectPDF_Click(object sender, RoutedEventArgs e)
+        {
+            SelectFilesByExtension(IsPdfFile, "PDF");
+        }
+
+        /// <summary>
+        /// Officeファイルのみ選択
+        /// </summary>
+        private void BtnSelectOffice_Click(object sender, RoutedEventArgs e)
+        {
+            SelectFilesByExtension(IsOfficeFile, "Office文書");
+        }
+
+        /// <summary>
+        /// 指定された条件に合致するファイルのみを選択
+        /// </summary>
+        /// <param name="predicate">ファイル判定条件</param>
+        /// <param name="fileTypeName">ファイルタイプ名（ステータス表示用）</param>
+        private void SelectFilesByExtension(Func<string, bool> predicate, string fileTypeName)
+        {
+            var matchingFiles = fileItems.Where(f => predicate(f.Extension)).ToList();
+            
+            if (!matchingFiles.Any())
+            {
+                MessageBox.Show($"{fileTypeName}ファイルが見つかりません。", "情報", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // 全てのファイルを一旦選択解除
+            foreach (var item in fileItems)
+            {
+                item.IsSelected = false;
+            }
+
+            // 対象ファイルのみ選択
+            foreach (var item in matchingFiles)
+            {
+                item.IsSelected = true;
+            }
+
+            // 全選択チェックボックスの状態を更新
+            chkSelectAll.IsChecked = false;
+
+            // DataGridの表示を更新
+            dgFiles.Items.Refresh();
+
+            // プロジェクトデータを保存
+            SaveCurrentProjectState();
+
+            // ステータス表示
+            txtStatus.Text = $"{fileTypeName}ファイル {matchingFiles.Count}個を選択しました。";
+        }
+
         private void FileName_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is TextBlock textBlock && textBlock.DataContext is FileItem fileItem)
@@ -1602,6 +1683,46 @@ namespace Nico2PDF
         private static bool IsExcelFile(string extension)
         {
             return extension.ToUpper() is "XLS" or "XLSX" or "XLSM";
+        }
+
+        /// <summary>
+        /// Wordファイルかどうかを判定
+        /// </summary>
+        /// <param name="extension">拡張子</param>
+        /// <returns>Wordファイルの場合true</returns>
+        private static bool IsWordFile(string extension)
+        {
+            return extension.ToUpper() is "DOC" or "DOCX";
+        }
+
+        /// <summary>
+        /// PowerPointファイルかどうかを判定
+        /// </summary>
+        /// <param name="extension">拡張子</param>
+        /// <returns>PowerPointファイルの場合true</returns>
+        private static bool IsPowerPointFile(string extension)
+        {
+            return extension.ToUpper() is "PPT" or "PPTX";
+        }
+
+        /// <summary>
+        /// PDFファイルかどうかを判定
+        /// </summary>
+        /// <param name="extension">拡張子</param>
+        /// <returns>PDFファイルの場合true</returns>
+        private static bool IsPdfFile(string extension)
+        {
+            return extension.ToUpper() is "PDF";
+        }
+
+        /// <summary>
+        /// Officeファイルかどうかを判定
+        /// </summary>
+        /// <param name="extension">拡張子</param>
+        /// <returns>Officeファイルの場合true</returns>
+        private static bool IsOfficeFile(string extension)
+        {
+            return IsExcelFile(extension) || IsWordFile(extension) || IsPowerPointFile(extension);
         }
 
         #endregion
