@@ -1169,43 +1169,18 @@ namespace Nico2PDF
         }
 
         /// <summary>
-        /// Excelファイルのみ選択
+        /// 拡張子別選択ダイアログを開く
         /// </summary>
-        private void BtnSelectExcel_Click(object sender, RoutedEventArgs e)
+        private void BtnExtensionSelect_Click(object sender, RoutedEventArgs e)
         {
-            SelectFilesByExtension(IsExcelFile, "Excel");
-        }
-
-        /// <summary>
-        /// Wordファイルのみ選択
-        /// </summary>
-        private void BtnSelectWord_Click(object sender, RoutedEventArgs e)
-        {
-            SelectFilesByExtension(IsWordFile, "Word");
-        }
-
-        /// <summary>
-        /// PowerPointファイルのみ選択
-        /// </summary>
-        private void BtnSelectPowerPoint_Click(object sender, RoutedEventArgs e)
-        {
-            SelectFilesByExtension(IsPowerPointFile, "PowerPoint");
-        }
-
-        /// <summary>
-        /// PDFファイルのみ選択
-        /// </summary>
-        private void BtnSelectPDF_Click(object sender, RoutedEventArgs e)
-        {
-            SelectFilesByExtension(IsPdfFile, "PDF");
-        }
-
-        /// <summary>
-        /// Officeファイルのみ選択
-        /// </summary>
-        private void BtnSelectOffice_Click(object sender, RoutedEventArgs e)
-        {
-            SelectFilesByExtension(IsOfficeFile, "Office文書");
+            var dialog = new Nico2PDF.Views.ExtensionSelectionDialog();
+            dialog.Owner = this;
+            dialog.SetFileItems(fileItems.ToList());
+            
+            // コールバックを設定
+            dialog.SelectFilesByExtension = SelectFilesByExtension;
+            
+            dialog.ShowDialog();
         }
 
         /// <summary>

@@ -266,22 +266,9 @@
                               Click="ChkSelectAll_Click" FontWeight="Bold" Margin="0,0,15,0"/>
                     
                     <!-- 拡張子別選択ボタン -->
-                    <TextBlock Text="拡張子別選択:" VerticalAlignment="Center" Margin="0,0,5,0" FontWeight="Bold"/>
-                    <Button x:Name="btnSelectExcel" Content="📊 Excel" Width="70" Height="25" Margin="0,0,3,0" 
-                            Click="BtnSelectExcel_Click" ToolTip="Excelファイル(.xls, .xlsx, .xlsm)のみ選択" 
-                            Background="#217346" Foreground="White" FontSize="11"/>
-                    <Button x:Name="btnSelectWord" Content="📝 Word" Width="70" Height="25" Margin="0,0,3,0" 
-                            Click="BtnSelectWord_Click" ToolTip="Wordファイル(.doc, .docx)のみ選択" 
-                            Background="#2B5797" Foreground="White" FontSize="11"/>
-                    <Button x:Name="btnSelectPowerPoint" Content="📊 PPT" Width="70" Height="25" Margin="0,0,3,0" 
-                            Click="BtnSelectPowerPoint_Click" ToolTip="PowerPointファイル(.ppt, .pptx)のみ選択" 
-                            Background="#D24726" Foreground="White" FontSize="11"/>
-                    <Button x:Name="btnSelectPDF" Content="📄 PDF" Width="70" Height="25" Margin="0,0,3,0" 
-                            Click="BtnSelectPDF_Click" ToolTip="PDFファイル(.pdf)のみ選択" 
-                            Background="#DC3545" Foreground="White" FontSize="11"/>
-                    <Button x:Name="btnSelectOffice" Content="📋 Office" Width="80" Height="25" Margin="0,0,3,0" 
-                            Click="BtnSelectOffice_Click" ToolTip="Office文書(Word/Excel/PowerPoint)のみ選択" 
-                            Background="#6F42C1" Foreground="White" FontSize="11"/>
+                    <Button x:Name="btnExtensionSelect" Content="📂 拡張子別選択" Width="120" Height="25" Margin="0,0,5,0" 
+                            Click="BtnExtensionSelect_Click" ToolTip="拡張子を指定してファイルを一括選択" 
+                            Background="#6C757D" Foreground="White" FontSize="11"/>
                 </StackPanel>
             </Grid>
 

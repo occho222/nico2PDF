@@ -1,0 +1,152 @@
+<Window x:Class="Nico2PDF.Views.ExtensionSelectionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="拡張子別ファイル選択" Height="400" Width="500"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="#F8F9FA">
+    
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="10,5"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.8"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style TargetType="TextBlock" x:Key="HeaderStyle">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="10,10,10,5"/>
+            <Setter Property="Foreground" Value="#333333"/>
+        </Style>
+        
+        <Style TargetType="TextBlock" x:Key="DescriptionStyle">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Margin" Value="15,0,10,15"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        
+        <Style TargetType="TextBlock" x:Key="CountStyle">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="15,5,10,5"/>
+            <Setter Property="Foreground" Value="#007ACC"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ヘッダー -->
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="拡張子別ファイル選択" Style="{StaticResource HeaderStyle}" FontSize="16"/>
+            <TextBlock Text="選択したい拡張子のボタンをクリックしてください。該当するファイルのみが選択されます。" 
+                       Style="{StaticResource DescriptionStyle}"/>
+        </StackPanel>
+
+        <!-- メインコンテンツ -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+                
+                <!-- Excel -->
+                <Border Background="White" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Margin="0,5">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="15,10">
+                            <TextBlock Text="📊" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel>
+                                <TextBlock Text="Microsoft Excel" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock x:Name="txtExcelCount" Text="対象ファイル: 0個" Style="{StaticResource CountStyle}" Margin="0,2,10,2"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Text="対応形式: .xls, .xlsx, .xlsm" Style="{StaticResource DescriptionStyle}" Margin="45,0,15,5"/>
+                        <Button x:Name="btnSelectExcel" Content="Excelファイルを選択" 
+                                Click="BtnSelectExcel_Click" Background="#217346" Foreground="White" Margin="15,0,15,15"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Word -->
+                <Border Background="White" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Margin="0,5">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="15,10">
+                            <TextBlock Text="📝" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel>
+                                <TextBlock Text="Microsoft Word" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock x:Name="txtWordCount" Text="対象ファイル: 0個" Style="{StaticResource CountStyle}" Margin="0,2,10,2"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Text="対応形式: .doc, .docx" Style="{StaticResource DescriptionStyle}" Margin="45,0,15,5"/>
+                        <Button x:Name="btnSelectWord" Content="Wordファイルを選択" 
+                                Click="BtnSelectWord_Click" Background="#2B5797" Foreground="White" Margin="15,0,15,15"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- PowerPoint -->
+                <Border Background="White" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Margin="0,5">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="15,10">
+                            <TextBlock Text="📊" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel>
+                                <TextBlock Text="Microsoft PowerPoint" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock x:Name="txtPowerPointCount" Text="対象ファイル: 0個" Style="{StaticResource CountStyle}" Margin="0,2,10,2"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Text="対応形式: .ppt, .pptx" Style="{StaticResource DescriptionStyle}" Margin="45,0,15,5"/>
+                        <Button x:Name="btnSelectPowerPoint" Content="PowerPointファイルを選択" 
+                                Click="BtnSelectPowerPoint_Click" Background="#D24726" Foreground="White" Margin="15,0,15,15"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- PDF -->
+                <Border Background="White" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Margin="0,5">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="15,10">
+                            <TextBlock Text="📄" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel>
+                                <TextBlock Text="PDF Document" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock x:Name="txtPdfCount" Text="対象ファイル: 0個" Style="{StaticResource CountStyle}" Margin="0,2,10,2"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Text="対応形式: .pdf" Style="{StaticResource DescriptionStyle}" Margin="45,0,15,5"/>
+                        <Button x:Name="btnSelectPDF" Content="PDFファイルを選択" 
+                                Click="BtnSelectPDF_Click" Background="#DC3545" Foreground="White" Margin="15,0,15,15"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Office統合 -->
+                <Border Background="White" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Margin="0,5">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="15,10">
+                            <TextBlock Text="📋" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel>
+                                <TextBlock Text="Microsoft Office文書" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock x:Name="txtOfficeCount" Text="対象ファイル: 0個" Style="{StaticResource CountStyle}" Margin="0,2,10,2"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Text="対応形式: Word + Excel + PowerPoint" Style="{StaticResource DescriptionStyle}" Margin="45,0,15,5"/>
+                        <Button x:Name="btnSelectOffice" Content="Office文書をすべて選択" 
+                                Click="BtnSelectOffice_Click" Background="#6F42C1" Foreground="White" Margin="15,0,15,15"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- フッター -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Name="btnClose" Content="閉じる" Click="BtnClose_Click" 
+                    Background="#6C757D" Foreground="White" MinWidth="80"/>
+        </StackPanel>
+    </Grid>
+</Window>
